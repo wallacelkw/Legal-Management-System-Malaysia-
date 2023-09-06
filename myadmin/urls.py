@@ -24,16 +24,21 @@ urlpatterns = [
     path("signup/<str:username>", views.signup_view, name="signup"),
     path("404/<str:username>", views.view_404, name="404"),
     path("blank/<str:username>", views.blank_view, name="blank"),
-    path("add_cus_record/<str:username>", views.add_cus_record, name="add_cus_record"),
+    # path("add_cus_record/<str:username>", views.add_cus_record, name="add_cus_record"),
+    # path("client_record/<int:pk>",views.client_record,name="client_record"),
+    path("add_client_to_db/", views.add_client_to_db, name="add_client_to_db"),
     path(
-        "client_record/<int:pk>",
-        views.client_record,
-        name="client_record",
+        "add_client_view/<str:username>", views.add_client_view, name="add_client_view"
     ),
-    path("update_client/<int:pk>", views.client_update, name="update_client"),
-    path("view_client/<str:username>", views.client_view, name="view_client"),
-    path("add_client/<str:username>", views.add_client, name="add_client"),
-    path("delete_client/<int:pk>/", views.delete_client, name="delete_client"),
+    path(
+        "view_all_client/<str:username>", views.view_all_client, name="view_all_client"
+    ),
+    path("update_the_client/<int:pk>", views.update_client, name="update_client"),
+    path("delete_the_client/<int:pk>", views.delete_client, name="delete_client"),
+    # path("update_client/<int:pk>", views.client_update, name="update_client"),
+    # path("view_client/<str:username>", views.client_view, name="view_client"),
+    # path("add_client/<str:username>", views.add_client, name="add_client"),
+    # path("delete_client/<int:pk>/", views.delete_client, name="delete_client"),
     # CREATE CASES TYPE
     path("case_type/<str:username>", views.case_type, name="case_type"),
     path("add_case_type/", views.add_case_type, name="add_case_type"),
@@ -50,7 +55,15 @@ urlpatterns = [
     ),
     # CASES
     path("list_case/<str:username>", views.list_case, name="list_case"),
-    path("add_case_clients/<str:username>/", views.add_case, name="add_case"),
-    path("add_client_to_case/<int:pk>",views.add_client_to_case,name="add_client_to_case",),
-    path("add_case_clients/<str:username>/", views.add_case_clients, name="add_case_clients"),
+    # path("add_case_clients/<str:username>/", views.add_case, name="add_case"),
+    path(
+        "add_client_to_case/<int:pk>",
+        views.add_client_to_case,
+        name="add_client_to_case",
+    ),
+    path(
+        "add_case_clients/<str:username>/",
+        views.add_case_clients,
+        name="add_case_clients",
+    ),
 ]

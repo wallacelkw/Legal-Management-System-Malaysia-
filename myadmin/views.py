@@ -9,8 +9,9 @@ from .forms import (
     AddCourtType,
     ClientForm,
     CaseForm,
+    AddClientForm,
 )
-from .models import cusRecord, CaseType, CourtType, Client, Case
+from .models import CaseType, CourtType, Client, Case, ClientRecord
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -18,7 +19,7 @@ from django.contrib.auth.forms import AuthenticationForm
 
 
 def login_user(request):
-    records = cusRecord.objects.all()
+    records = User.objects.all()
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -68,48 +69,48 @@ def register_user(request):
     return render(request, "register.html", {"form": form})
 
 
-def client_record(request, pk):
-    if request.user.is_authenticated:
-        customer_record = get_object_or_404(cusRecord, pk=pk)
-        messages.success(request, "Client Record Access")
-        return render(
-            request,
-            "main/client/client_popout.html",
-            {"customer_record": customer_record},
-        )
-    else:
-        messages.success(request, "Error Client Record")
-        return redirect("view_client")
+# def client_record(request, pk):
+#     if request.user.is_authenticated:
+#         customer_record = get_object_or_404(cusRecord, pk=pk)
+#         messages.success(request, "Client Record Access")
+#         return render(
+#             request,
+#             "main/client/client_popout.html",
+#             {"customer_record": customer_record},
+#         )
+#     else:
+#         messages.success(request, "Error Client Record")
+#         return redirect("view_client")
 
 
-def client_view(request, username):
-    record = cusRecord.objects.all()
-    print(record)
-    print("USER Authenticated: ", request.user.is_authenticated)
+# def client_view(request, username):
+#     record = cusRecord.objects.all()
+#     print(record)
+#     print("USER Authenticated: ", request.user.is_authenticated)
 
-    if request.user.is_authenticated:
-        messages.success(request, "Viewing")
-        return render(
-            request,
-            "main/client/client_view.html",
-            {"records": record, "username": username},
-        )
-    else:
-        messages.success(request, "You Must Be Logged In To View That Page...")
-        return redirect(
-            "view_client"
-        )  # Redirect to the login page or any other appropriate URL
+#     if request.user.is_authenticated:
+#         messages.success(request, "Viewing")
+#         return render(
+#             request,
+#             "main/client/client_view.html",
+#             {"records": record, "username": username},
+#         )
+#     else:
+#         messages.success(request, "You Must Be Logged In To View That Page...")
+#         return redirect(
+#             "view_client"
+#         )  # Redirect to the login page or any other appropriate URL
 
 
-def delete_client(request, pk):
-    if request.user.is_authenticated:
-        delete_it = cusRecord.objects.get(id=pk)
-        delete_it.delete()
-        messages.success(request, "Record Deleted Successfully...")
-        return redirect("view_client", request.user)
-    else:
-        messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("view_client", request.user)
+# def delete_client(request, pk):
+#     if request.user.is_authenticated:
+#         delete_it = cusRecord.objects.get(id=pk)
+#         delete_it.delete()
+#         messages.success(request, "Record Deleted Successfully...")
+#         return redirect("view_client", request.user)
+#     else:
+#         messages.success(request, "You Must Be Logged In To Do That...")
+#         return redirect("view_client", request.user)
 
 
 # Setting -> CASE INFORMATION
@@ -187,6 +188,9 @@ def delete_case_type(request, pk):
         return redirect("case_type", request.user)
 
 
+####-----------------####
+####  COURT RECORD   ####
+####-----------------####
 # Setting -> COURT INFORMATION
 def court_type(request, username):
     records = CourtType.objects.all()
@@ -262,66 +266,113 @@ def delete_court_type(request, pk):
         return redirect("court_type", request.user)
 
 
-def add_cus_record(request, username):
+####-----------------####
+####  CLIENT RECORD  ####
+####-----------------####
+
+
+def add_client_to_db(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            form = AddRecordsForm(request.POST)
-            print(form)
-            print(form.is_valid())
+            form = AddClientForm(request.POST)
             if form.is_valid():
-                record = form.save(commit=False)
-                record.created_by = request.user
-                record.save()
+                form.save()
                 messages.success(request, "Client record added successfully.")
-                return redirect("add_client", username=username)
+                return redirect("add_client_view", request.user)
             else:
-                # Debug: Print form errors to the console
+                messages.error(request, form.errors)
                 print("Form errors:", form.errors)
-                messages.error(request, "There were errors in the form.")
-                return redirect("add_client", username=username)
+
         else:
-            form = AddRecordsForm()  # Create an empty form for GET requests
-        return render(request, "main/client/client.html")
+            form = AddRecordsForm()
+
+        return render(request, "main/client/add_client.html", {"form": form})
+
+
+def view_all_client(request, username):
+    record = ClientRecord.objects.all()
+    print(record)
+    if request.user.is_authenticated:
+        return render(
+            request,
+            "main/client/view_client.html",
+            {"records": record, "username": username},
+        )
     else:
-        return redirect("add_client")
+        messages.success(request, "You Must Be Logged In To View That Page...")
+        return redirect("view_all_client")
 
 
-def client_update(request, pk):
+def update_client(request, pk):
     context = {}
     if request.user.is_authenticated:
         # fetch the object related to passed id
-        obj = get_object_or_404(cusRecord, id=pk)
-        current_record = cusRecord.objects.get(id=pk)
-        form = AddRecordsForm(request.POST, instance=obj)
+        obj = get_object_or_404(ClientRecord, id=pk)
+        current_record = ClientRecord.objects.get(id=pk)
+        form = AddClientForm(request.POST, instance=obj)
+        # print(form)
+        # print(form)
         if form.is_valid():
             form.save()
             messages.success(request, "Record Has Been Updated!")
-            return redirect("view_client", username=request.user)
+            return redirect("view_all_client", username=request.user)
         else:
             print("Form errors:", form.errors)
         context["form"] = form
-        return render(
-            request,
-            "main/client/client_update.html",
-            {"context": context, "record": current_record},
-        )
-
     else:
-        messages.success(request, "Update Error")
-        return redirect("view_client", username=request.user)
+        form = AddClientForm()
+    return render(
+        request,
+        "main/client/update_client.html",
+        {"context": context, "record": current_record},
+    )
+
+
+def delete_client(request, pk):
+    if request.user.is_authenticated:
+        delete_it = ClientRecord.objects.get(id=pk)
+        delete_it.delete()
+        return redirect("view_all_client", request.user)
+    else:
+        return redirect("view_all_client", request.user)
+
+
+# def client_update(request, pk):
+#     context = {}
+#     if request.user.is_authenticated:
+#         # fetch the object related to passed id
+#         obj = get_object_or_404(cusRecord, id=pk)
+#         current_record = cusRecord.objects.get(id=pk)
+#         form = AddRecordsForm(request.POST, instance=obj)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, "Record Has Been Updated!")
+#             return redirect("view_client", username=request.user)
+#         else:
+#             print("Form errors:", form.errors)
+#         context["form"] = form
+#         return render(
+#             request,
+#             "main/client/client_update.html",
+#             {"context": context, "record": current_record},
+#         )
+
+#     else:
+#         messages.success(request, "Update Error")
+#         return redirect("view_client", username=request.user)
 
 
 def list_case(request, username):
     return render(request, "main/case/list_case.html", {"username": username})
 
 
-def add_case(request, username):
-    record = cusRecord.objects.all()
-    return render(
-        request,
-        "main/case/add_case_client.html",
-        {"username": username, "records": record},
-    )
+# def add_case(request, username):
+#     record = cusRecord.objects.all()
+#     return render(
+#         request,
+#         "main/case/add_case_client.html",
+#         {"username": username, "records": record},
+#     )
 
 
 def add_client_to_case(request, case_id):
@@ -370,8 +421,8 @@ def add_case_clients(request):
     )
 
 
-def add_client(request, username):
-    return render(request, "main/client/client.html", {"username": username})
+def add_client_view(request, username):
+    return render(request, "main/client/add_client.html", {"username": username})
 
 
 # Create your views here.

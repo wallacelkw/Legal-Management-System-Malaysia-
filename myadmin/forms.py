@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Record, cusRecord, CaseType, CourtType, Client, Case
+from .models import CaseType, CourtType, Client, Case, ClientRecord
 
 
 class SignUpForm(UserCreationForm):
@@ -60,6 +60,28 @@ class SignUpForm(UserCreationForm):
         self.fields[
             "password2"
         ].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
+
+
+class AddClientForm(forms.ModelForm):
+    class Meta:
+        model = ClientRecord
+        fields = (
+            "full_name",
+            "identity",
+            "gender",
+            "phone_number",
+            "email",
+            "address1",
+            "address2",
+            "city",
+            "postcode",
+            "state",
+            "country",
+            "agent_fullname",
+            "agent_ph",
+            "agent_identity",
+            "remark",
+        )
 
 
 # Create Add Record Form
@@ -182,7 +204,7 @@ class AddRecordsForm(forms.ModelForm):
     )
 
     class Meta:
-        model = cusRecord
+        model = ClientRecord
         exclude = ("user",)
 
 
@@ -237,7 +259,12 @@ class AddCourtType(forms.ModelForm):
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = ["client_name", "client_role", "respondent_name", "respondent_advocate"]
+        fields = [
+            "client_name",
+            "client_role",
+            "respondent_name",
+            "respondent_advocate",
+        ]
 
 
 class CaseForm(forms.ModelForm):
