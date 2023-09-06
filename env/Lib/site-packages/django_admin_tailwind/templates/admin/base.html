@@ -1,0 +1,378 @@
+{% load i18n static context %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    {% block stylesheet %}
+        <style>
+            :root {
+            {% block colors %}
+                --color-light-0: #FFF;
+                --color-light-50: #F8FAFF;
+                --color-light-100: #F0F4FF;
+                --color-light-200: #D9E0F4;
+                --color-light-300: #8594AF;
+                --color-light-400: #67799A;
+                --color-light-500: #485C80;
+                --color-light-600: #2E446A;
+                --color-light-700: #192F55;
+                --color-light-800: #0A1E40;
+                --color-light-900: #011029;
+
+                --color-dark-0: #010917;
+                --color-dark-50: #030E1F;
+                --color-dark-100: #020D21;
+                --color-dark-200: #293340;
+                --color-dark-300: #434E5D;
+                --color-dark-400: #5E6774;
+                --color-dark-500: #78818E;
+                --color-dark-600: #9199A7;
+                --color-dark-700: #A7AFBC;
+                --color-dark-800: #B3BAC6;
+                --color-dark-900: #C9CED8;
+
+                --color-primary-50: #EAF2FA;
+                --color-primary-100: #C4DFFA;
+                --color-primary-200: #9DCBF7;
+                --color-primary-300: #75B4F0;
+                --color-primary-400: #4C95DB;
+                --color-primary-500: #32679B;
+                --color-primary-600: #144B82;
+                --color-primary-700: #0C3157;
+                --color-primary-800: #08233E;
+                --color-primary-900: #041322;
+
+                --color-secondary-50: #F4FEFF;
+                --color-secondary-100: #CAF8FC;
+                --color-secondary-200: #ADF6FC;
+                --color-secondary-300: #89F3FC;
+                --color-secondary-400: #4FEDFA;
+                --color-secondary-500: #24EDFD;
+                --color-secondary-600: #0CD8E8;
+                --color-secondary-700: #25E9F8;
+                --color-secondary-800: #069DA8;
+                --color-secondary-900: #05828B;
+
+                --svg-theme-light-primary: currentColor;
+                --svg-theme-light-secondary: #FFF;
+                --svg-theme-light-tertiary: #FFF;
+
+                --svg-theme-dark-primary: currentColor;
+                --svg-theme-dark-secondary: #FFF;
+                --svg-theme-dark-tertiary: #FFF;
+            {% endblock %}
+            }
+
+            /* Alpine.js */
+
+            [x-cloak] {
+                display: none;
+            }
+        </style>
+        {% with VERSION='VERSION'|get_context %}
+            {% with href="/django_admin_tailwind/"|add:VERSION|add:'/css/base.css' %}
+                <link rel="stylesheet" type="text/css" href="{% static href %}">
+            {% endwith %}
+        {% endwith %}
+    {% endblock %}
+    {% comment %}
+        Tailwind purge class:
+            - errorlist
+            - vIntegerField
+            - this-page
+    {% endcomment %}
+    {% block extrastyle %}{% endblock %}
+    {% block extrahead %}{% endblock %}
+    {% block responsive %}
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        {% comment %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}">{% endcomment %}
+        {% comment %}{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}{% endcomment %}
+    {% endblock %}
+    {% block blockbots %}
+        <meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.11.1/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" defer></script>
+</head>
+
+<body class="bg-light-0 dark:bg-dark-0 {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+      {% block bodystyle %}{% endblock %}
+      data-admin-utc-offset="{% now "Z" %}">
+
+<!-- Container -->
+<div id="container">
+
+    {% if not is_popup %}
+        <!-- Header -->
+        {% block header %}
+            <div id="header" class="border-b border-light-200 dark:border-dark-200">
+                <div id="branding">
+                </div>
+                {% block usertools %}
+                    {% if has_permission %}
+                        <nav class="bg-light-100 dark:bg-dark-100">
+                            <div class="mx-auto spacing-x-regular">
+                                <div class="relative flex items-center justify-between h-16">
+                                    <div class="flex-1 flex items-center items-stretch justify-start">
+                                        <div class="flex-shrink-0 flex items-center">
+                                            {% block branding %}{% endblock %}
+                                        </div>
+                                    </div>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                        <!-- Profile dropdown -->
+                                        <div class="ml-3 relative"
+                                             x-data="{ dropdownUser: false }"
+                                             @click.away="dropdownUser = false">
+                                            <div>
+                                                <button @click="dropdownUser = true"
+                                                        type="button"
+                                                        class="svg-trigger bg-light-800 dark:bg-dark-800 dark:bg-dark-800 flex text-sm rounded-full focus:outline-none"
+                                                        id="user-menu-button"
+                                                        aria-expanded="false"
+                                                        aria-haspopup="true">
+                                                    <span class="sr-only">Open user menu</span>
+                                                    {% comment %}heroicons-user-small{% endcomment %}
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         class="svg-snoweb h-8 w-8 rounded-full fill-current text-light-50 dark:text-dark-50"
+                                                         x="0" y="0" width="100%"
+                                                         height="100%" viewBox="0 0 100 100"
+                                                         preserveAspectRatio="xMidYMid meet">
+                                                        <g transform="translate(12.50, 12.50) scale(0.75, 0.75)">
+                                                            <path d="M50,42.5a15,15,0,1,0-15-15A15,15,0,0,0,50,42.5ZM15.1,87.4a34.9,34.9,0,0,1,69.8,0Z"
+                                                                  class="svg-fill-primary"
+                                                                  fill-rule="evenodd"></path>
+                                                        </g>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <div x-description="Dropdown menu, show/hide based on menu state."
+                                                 x-show="dropdownUser"
+                                                 x-transition:enter="ease-out duration-100"
+                                                 x-transition:enter-start="opacity-0 scale-95"
+                                                 x-transition:enter-end="opacity-100 scale-100"
+                                                 x-transition:leave="duration-100 ease-in duration-75"
+                                                 x-transition:leave-start="opacity-100 scale-100"
+                                                 x-transition:leave-end="opacity-0 scale-95"
+                                                 x-cloak
+                                                 class="z-30 transition origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-light-0 dark:bg-dark-0 focus:outline-none"
+                                                 role="menu"
+                                                 aria-orientation="vertical"
+                                                 aria-labelledby="user-menu-button"
+                                                 tabindex="-1">
+                                                {% block userlinks %}
+                                                    {% if site_url %}
+                                                        <a href="{{ site_url }}"
+                                                           class="block hover:bg-light-50 dark:hover:bg-dark-50 px-4 py-2 text-sm text-light-700 dark:text-dark-700"
+                                                           role="menuitem"
+                                                           tabindex="-1"
+                                                           id="user-menu-item-0">{% translate 'View site' %}</a>
+                                                    {% endif %}
+                                                    {% if user.is_active and user.is_staff %}
+                                                        {% url 'django-admindocs-docroot' as docsroot %}
+                                                        {% if docsroot %}
+                                                            <a href="{{ docsroot }}"
+                                                               class="block hover:bg-light-50 dark:hover:bg-dark-50 px-4 py-2 text-sm text-light-700 dark:text-dark-700"
+                                                               role="menuitem"
+                                                               tabindex="-1">{% translate 'Documentation' %}</a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if user.has_usable_password %}
+                                                        <a href="{% url 'admin:password_change' %}"
+                                                           class="block hover:bg-light-50 dark:hover:bg-dark-50 px-4 py-2 text-sm text-light-700 dark:text-dark-700"
+                                                           role="menuitem"
+                                                           tabindex="-1">{% translate 'Change password' %}</a>
+                                                    {% endif %}
+                                                    <a href="{% url 'admin:logout' %}"
+                                                       class="block hover:bg-light-50 dark:hover:bg-dark-50 px-4 py-2 text-sm text-light-700 dark:text-dark-700"
+                                                       role="menuitem"
+                                                       tabindex="-1" id="user-menu-item-0">{% translate 'Log out' %}</a>
+                                                {% endblock %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </nav>
+                    {% endif %}
+                {% endblock %}
+                {% block nav-global %}{% endblock %}
+            </div>
+        {% endblock %}
+        <!-- END Header -->
+        {% block breadcrumbs %}
+            <nav class="border-b border-light-200 dark:border-dark-200 flex" aria-label="Breadcrumb">
+                <ol class="w-full mx-auto px-4 flex space-x-4 sm:px-6 lg:px-8">
+                    <li class="flex">
+                        <div class="flex items-center">
+                            <a href="{% url 'admin:index' %}">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="svg-snoweb svg-flex-shrink-0 h-5 w-5 fill-current text-light-900 dark:text-dark-900"
+                                     x="0"
+                                     y="0"
+                                     width="100%"
+                                     height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                                    <path d="M53.3,13.9a4.7,4.7,0,0,0-6.6,0L13.9,46.7a4.7,4.7,0,0,0,0,6.6,4.8,4.8,0,0,0,6.7,0l1.3-1.4V82.7a4.7,4.7,0,0,0,4.7,4.7H36a4.7,4.7,0,0,0,4.6-4.7V73.4a4.7,4.7,0,0,1,4.7-4.7h9.4a4.7,4.7,0,0,1,4.7,4.7v9.3A4.7,4.7,0,0,0,64,87.4h9.4a4.7,4.7,0,0,0,4.7-4.7V51.9l1.3,1.4a4.8,4.8,0,0,0,6.7,0,4.7,4.7,0,0,0,0-6.6Z"
+                                          class="svg-fill-primary"></path>
+                                </svg>
+                                <span class="sr-only">{% translate 'Home' %}</span>
+                            </a>
+                        </div>
+                    </li>
+                    {% if title %}
+                        <li class="flex">
+                            <div class="flex items-center">
+                                <svg class="flex-shrink-0 w-6 h-full text-light-200 dark:text-dark-200"
+                                     viewBox="0 0 24 44"
+                                     preserveAspectRatio="none" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                                     aria-hidden="true">
+                                    <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z"/>
+                                </svg>
+                                <span class="ml-4 text-sm font-medium text-light-300 dark:text-dark-300"
+                                      aria-current="page">{{ title }}</span>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ol>
+            </nav>
+        {% endblock %}
+    {% endif %}
+
+    <div id="main" class="flex">
+        {% if not is_popup and is_nav_sidebar_enabled %}
+            {% block nav-sidebar %}
+                {% include "admin/nav_sidebar.html" %}
+            {% endblock %}
+        {% endif %}
+        {% block messages %}
+            {% if messages %}
+                <div class="fixed z-50 inset-0 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
+                    <div x-data="{ show: true }" x-show="show"
+                         x-description="Notification panel, show/hide based on alert state."
+                         x-transition:enter="transform ease-out duration-300 transition"
+                         x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                         x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                         x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="max-w-sm w-full bg-light-0 dark:bg-dark-0 shadow-lg rounded-lg pointer-events-auto overflow-hidden ring-1 ring-primary-500">
+                        {% for message in messages %}
+                            <div class="message p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0" data-tags="{{ message.tags }}">
+                                        {% if 'success' in message.tags %}
+                                            <svg class="h-6 w-6 text-green-400 fill-current"
+                                                 width="100%"
+                                                 height="100%"
+                                                 preserveaspectratio="xMidYMid meet"
+                                                 viewbox="0 0 100 100"
+                                                 x="0"
+                                                 y="0"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M85.7,25a5.3,5.3,0,0,1,0,7.5L43.1,75a5.3,5.3,0,0,1-7.5,0L14.3,53.8a5.4,5.4,0,0,1,0-7.6,5.4,5.4,0,0,1,7.5,0L39.4,63.8,78.2,25A5.3,5.3,0,0,1,85.7,25Z"
+                                                      fill-rule="evenodd">
+                                                </path>
+                                            </svg>
+                                        {% elif 'error' in message.tags %}
+                                            <svg class="h-6 w-6 text-red-400 fill-current"
+                                                 height="100%"
+                                                 width="100%"
+                                                 preserveaspectratio="xMidYMid meet"
+                                                 viewbox="0 0 100 100"
+                                                 x="0"
+                                                 y="0"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path class="svg-fill-primary"
+                                                      d="M14.4,14.4a6.3,6.3,0,0,1,8.8,0L50,41.2,76.8,14.4a6.2,6.2,0,0,1,8.8,8.8L58.8,50,85.6,76.8a6.2,6.2,0,0,1-8.8,8.8L50,58.8,23.2,85.6a6.2,6.2,0,0,1-8.8-8.8L41.2,50,14.4,23.2A6.3,6.3,0,0,1,14.4,14.4Z"
+                                                      fill-rule="evenodd">
+                                                </path>
+                                            </svg>
+                                        {% elif 'warning' in message.tags %}
+                                            <svg class="h-6 w-6 text-orange-400 fill-current"
+                                                 height="100%"
+                                                 width="100%"
+                                                 preserveaspectratio="xMidYMid meet"
+                                                 viewbox="0 0 100 100"
+                                                 x="0"
+                                                 y="0"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <path class="svg-fill-primary"
+                                                      d="M42.6,24.8a8.5,8.5,0,0,1,14.8,0L81,66.9a8.5,8.5,0,0,1-7.4,12.6H26.4A8.5,8.5,0,0,1,19,66.9Zm11.6,42A4.2,4.2,0,1,1,50,62.5,4.2,4.2,0,0,1,54.2,66.8ZM50,32.9a4.2,4.2,0,0,0-4.2,4.2V49.8a4.2,4.2,0,1,0,8.4,0V37.1A4.2,4.2,0,0,0,50,32.9Z"
+                                                      fill-rule="evenodd">
+                                                </path>
+                                            </svg>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                                        <p class="text-sm font-medium text-light-900 dark:text-dark-900">
+                                            {{ message }}
+                                        </p>
+                                        {% if message.extra_tags %}
+                                            <p class="mt-1 text-sm text-light-500 dark:text-dark-500">
+                                                {{ message.extra_tags }}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    {% if forloop.counter0 == 0 %}
+                                        <div class="ml-4 flex-shrink-0 flex">
+                                            <button @click="show = false"
+                                                    class="svg-trigger bg-light-0 dark:bg-dark-0 rounded-md inline-flex text-light-400 hover:text-light-500 dark:text-dark-400 dark:hover:text-dark-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                                <span class="sr-only">Close</span>
+                                                <svg class="h-4 w-4 text-light-400 dark:text-dark-400 fill-current"
+                                                     height="100%"
+                                                     width="100%"
+                                                     preserveaspectratio="xMidYMid meet"
+                                                     viewbox="0 0 100 100"
+                                                     x="0"
+                                                     y="0"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path class="svg-fill-primary"
+                                                          d="M14.4,14.4a6.3,6.3,0,0,1,8.8,0L50,41.2,76.8,14.4a6.2,6.2,0,0,1,8.8,8.8L58.8,50,85.6,76.8a6.2,6.2,0,0,1-8.8,8.8L50,58.8,23.2,85.6a6.2,6.2,0,0,1-8.8-8.8L41.2,50,14.4,23.2A6.3,6.3,0,0,1,14.4,14.4Z"
+                                                          fill-rule="evenodd">
+                                                    </path>
+                                                </svg>
+                                                {% comment %}{% svg_inline 'heroicons-cross-small' width="100%" height="100%" klass='h-4 w-4 text-light-400 dark:text-dark-400 fill-current' %}{% endcomment %}
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock messages %}
+        <!-- Content -->
+        <div id="content" class="flex-1 {% block contentclass %}{% endblock %}">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}
+                <div class="pt-6">
+                    <div class="tracking-tight pl-2 sm:pl-6 lg:pl-8">
+                        {% if title %}
+                            <h1 class="inline">{{ title }}</h1>
+                        {% endif %}
+                        {% block content_subtitle %}
+                            {% if subtitle %}
+                                <p class="mt-1 max-w-2xl text-sm text-light-500 dark:text-dark-500">{{ subtitle }}</p>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                </div>
+            {% endblock %}
+
+            <div class="{% block content_container_class %}lg:flex lg:flex-shrink-0{% endblock %}">
+                {% block content %}
+                    {% block object-tools %}{% endblock %}
+                    {{ content }}
+                {% endblock %}
+                {% block sidebar %}{% endblock %}
+            </div>
+        </div>
+        <!-- END Content -->
+        {% block footer %}
+            <div id="footer"></div>{% endblock %}
+    </div>
+</div>
+<!-- END Container -->
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

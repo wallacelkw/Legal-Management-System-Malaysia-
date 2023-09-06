@@ -1,0 +1,42 @@
+<div class="row g-2">
+    <div class="col-6">
+        <div class="form-floating mb-3">
+            <select class="form-select" id="clientName" name="clientName" required>
+                <option value="" selected>Please Select Client</option>
+            {% if records %} {% for record in records %}
+                <option value="{{record.first_name}} {{record.last_name}}">{{record.first_name}} {{record.last_name}}</option>
+                {% endfor %} {% endif %}
+            </select>
+            <label for="floatingSelect">Client</label>
+
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="col-sm-10 justify-content-between">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="Petitioner" checked>
+                <label class="form-check-label" for="gridRadios1">
+                Petitioner 
+                    </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="Respondent">
+                <label class="form-check-label" for="gridRadios2">
+                Respondent
+                    </label>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="respondent_name" name="respondent_name" required>
+            <label for="first_name" class="form-label">Respondent Name</label>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" required>
+            <label for="first_name" class="form-label">Respondent Advocate</label>
+        </div>
+    </div>
+</div>

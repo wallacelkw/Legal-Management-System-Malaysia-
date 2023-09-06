@@ -1,0 +1,72 @@
+{% load i18n %}
+
+
+{% if app_list %}
+
+    {% for app in app_list %}
+
+        <div class="flex flex-col">
+            <div class="overflow-x-auto">
+                <div class="{% if with_section %}p-2{% endif %} align-middle inline-block min-w-full">
+                    <div class="{% if with_section %}shadow sm:rounded-lg{% endif %} overflow-hidden border-b border-light-200 dark:border-dark-200">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th colspan="2">
+                                    <a href="{{ app.app_url }}" class="section"
+                                       title="{% blocktranslate with name=app.name %}Models in the {{ name }} application{% endblocktranslate %}">{{ app.name }}</a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for model in app.models %}
+
+                                <tr class="flex items-center">
+                                {% if model.admin_url %}
+                                    <td class="flex-grow">
+                                        <a href="{{ model.admin_url }}"
+                                                {% if model.admin_url in request.path %}
+                                           aria-current="page"{% endif %}>{{ model.name }}</a>
+                                    </td>
+                                {% else %}
+                                    <td class="flex-grow">
+                                        {{ model.name }}
+                                    </td>
+                                {% endif %}
+
+
+                                <td class="p-4 flex-none">
+                                    {% if model.add_url %}
+                                        <a href="{{ model.add_url }}"
+                                           class="addlink inline-flex items-center shadow-sm px-2.5 py-0.5 border text-sm leading-5 font-medium rounded-full border-light-300 text-light-700 hover:bg-light-50 dark:border-dark-300 dark:text-dark-700 bg-light-0 dark:bg-dark-0 dark:hover:bg-dark-200">
+                                            {% translate 'Add' %}
+                                        </a>
+                                    {% endif %}
+
+                                    {% if model.admin_url and show_changelinks %}
+                                        {% if model.view_only %}
+                                            <a href="{{ model.admin_url }}"
+                                               class="inline-flex items-center shadow-sm px-2.5 py-0.5 border text-sm leading-5 font-medium rounded-full border-light-300 text-light-700 hover:bg-light-50 dark:border-dark-300 dark:text-dark-700 bg-light-0 dark:bg-dark-0 dark:hover:bg-dark-200">
+                                                {% translate 'View' %}
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ model.admin_url }}"
+                                               class="inline-flex items-center shadow-sm px-2.5 py-0.5 border text-sm leading-5 font-medium rounded-full border-light-300 text-light-700 hover:bg-light-50 dark:border-dark-300 dark:text-dark-700 bg-light-0 dark:bg-dark-0 dark:hover:bg-dark-200">
+                                                {% translate 'Change' %}
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+
+                            {% endfor %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>{% translate 'You don’t have permission to view or edit anything.' %}</p>
+{% endif %}

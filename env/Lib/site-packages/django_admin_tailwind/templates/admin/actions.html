@@ -1,0 +1,36 @@
+{% load i18n %}
+<div class="actions flex items-center">
+    {% block actions %}
+        {% block actions-form %}
+            {% for field in action_form %}{% if field.label %}<label class="flex items-center">
+                {% comment %}{{ field.label }}{% endcomment %} {% endif %}{{ field }}{% if field.label %}</label>
+            {% endif %}{% endfor %}
+        {% endblock %}
+        {% block actions-submit %}
+            <button type="submit"
+                    class="button text-white bg-primary-600 hover:bg-primary-700 focus:ring-primary-500"
+                    title="{% translate "Run the selected action" %}" name="index"
+                    value="{{ action_index|default:0 }}">{% translate "Go" %}</button>
+        {% endblock %}
+        {% block actions-counter %}
+            <div class="ml-3">
+                {% if actions_selection_counter %}
+                    <span class="action-counter block text-sm text-light-400 dark:text-dark-400"
+                          data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
+                    {% if cl.result_count != cl.result_list|length %}
+                        <span class="all hidden text-sm text-light-400 dark:text-dark-400">{{ selection_note_all }}</span>
+                        <span class="question hidden text-sm text-primary-600">
+                            <a href="#"
+                               class="block"
+                               title="{% translate "Click here to select the objects across all pages" %}">{% blocktranslate with cl.result_count as total_count %}
+                                Select all {{ total_count }} {{ module_name }}{% endblocktranslate %}</a>
+                        </span>
+                        <span class="clear hidden text-sm text-primary-600 dark:text-dark-600">
+                            <a class="block"
+                               href="#">{% translate "Clear selection" %}</a></span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endblock %}
+    {% endblock %}
+</div>

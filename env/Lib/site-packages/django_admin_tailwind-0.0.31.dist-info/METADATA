@@ -1,0 +1,74 @@
+Metadata-Version: 2.1
+Name: django-admin-tailwind
+Version: 0.0.31
+Summary: Django Admin Tailwind
+Home-page: https://github.com/Aleksi44/django-admin-tailwind
+Author: Alexis Le Baron
+Author-email: hello@snoweb.fr
+License: GPL-3.0
+Keywords: django django-admin tailwind
+Platform: linux
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development
+License-File: LICENSE
+
+*********************
+Django Admin Tailwind
+*********************
+
+.. image:: https://img.shields.io/pypi/v/django-admin-tailwind
+    :target: https://pypi.org/project/django-admin-tailwind/
+
+.. image:: https://img.shields.io/pypi/pyversions/django-admin-tailwind
+    :target: https://pypi.org/project/django-admin-tailwind/
+
+
+`Django Admin <https://docs.djangoproject.com/fr/3.2/ref/contrib/admin/>`_ + `Tailwind <https://tailwindcss.com/>`_ = 🚀
+
+django-admin-tailwind is a theme for Django Admin developed with :
+
+- Tailwind class
+- `Tailwind forms <https://github.com/tailwindlabs/tailwindcss-forms>`_
+- Tailwind dark mode
+
+**WARNING** : Some Django form fields are not yet developed.
+
+.. image:: https://static.snoweb.fr/images/django-admin-tailwind.original.jpg
+
+Setup
+#####
+
+Install with pip :
+
+``pip install django-admin-tailwind``
+
+Add django-admin-tailwind to django apps installed :
+::
+
+    INSTALLED_APPS = [
+        ...
+        'django_admin_tailwind',
+        ...
+        'django.contrib.admin',
+    ]
+
+
+Dev
+###
+
+::
+
+    python manage.py migrate
+    python manage.py init
+
+Log in with django:tailwind
+
+

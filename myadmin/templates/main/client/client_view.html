@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %} {% include "navigation/head.html" %}
+
+<body>
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+        <!-- Sidebar Start -->
+        {% include "navigation/sidebar.html" %}
+        <!-- Sidebar End -->
+
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            {% include "navigation/navbar.html" %}
+
+            <div class="container-fluid pt-4 px-4">
+                {% for msg in messages %}
+                <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Hey! </strong>{{msg}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div> -->
+
+                {% endfor %}
+
+                <div class="col-12">
+
+                    <div class="bg-light rounded h-100 p-4">
+                        <h3>Client Information</h3>
+                        <div class="table-responsive">
+
+                            <table id="clientTable" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Gender</th>
+                                        <th scope="col">Date Of Birth</th>
+                                        <th scope="col">Phone Number</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Address</th>
+                                        <th scope="col">City</th>
+                                        <th scope="col">Postcode</th>
+                                        <th scope="col">State</th>
+                                        <th scope="col">Country</th>
+                                        <th scope="col">Emergency (Full Name)</th>
+                                        <th scope="col">Emergency (Relationship)</th>
+                                        <th scope="col">Emergency (Email)</th>
+                                        <th scope="col">Emergency (Phone Number)</th>
+                                        <th scope="col">Created By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if records %} {% for record in records %}
+                                    <tr>
+                                        <td><a class="open-incident" href="{% url 'update_client' pk=record.id%}">{{ record.id }}</a></td>
+                                        <td>{{ record.first_name }} {{ record.last_name }}</td>
+                                        <td>{{ record.gender }}</td>
+                                        <td>{{ record.date_of_birth }}</td>
+                                        <td>{{ record.phone_number }}</td>
+                                        <td>{{ record.email }}</td>
+                                        <td>{{ record.address1 }} {{ record.address2 }}</td>
+                                        <td>{{ record.city }}</td>
+                                        <td>{{ record.postcode }}</td>
+                                        <td>{{ record.state }}</td>
+                                        <td>{{ record.country }}</td>
+                                        <td>{{ record.emergency_contact_full_name }}</td>
+                                        <td>{{ record.emergency_contact_relationship }}</td>
+                                        <td>{{ record.emergency_contact_email }}</td>
+                                        <td>{{ record.emergency_contact_phone_number }}</td>
+                                        <td>{{ record.created_by }}</td>
+                                    </tr>
+                                    {% endfor %} {% endif %}
+
+                                    <!-- To place above the incident-modal html -->
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% include "navigation/footer.html" %}
+        </div>
+
+    </div>
+
+    <!-- Back to Top -->
+
+    <!-- JavaScript Libraries -->
+    <!-- Include jQuery first (if not already included) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/chart/chart.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/project_function.js' %}"></script>
+    <!-- DataTables JavaScript -->
+    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.10/js/jquery.dataTables.js"></script> -->
+    <!-- DataTable-->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        new DataTable('#clientTable', {
+            order: [
+                [0, 'decs']
+            ]
+        })
+    </script>
+</body>
+
+
+</html>
