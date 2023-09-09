@@ -26,7 +26,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h3 class="mb-0">Cases</h3>
 
-                        <a href="{% url 'add_case' username=username %}">
+                        <a href="{%url 'create_case_view' request.user %}">
                             <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
                                 Add Cases
                               </button>
@@ -34,29 +34,41 @@
 
                     </div>
                     <div class="table-responsive">
-                        <table id="clientTable" class="table table-striped table-hover">
+                        <table id="caseTable" class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col">No</th>
-                                    <th scope="col">Case Detail</th>
-                                    <th scope="col">Court Detail</th>
-                                    <th scope="col">Petitioner & Respondent</th>
-                                    <th scope="col">Status</th>
+
+                                    <th scope="col">Client</th>
+                                    <th scope="col">Case No</th>
+                                    <th scope="col">Stage of Case</th>
+                                    <th scope="col">Urgent Level</th>
+                                    <th scope="col">Court No</th>
+                                    <th scope="col">Judge Name</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% if records %} {% for record in records %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ record.court_type }}</td>
-                                    <td>{{ record.court_description }}</td>
+                                    <td>{{ record.clients }}</td>
+                                    <td>{{ record.case_no }}</td>
+                                    <td>{{ record.stage_of_case }}</td>
+                                    <td>{{ record.sense_of_urgent }}</td>
+                                    <td>{{ record.court_no }}</td>
+                                    <td>{{ record.judge_name }}</td>
+
 
                                     <td>
-                                        <button type="submit" class="btn btn-success edit-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#updateCourtTypeModal{{record.id}}">
+                                        <a href="{%url 'update_case_client' pk=record.id%}">
+                                            <button class="btn btn-success edit-button">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        </a>
                                         <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
                                             <i class="far fa-trash-alt"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-info view-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#viewConfirmationModal{{ record.id }}">
+                                            <i class="far fa-eye"></i>
                                         </button>
 
                                 </tr>
@@ -71,7 +83,49 @@
                 <!-- Footer End -->
             </div>
             <!-- Content End -->
+            <!-- View Checking Modal -->
+            {% for record in records %}
+            <div class="modal fade" id="viewConfirmationModal{{ record.id }}" tabindex="-1" aria-labelledby="viewConfirmationModalLabel" aria-hidden="true">
+                <form method="GET" action="{% url 'single_case_client' pk=record.id %}">
+                    {% csrf_token %}
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewConfirmationModalLabel">View Data</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {%include "main/case/individual_client_case.html"%}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endfor %}
 
+
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this record?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <a href="#" class="btn btn-danger" id="confirmDeleteButton">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Back to Top -->
             <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
@@ -95,9 +149,37 @@
         <script src="{% static 'js/datatables.js' %} "></script>
         <script src="{% static 'js/datatables.min.js' %} "></script>
         <script src="https://code.jquery.com/jquery-3.7.0.js "></script>
-        <!-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script> -->
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script>
 
 
+        <script>
+            new DataTable('#caseTable', {})
+        </script>
+        <script>
+            $(document).ready(function() {
+                $(".delete-button").on("click", function() {
+                    // Get the record ID from the button's data attribute
+                    var recordId = $(this).data("record-id");
+
+                    // Set the "Delete" button's href attribute to include the record ID
+                    var deleteButton = $("#confirmDeleteButton");
+                    var deleteUrl = "{% url 'delete_case_client' pk=0 %}".replace('0', recordId);
+                    deleteButton.attr("href", deleteUrl);
+                });
+            });
+
+            // $(document).ready(function() {
+            //     $(".view-button").on("click", function() {
+            //         // Get the record ID from the button's data attribute
+            //         var recordId = $(this).data("record-id");
+
+            //         // Set the "Delete" button's href attribute to include the record ID
+            //         var viewButton = $("#viewConfirmationModal");
+            //         var viewUrl = "{% url 'single_case_client' pk=0 %}".replace('0', recordId);
+            //         viewButton.attr("href", viewUrl);
+            //     });
+            // });
+        </script>
 </body>
 
 </html>

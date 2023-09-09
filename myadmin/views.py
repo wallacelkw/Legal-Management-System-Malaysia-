@@ -7,16 +7,14 @@ from .forms import (
     AddRecordsForm,
     AddCaseType,
     AddCourtType,
-    ClientForm,
     CaseForm,
     AddClientForm,
 )
-from .models import CaseType, CourtType, Client, Case, ClientRecord
+from .models import CaseType, CourtType, ClientRecord, Case
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
-
 
 def login_user(request):
     records = User.objects.all()
@@ -67,50 +65,6 @@ def register_user(request):
         return render(request, "register.html", {"form": form})
 
     return render(request, "register.html", {"form": form})
-
-
-# def client_record(request, pk):
-#     if request.user.is_authenticated:
-#         customer_record = get_object_or_404(cusRecord, pk=pk)
-#         messages.success(request, "Client Record Access")
-#         return render(
-#             request,
-#             "main/client/client_popout.html",
-#             {"customer_record": customer_record},
-#         )
-#     else:
-#         messages.success(request, "Error Client Record")
-#         return redirect("view_client")
-
-
-# def client_view(request, username):
-#     record = cusRecord.objects.all()
-#     print(record)
-#     print("USER Authenticated: ", request.user.is_authenticated)
-
-#     if request.user.is_authenticated:
-#         messages.success(request, "Viewing")
-#         return render(
-#             request,
-#             "main/client/client_view.html",
-#             {"records": record, "username": username},
-#         )
-#     else:
-#         messages.success(request, "You Must Be Logged In To View That Page...")
-#         return redirect(
-#             "view_client"
-#         )  # Redirect to the login page or any other appropriate URL
-
-
-# def delete_client(request, pk):
-#     if request.user.is_authenticated:
-#         delete_it = cusRecord.objects.get(id=pk)
-#         delete_it.delete()
-#         messages.success(request, "Record Deleted Successfully...")
-#         return redirect("view_client", request.user)
-#     else:
-#         messages.success(request, "You Must Be Logged In To Do That...")
-#         return redirect("view_client", request.user)
 
 
 # Setting -> CASE INFORMATION
@@ -337,88 +291,84 @@ def delete_client(request, pk):
         return redirect("view_all_client", request.user)
 
 
-# def client_update(request, pk):
-#     context = {}
-#     if request.user.is_authenticated:
-#         # fetch the object related to passed id
-#         obj = get_object_or_404(cusRecord, id=pk)
-#         current_record = cusRecord.objects.get(id=pk)
-#         form = AddRecordsForm(request.POST, instance=obj)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, "Record Has Been Updated!")
-#             return redirect("view_client", username=request.user)
-#         else:
-#             print("Form errors:", form.errors)
-#         context["form"] = form
-#         return render(
-#             request,
-#             "main/client/client_update.html",
-#             {"context": context, "record": current_record},
-#         )
-
-#     else:
-#         messages.success(request, "Update Error")
-#         return redirect("view_client", username=request.user)
-
-
+###-----------------###
+###   CREATE CASE --###
+###-----------------###
 def list_case(request, username):
-    return render(request, "main/case/list_case.html", {"username": username})
+    record = Case.objects.all()
+    return render(request, "main/case/list_case.html", {"username": username, "records": record})
 
 
-# def add_case(request, username):
-#     record = cusRecord.objects.all()
-#     return render(
-#         request,
-#         "main/case/add_case_client.html",
-#         {"username": username, "records": record},
-#     )
-
-
-def add_client_to_case(request, case_id):
-    case = Case.objects.get(id=case_id)
-
-    if request.method == "POST":
-        form = ClientForm(request.POST)
-        if form.is_valid():
-            client = form.save(commit=False)
-            client.case = case
-            client.save()
-            return redirect("list_case")  # Redirect to a success page
-
-    else:
-        form = ClientForm()
-
-    return render(request, "main/case/add_case.html", {"form": form, "case": case})
-
-
-def add_case_clients(request):
-    if request.method == "POST":
-        client_form = ClientForm(request.POST, prefix="client")
-        case_form = CaseForm(request.POST, prefix="case")
-
-        if client_form.is_valid() and case_form.is_valid():
-            # Process client and case data here
-            client = client_form.save(commit=False)
-            case = case_form.save()
-
-            # Associate the client with the case
-            client.case = case
-            client.save()
-
-            return redirect("list_case", case_id=case.id)
-    else:
-        client_form = ClientForm(prefix="client")
-        case_form = CaseForm(prefix="case")
-
+def create_case_view(request, username):
+    courtInfo = CourtType.objects.all()
+    caseInfo = CaseType.objects.all()
+    record = ClientRecord.objects.all()
     return render(
-        request,
-        "main/client/add_case.html",
-        {
-            "client_form": client_form,
-            "case_form": case_form,
-        },
+        request, "main/case/create_case.html", {"username": username, 
+                                                "records": record,
+                                                "courtInfo" : courtInfo,
+                                                "caseInfo": caseInfo}
     )
+
+def create_case_detail(request):
+    if request.user.is_authenticated:
+        if request.method =="POST":
+            case_form = CaseForm(request.POST)
+            if case_form.is_valid() :
+                case = case_form.save()
+                return redirect("list_case", request.user)
+            else:
+                print("Case Form errors:", case_form.errors)
+         
+        else:
+            case_form = CaseForm()
+        return render(request, 'main/case/create_case.html',{'case_form': case_form})
+
+
+def update_case_client(request, pk):
+    context = {}
+    if request.user.is_authenticated:
+        case_record = get_object_or_404(Case, id=pk)
+        case_primary_record = Case.objects.get(id=pk)
+        caseclient_info = Case.objects.all()
+        court_info = CourtType.objects.all()
+        client_info = ClientRecord.objects.all()
+        case_info = CaseType.objects.all()
+        caseForm = CaseForm(request.POST, instance=case_record)
+        if caseForm.is_valid():
+            # print(caseForm)
+            print("Court Type: ", case_record.clients)
+            caseForm.save()
+            # clientCaseForm.save()
+            messages.success(request, "Record Has Been Updated")
+            return redirect("list_case", username=request.user)
+        else:
+            print("caseForm Error: ",caseForm.errors)
+        context["form"] = caseForm
+    else:
+        caseForm = CaseForm()
+    
+    return render(request, "main/case/update_case_client.html", {"record": case_primary_record,
+                                                                   "context": context,
+                                                                   "caseInfo": case_info,
+                                                                   "clientInfo":client_info,
+                                                                   "courtInfo":court_info,
+                                                                   "caseClientInfo": caseclient_info})
+
+def delete_case(request, pk):
+    if request.user.is_authenticated:
+        delete_it = Case.objects.get(id=pk)
+        delete_it.delete()
+        return redirect("list_case", request.user)
+    else:
+        return redirect("list_case", request.user)
+
+def single_case_client(request, pk):
+    if request.user.is_authenticated:
+        current_record = Case.objects.get(id=pk)
+        return redirect("list_case", {"username": request.user,
+                                      "record": current_record})
+
 
 
 def add_client_view(request, username):

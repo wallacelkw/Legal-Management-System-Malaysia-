@@ -1,0 +1,22 @@
+client,
+invoice optional
+
+balance sheet
+
+
+
+ec -no include
+dob - no include
+	- description
+	- full name
+	- IC / Passport
+Agent(name, PH, IC)
+
+
+
+
+CREATE CASE(EDITABLE)
+case no, case type, mention date(many), level of urgent, 
+
+Court Detail,
+court no, court type, name of judge, remarks.

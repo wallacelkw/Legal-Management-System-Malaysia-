@@ -18,44 +18,40 @@
         <div class="content">
             <!-- Navbar Start -->
             {% include "navigation/navbar.html" %}
-
-            <div class="container-fluid pt-4 px-4">
-                <h3>Cases</h3>
-                <div class="row g-4">
-                    <div class="col-xl-12 col-xl-6">
-                        <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Client Detail</h6>
-                            <form action="POST">
+            <form method="POST" action="{%url 'create_case_client_detail' %}">
+                {% csrf_token %}
+                <div class="container-fluid pt-4 px-4">
+                    <h3>Cases</h3>
+                    <div class="row g-4">
+                        <div class="col-xl-12 col-xl-6">
+                            <div class="bg-light rounded h-100 p-4">
+                                <h6 class="mb-4">Client Detail</h6>
                                 <div class="container">
                                     <ul id="clientList">
                                         <!-- Existing clients (if any) will go here -->
                                         <div class="row g-2" id="formContainer">
                                             <div class="col-6">
                                                 <div class="form-floating mb-3">
-                                                    <select class="form-select" id="clientName" name="clientName" required>
+                                                    <select class="form-select" id="clientName" name="clients" required>
                                                     <option value="" selected>Please Select Client</option>
                                                 {% if records %} {% for record in records %}
-                                                    <option value="{{record.first_name}} {{record.last_name}}">{{record.first_name}} {{record.last_name}}</option>
+                                                    <option value="{{record.id}}">{{record.full_name}}</option>
                                                     {% endfor %} {% endif %}
                                                 </select>
                                                     <label for="floatingSelect">Client</label>
-
                                                 </div>
                                             </div>
                                             <div class="col-6">
-                                                <div class="col-sm-10 justify-content-between">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="Petitioner" checked>
-                                                        <label class="form-check-label" for="gridRadios1">
-                                                    Petitioner 
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="Respondent">
-                                                        <label class="form-check-label" for="gridRadios2">
-                                                    Respondent
-                                                        </label>
-                                                    </div>
+                                                <div class="form-floating mb-3">
+                                                    <select class="form-select" id="client_role" name="client_role" required>
+                                                        <option value="" selected>Please Select Client Role</option>
+                                                            <option value="Petitioner">Petitioner</option>
+                                                            <option value="Respondent">Respondent</option>
+                                                                <!-- <option value="{{ caseclient }}" {% if record.client_role == caseclient %}selected="selected"{% endif %}>{{ record.client_role }}</option> -->
+                                                          
+                                                        </select>
+                                                    <label for="floatingSelect">Client Role</label>
+
                                                 </div>
                                             </div>
                                             <div class="col-6">
@@ -73,32 +69,63 @@
                                         </div>
                                     </ul>
                                 </div>
-                                <button type="button" class="btn btn-primary w-30 m-2" id="addMoreButton">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" value="{{case.case_no}}" disabled>
+                                    <label for="first_name" class="form-label">Case No</label>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" name="case_no" required>
+                                        <option value="{{case.id}}"selected>{{case.case_no}}</option>
+                                </select>
+                                    <label for="floatingSelect">Case No</label>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary w-30 m-2" id="addMoreButton">
                                     Add More
                                     </button>
-
-                                <button type="submit" class="btn btn-primary w-30 m-2">
-                                        Save
-                                    </button>
-                            </form>
-
-
 
                         </div>
                     </div>
                 </div>
-            </div>
-
-
-            <!-- Footer Start -->
-            {% include "navigation/footer.html" %}
-            <!-- Footer End -->
+                <button type="submit" class="btn btn-primary w-30 m-2">
+                    Save
+                </button>
+            </form>
         </div>
-        <!-- Content End -->
 
 
-        <!-- Back to Top -->
-        <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
+
+
+        <!-- Footer Start -->
+        {% include "navigation/footer.html" %}
+        <!-- Footer End -->
+    </div>
+    <!-- Content End -->
+    {% if case_form.errors or case_client_form.errors %}
+    <div class="modal show" id="mymodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="closeModalButton1" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <div class="modal-body">
+                    Case: {{ case_form.errors }}
+                    <br> Case Client : {{ case_client_form.errors }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeModalButton2" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Back to Top -->
+    <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
     </div>
 
     <!-- JavaScript Libraries -->

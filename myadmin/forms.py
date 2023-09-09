@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import CaseType, CourtType, Client, Case, ClientRecord
+from .models import CaseType, CourtType, Case, ClientRecord
 
 
 class SignUpForm(UserCreationForm):
@@ -249,25 +249,7 @@ class AddCourtType(forms.ModelForm):
         model = CourtType
         exclude = ("user",)
 
-
-# class ClientForm(forms.ModelForm):
-#     class Meta:
-#         model = Client
-#         fields = ['client_name', 'role', 'respondent_name', 'respondent_advocate']
-
-
-class ClientForm(forms.ModelForm):
-    class Meta:
-        model = Client
-        fields = [
-            "client_name",
-            "client_role",
-            "respondent_name",
-            "respondent_advocate",
-        ]
-
-
 class CaseForm(forms.ModelForm):
     class Meta:
         model = Case
-        fields = ["case_name", "description"]
+        fields = '__all__'

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<!-- Load the static tag library -->
+{% include "navigation/head.html" %}
+
+
+<body>
+
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+
+        <!-- Sidebar Start -->
+        {% include "navigation/sidebar.html" %}
+        <!-- Sidebar End -->
+
+
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            {% include "navigation/navbar.html" %}
+            <form method="POST" action="{% url 'update_case_client' pk=record.id%}">
+                {% csrf_token %}
+                <br>
+                <div class="col-sm-12 col-xl-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h6 class="mb-4">Client</h6>
+                        <div class="row g-2" id="formContainer">
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="clientName" name="clients" required>
+                                        {% for client in clientInfo %}
+                                        <option value="{{ client.id }}" {% if record.clients == client %}selected="selected"{% endif %}>{{ client }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="floatingSelect">Client</label>
+
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="client_role" name="client_role" required>
+                                        
+                                            <option value="Petitioner" {% if record.client_role == "Petitioner" %}selected="selected"{% endif %}>Petitioner</option>
+                                            <option value="Respondent" {% if record.client_role == "Respondent" %}selected="selected"{% endif %}>Respondent</option>
+                                                <!-- <option value="{{ caseclient }}" {% if record.client_role == caseclient %}selected="selected"{% endif %}>{{ record.client_role }}</option> -->
+                                          
+                                        </select>
+                                    <label for="floatingSelect">Client Role</label>
+
+                                </div>
+
+
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="respondent_name" name="respondent_name" value="{{record.respondent_name}}" required>
+                                    <label for="first_name" class="form-label">Respondent Name</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" value="{{record.respondent_advocate}}" required>
+                                    <label for="first_name" class="form-label">Respondent Advocate</label>
+                                </div>
+                            </div>
+                        </div>
+                        <h6 class="mb-4">Cases</h6>
+                        <div class="row g-2" id="formContainer">
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" name="case_no" class="form-control" id="case_no" value="{{record.case_no}}">
+                                    <label for="case_no" class="form-label">Case No</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="case_type" name="case_type" required>
+                                           {% for case in caseInfo %}
+                                            <option value="{{ case.id  }}" {% if record.case_type == case %}selected="selected"{% endif %}>{{ case }}</option>
+                                        {% endfor %} 
+                                 </select>
+                                    <label for="floatingSelect">Case Type</label>
+
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="stage_of_case" name="stage_of_case" required>
+                            <option value="" selected>Please Select Stage</option>
+                            <option value="Institution Phase" {% if record.stage_of_case == "Institution Phase" %}selected="selected"{% endif %}>Institution Phase</option>
+                            <option value="Trial Phase"  {% if record.stage_of_case == "Trial Phase" %}selected="selected"{% endif %}>Trial Phase</option>
+                            <option value="Judgement Phase"  {% if record.stage_of_case == "Judgement Phase" %}selected="selected"{% endif %}>Judgement Phase</option> 
+                                </select>
+                                    <label for="floatingSelect">Stage of Case</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="stage_of_case" name="sense_of_urgent" required>
+                            
+                            <option value="High"  {% if record.sense_of_urgent|lower == "High" %}selected="selected"{% endif %}>High</option>
+                            <option value="Medium"  {% if record.sense_of_urgent|lower == "Medium" %}selected="selected"{% endif %}>Medium</option>
+                            <option value="Low"  {% if record.sense_of_urgent|lower == "Low" %}selected="selected"{% endif %}>Low</option> 
+                                </select>
+                                    <label for="floatingSelect">Level of Urgency</label>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="case_description">{{record.case_description}}</textarea>
+                                    <label for="floatingTextarea">Remarks</label>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="col-sm-12 col-xl-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h6 class="mb-4">Court</h6>
+                        <div class="row g-2" id="formContainer">
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" name="court_no" class="form-control" id="court_no" value="{{record.court_no}}">
+                                    <label for="court_no" class="form-label">Court No</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="case_type" name="court_type" required>
+                                        {% for court in courtInfo %}
+                                        <option value="{{ court.id }}" {% if record.court_type == court %}selected="selected"{% endif %}>{{ court }}</option>
+                                        {% endfor %} 
+                                 </select>
+                                    <label for="floatingSelect">Court Type</label>
+
+                                </div>
+
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="judge_name" name="judge_name" value="{{record.judge_name}}" required>
+                                    <label for="judge_name" class="form-label">Judge Name</label>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="court_remark">{{record.court_remark }}</textarea>
+                                    <label for="floatingTextarea">Remarks</label>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-30 m-2">Save</button>
+            </form>
+
+            <!-- Footer Start -->
+            {% include "navigation/footer.html" %}
+            <!-- Footer End -->
+        </div>
+        <!-- Content End -->
+        {% if case_form.errors or case_client_form.errors %}
+        <div class="modal show" id="mymodal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Error</h5>
+                        <button type="button" class="close" data-dismiss="modal" id="closeModalButton1" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Case: {{ case_form.errors }}
+                        <br> Case Client : {{ case_client_form.errors }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="closeModalButton2" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Back to Top -->
+        <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js "></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js "></script>
+    <script src="{% static 'lib/chart/chart.min.js' %} "></script>
+    <script src="{% static 'lib/easing/easing.min.js' %} "></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %} "></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %} "></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %} "></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %} "></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %} "></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %} "></script>
+
+
+    <script src="{% static 'js/datatables.js' %} "></script>
+    <script src="{% static 'js/datatables.min.js' %} "></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js "></script>
+    <!-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script> -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const addMoreButton = document.getElementById("addMoreButton");
+            const clientList = document.getElementById("clientList");
+
+            addMoreButton.addEventListener("click", function() {
+                const formContainer = document.querySelector("#formContainer");
+                const clonedRow = formContainer.cloneNode(true);
+
+                // Generate a unique name for each set of radio buttons
+                const radioButtons = clonedRow.querySelectorAll('input[type="radio"]');
+                radioButtons.forEach(function(radioButton) {
+                    const uniqueName = `gridRadios_${Date.now()}`;
+                    radioButton.name = uniqueName;
+                });
+
+                clientList.appendChild(clonedRow);
+
+                // Reset input values in the cloned row, if needed
+                const clonedInputs = clonedRow.querySelectorAll('input, select');
+                clonedInputs.forEach(function(input) {
+                    input.value = '';
+                });
+            });
+        });
+
+        function autoInsert() {
+            var inputValue = document.getElementById("case_no").value;
+            var selectElement = document.getElementById("targetInput");
+
+            // Check if the entered value already exists as an option
+            var optionExists = Array.from(selectElement.options).some(function(option) {
+                return option.value === inputValue;
+            });
+
+            // Clear existing options
+            selectElement.innerHTML = '<option value=""></option>';
+
+            // Add the entered value as an option if it doesn't already exist
+            if (inputValue.trim() !== "" && !optionExists) {
+                var option = document.createElement("option");
+                option.value = inputValue;
+                option.text = inputValue;
+                option.selected = "selected"
+                selectElement.appendChild(option);
+            }
+        }
+    </script>
+</body>
+
+
+
+
+</html>

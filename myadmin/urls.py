@@ -35,10 +35,6 @@ urlpatterns = [
     ),
     path("update_the_client/<int:pk>", views.update_client, name="update_client"),
     path("delete_the_client/<int:pk>", views.delete_client, name="delete_client"),
-    # path("update_client/<int:pk>", views.client_update, name="update_client"),
-    # path("view_client/<str:username>", views.client_view, name="view_client"),
-    # path("add_client/<str:username>", views.add_client, name="add_client"),
-    # path("delete_client/<int:pk>/", views.delete_client, name="delete_client"),
     # CREATE CASES TYPE
     path("case_type/<str:username>", views.case_type, name="case_type"),
     path("add_case_type/", views.add_case_type, name="add_case_type"),
@@ -55,15 +51,19 @@ urlpatterns = [
     ),
     # CASES
     path("list_case/<str:username>", views.list_case, name="list_case"),
-    # path("add_case_clients/<str:username>/", views.add_case, name="add_case"),
-    path(
-        "add_client_to_case/<int:pk>",
-        views.add_client_to_case,
-        name="add_client_to_case",
-    ),
-    path(
-        "add_case_clients/<str:username>/",
-        views.add_case_clients,
-        name="add_case_clients",
-    ),
+    path("create_case_view/<str:username>/", views.create_case_view, name="create_case_view"),
+    path("create_case_detail/", views.create_case_detail, name="create_case_detail"),
+    path("update_case/<int:pk>/", views.update_case_client, name="update_case_client"),
+    path("delete_case_client/<int:pk>/", views.delete_case, name="delete_case_client"),
+    path("single_case_client/<int:pk>/", views.single_case_client, name="single_case_client"),
+    # path(
+    #     "add_client_to_case/<int:pk>",
+    #     views.add_client_to_case,
+    #     name="add_client_to_case",
+    # ),
+    # path(
+    #     "add_case_clients/<str:username>/",
+    #     views.add_case_clients,
+    #     name="add_case_clients",
+    # ),
 ]
