@@ -1,0 +1,31 @@
+.tel_info {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.clientAddress {
+    text-align: justify;
+    margin-left: 45px;
+}
+
+.container-xxl.clientToward {
+    display: flex;
+}
+
+.container-xxl.ref_address {
+    display: flex;
+    justify-content: space-between;
+}
+
+.container-xxl.ref_date {
+    display: flex;
+    justify-content: space-between;
+}
+
+.short_description {
+    text-align: justify;
+}
+
+.invoice_table {
+    text-align: left;
+}

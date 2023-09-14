@@ -9,12 +9,22 @@ from .forms import (
     AddCourtType,
     CaseForm,
     AddClientForm,
+    InvoiceForm,
+    ReimburServiceFormSet,
+    ReimburServiceForm,
+    ProfServiceForm,
+    ProfServiceFormSet
 )
-from .models import CaseType, CourtType, ClientRecord, Case
+from .models import CaseType, CourtType, ClientRecord, Case, Invoice, ReimburService, ProfService
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.forms import AuthenticationForm
+
+from django.views import View
+from django.views.generic.edit import (
+    CreateView, UpdateView
+)
+from django.views.generic import ListView
 
 def login_user(request):
     records = User.objects.all()
@@ -370,61 +380,138 @@ def single_case_client(request, pk):
                                       "record": current_record})
 
 
+def view_invoice(request, username):
+    return render(request,"main/invoice/invoice_list.html", {"username":username})
+
+class InvoiceInline():
+    form_class = InvoiceForm
+    model = Invoice
+    template_name = "main/invoice/create_invoice.html"
+
+    def form_valid(self, form):
+        named_formsets = self.get_named_formsets()
+        if not all ((x.is_valid() for x in named_formsets.values())):
+            return self.render_to_response(self.get_context_data(form=form))
+
+        self.object = form.save()
+    
+        for name,formset in named_formsets.items():
+            print("NAME: ", name)
+            print("FORMSET: ", formset)
+            formset_save_func = getattr(self, 'formset_{0}_valid'.format(name), None)
+            print("formset_save_func : ", formset_save_func )
+            if formset_save_func is not None:
+                formset_save_func(formset)
+            else:
+                formset.save()
+        return redirect('view_invoice')
+    
+    def formset_services_valid(self, formset):
+        services = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for variant in services:
+            variant.invoice = self.object
+            variant.save()
+
+    def formset_prof_services_valid(self, formset):
+        profservices = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for variant in profservices:
+            variant.invoice = self.object
+            variant.save()
+
+class InvoiceCreate(InvoiceInline, CreateView):
+
+    def get_context_data(self, **kwargs):
+        case = Case.objects.all()
+        ctx = super(InvoiceCreate, self).get_context_data(**kwargs)
+        ctx['named_formsets'] = self.get_named_formsets()
+        ctx['case_info'] = case
+        # print("CTX: ",ctx)
+        return ctx
+    
+    def get_named_formsets(self):
+        if self.request.method =='GET':
+            return {
+                'services': ReimburServiceFormSet(prefix='services'),
+                'prof_services' : ProfServiceFormSet(prefix='prof_services')
+            }
+        else:
+            return{
+                'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='services'),
+                'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='prof_services'),
+            }
+
+class ProductUpdate(InvoiceInline, UpdateView):
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ProductUpdate, self).get_context_data(**kwargs)
+        ctx['named_formsets'] = self.get_named_formsets()
+        return ctx
+
+    def get_named_formsets(self):
+        return {
+            'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='services'),
+            'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='prof_services'),
+        }
+
+
+def delete_proservice(request, pk):
+    try:
+        image = ProfService.objects.get(id=pk)
+    except ProfService.DoesNotExist:
+        messages.success(
+            request, 'Object Does not exit'
+            )
+        return redirect('products:update_product', pk=image.product.id)
+
+    image.delete()
+    messages.success(
+            request, 'Image deleted successfully'
+            )
+    return redirect('products:update_product', pk=image.product.id)
+
+
+def delete_reimbur(request, pk):
+    try:
+        variant = ReimburService.objects.get(id=pk)
+    except ReimburService.DoesNotExist:
+        messages.success(
+            request, 'Object Does not exit'
+            )
+        return redirect('view_invoice', pk=variant.product.id)
+
+    variant.delete()
+    messages.success(
+            request, 'Variant deleted successfully'
+            )
+    return redirect('view_invoice', pk=variant.product.id)
+
+
+class InvoiceList(ListView):
+    model = Invoice
+    template_name = "main/invoice/invoice_list.html"
+    context_object_name = "invoices"
+
+def PDFInvoiceView(request, pk):
+    obj = Invoice.objects.get(pk=pk)
+    articles = obj.reimburservice_set.all()
+    proservices = obj.profservice_set.all()
+    case = Case.objects.get(pk=obj.case_id)
+    clients = ClientRecord.objects.get(pk= case.clients_id)
+
+
+    context = {'obj' : obj,
+               'articles': articles,
+               'case' : case,
+               'clients' : clients,
+               'proservices' : proservices
+               }
+    return render(request,'main/invoice/pdf_view.html', context)
+
 
 def add_client_view(request, username):
     return render(request, "main/client/add_client.html", {"username": username})
 
-
-# Create your views here.
-def button_view(request, username):
-    return render(request, "main/button.html", {"username": username})
-
-
-# Create your views here.
-def typography_view(request, username):
-    return render(request, "main/typography.html", {"username": username})
-
-
-# Create your views here.
-def element_view(request, username):
-    return render(request, "main/element.html", {"username": username})
-
-
-# Create your views here.
-def widget_view(request, username):
-    return render(request, "main/widget.html", {"username": username})
-
-
-# Create your views here.
-def form_view(request, username):
-    return render(request, "main/form.html", {"username": username})
-
-
-# Create your views here.
-def table_view(request, username):
-    return render(request, "main/table.html", {"username": username})
-
-
-# Create your views here.
-def chart_view(request, username):
-    return render(request, "main/chart.html", {"username": username})
-
-
-# Create your views here.
-def signin_view(request, username):
-    return render(request, "main/signin.html", {"username": username})
-
-
-# Create your views here.
-def signup_view(request, username):
-    return render(request, "main/signup.html", {"username": username})
-
-
-# Create your views here.
-def view_404(request, username):
-    return render(request, "main/error/404.html", {"username": username})
-
-
-# Create your views here.
-def blank_view(request, username):
-    return render(request, "main/error/blank.html", {"username": username})

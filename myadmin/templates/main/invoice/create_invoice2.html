@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %} {% include "navigation/head.html" %}
+
+<body>
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+        <!-- Sidebar Start -->
+        {% include "navigation/sidebar.html" %}
+        <!-- Sidebar End -->
+
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            {% include "navigation/navbar.html" %}
+            <!-- bootstrap alert -->
+            <div class="container-fluid pt-4 px-4">
+                <form class="" method="POST" action="">{% csrf_token %}
+                    <div class="columns is-centered">
+
+                        <div class="column is-one-third">
+                            date: <input class="input" type="date" name="date">
+                        </div>
+
+                    </div>
+                    <br>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="case" name="case" required>
+                        <!-- <option value="" selected>Please Select Case</option> -->
+                            {% for record in caseData %}
+                              
+                            <option value="{{record.id}}">{{record}}</option>
+                            {% endfor %} 
+                        </select>
+                        <label for="floatingSelect">Case</label>
+                    </div>
+
+                    <table class="table is-fullwidth is-bordered is-hoverable is-striped">
+                        <tbody>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>AMOUNT$</th>
+                                    <th>ADD</th>
+                                </tr>
+                                {{ formset.management_form }} {% for form in formset %}
+                                <tr>
+                                    <td>{{form.prof_charge}}</td>
+                                    <td>{{form.amount}}</td>
+                                    <td>
+                                        <div class="input-group-append">
+                                            <button class="button is-small btn btn-success add-form-row">+</button>&nbsp;
+                                            <button class="button is-small btn btn-warning remove-form-row">-</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </thead>
+                        </tbody>
+
+                    </table>
+                    <div class="row spacer">
+                        <div class="col-4 offset-2">
+                            <button type="submit" class="button btn btn-block is-info is-half">Create</button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="columns">
+                        <div class="column">
+                            <h3 class="title is-4">Total($): <span id="total_amount"></span></h3>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% include "navigation/footer.html" %}
+    </div>
+    <!-- Content End -->
+
+
+
+
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/chart/chart.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/project_function.js' %}"></script>
+
+
+    <!-- Phone Number -->
+    <!-- <script src="{%static 'js/intlTelInput.min.js'%}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script type="text/javascript">
+        $('table input').on("input", function() {
+            var total = []
+            var $tr = $(this).closest('tr');
+            var textValue1 = $("input.rate", $tr).val();
+            amt = textValue1
+                // console.log(amt);
+            $('.rate', $tr).html(amt);
+            calc_total();
+        });
+
+        function calc_total() {
+            var sum = 0;
+            $(".rate").each(function() {
+                sum += parseFloat($(this).text());
+            });
+            console.log(sum);
+            $('#total_amount').text(sum);
+        }
+    </script>
+
+    <script type="text/javascript">
+        function updateElementIndex(el, prefix, ndx) {
+            var id_regex = new RegExp('(' + prefix + '-\\d+)');
+            var replacement = prefix + '-' + ndx;
+            if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+            if (el.id) el.id = el.id.replace(id_regex, replacement);
+            if (el.name) el.name = el.name.replace(id_regex, replacement);
+        }
+
+        function cloneMore(selector, prefix) {
+            var newElement = $(selector).clone(true);
+            console.log(newElement);
+            var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+            newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+                var name = $(this).attr('name')
+                if (name) {
+                    name = name.replace('-' + (total - 1) + '-', '-' + total + '-');
+                    var id = 'id_' + name;
+                    $(this).attr({
+                        'name': name,
+                        'id': id
+                    }).val('').removeAttr('checked');
+                }
+            });
+            newElement.find('label').each(function() {
+                var forValue = $(this).attr('for');
+                if (forValue) {
+                    forValue = forValue.replace('-' + (total - 1) + '-', '-' + total + '-');
+                    $(this).attr({
+                        'for': forValue
+                    });
+                }
+            });
+            total++;
+            $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+            $(selector).after(newElement);
+            // $("div.form-row.button.is-primary").not(":last").hide();
+            // var conditionRow = $('.form-row:not(:last)');
+            // conditionRow.find('.button.is-primary')
+            // .hide();
+            // .removeClass('btn-success').addClass('btn-danger')
+            // .removeClass('add-form-row').addClass('remove-form-row')
+            // .html('-');
+            return false;
+        }
+
+        function deleteForm(prefix, btn) {
+            var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+            if (total > 1) {
+                btn.closest('.form-row').remove();
+                var forms = $('.form-row');
+                $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+                for (var i = 0, formCount = forms.length; i < formCount; i++) {
+                    $(forms.get(i)).find(':input').each(function() {
+                        updateElementIndex(this, prefix, i);
+                    });
+                }
+            }
+            return false;
+        }
+        $(document).on('click', '.add-form-row', function(e) {
+            e.preventDefault();
+            cloneMore('table tr:last', 'form');
+            return false;
+        });
+        $(document).on('click', '.remove-form-row', function(e) {
+            e.preventDefault();
+            deleteForm('form', $(this));
+            return false;
+        });
+    </script>
+    <!-- <script type="text/javascript">
+        $(document).ready(function() {
+
+            // Add the click event handler for the "REMOVE" button (if needed)
+            $(document).on("click", ".remove-form-row", function() {
+                // Remove the clicked row
+                $(this).closest("tr").remove();
+            });
+        });
+    </script> -->
+
+</body>
+
+</html>

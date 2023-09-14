@@ -69,15 +69,64 @@ class Case(models.Model):
     court_remark = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.case_no} - {self.case_type, self.court_no}"
+        return f"{self.case_no}"
 
 
-# class CaseClient(models.Model):
-#     case_no = models.ForeignKey(Case, on_delete=models.CASCADE)
-#     clients = models.ForeignKey(ClientRecord, on_delete=models.CASCADE)
-#     respondent_name = models.CharField(max_length=255)
-#     respondent_advocate = models.CharField(max_length=255)
-#     client_role = models.CharField(max_length=255)
+class Invoice(models.Model):
+    case = models.ForeignKey(Case, on_delete=models.PROTECT)
+    # save_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    invoice_date_time = models.DateTimeField(auto_now_add=True)
+    final_total = models.DecimalField(max_digits=10, decimal_places=2)
+    paid  = models.BooleanField(default=False)
+    short_descriptions = models.TextField(max_length=100 , null=True)
+    total_unit_price = models.DecimalField(max_digits=1000, decimal_places=2)
+    total_prof_service_price = models.DecimalField(max_digits=1000, decimal_places=2)
 
-#     def __str__(self):
-#         return f"{self.clients} - {self.case_no}"
+
+    class Meta:
+        verbose_name = "Invoice"
+        verbose_name_plural = "Invoices"
+
+    def __str__(self):
+           return f"{self.case.case_no}_{self.invoice_date_time}"
+    
+    @property
+    def get_total(self):
+        articles = self.article_set.all()   
+        total = sum(article.get_total for article in articles)
+        return total 
+    
+
+class ProfService(models.Model):
+    invoice = models.ForeignKey(Invoice,on_delete=models.CASCADE)
+    prof_service = models.CharField(max_length=100)
+    prof_service_price = models.DecimalField(max_digits=1000, decimal_places=2)
+    
+
+    class Meta:
+        verbose_name = 'ProfService'
+        verbose_name_plural = 'ProfService'
+
+    @property
+    def get_total(self):
+        total = self.prof_service_price   
+        return total 
+
+    
+class ReimburService(models.Model):
+    invoice = models.ForeignKey(Invoice,on_delete=models.CASCADE)
+    service = models.CharField(max_length=100)
+    unit_price = models.DecimalField(max_digits=1000, decimal_places=2)
+    
+
+    class Meta:
+        verbose_name = 'ReimburService'
+        verbose_name_plural = 'ReimburService'
+
+    @property
+    def get_total(self):
+        total = self.unit_price   
+        return total
+    
+
+    

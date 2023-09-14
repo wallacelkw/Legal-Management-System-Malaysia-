@@ -34,28 +34,6 @@
                 <i class="fa fa-tachometer-alt me-2"></i>Dashboard
             </a>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle {% if 'button' in request.path or 'typography' in request.path or 'element' in request.path %}active{% endif %}" data-bs-toggle="dropdown">
-                    <i class="fa fa-laptop me-2"></i>Elements
-                </a>
-                <div class="dropdown-menu bg-transparent border-0">
-                    <a href="{% url 'button' username=request.user.username %}" class="dropdown-item">Buttons</a>
-                    <a href="{% url 'typography' username=request.user.username %}" class="dropdown-item">Typography</a>
-                    <a href="{% url 'element'  username=request.user.username%}" class="dropdown-item">Other Elements</a>
-                </div>
-            </div>
-            <a href="{% url 'widget' username=request.user.username  %}" class="nav-item nav-link {% if 'widget' in request.path %}active{% endif %}">
-                <i class="fa fa-th me-2"></i>Widgets
-            </a>
-            <a href="{% url 'form' username=request.user.username %}" class="nav-item nav-link {% if 'form' in request.path %}active{% endif %}">
-                <i class="fa fa-keyboard me-2"></i>Forms
-            </a>
-            <a href="{% url 'table' username=request.user.username %}" class="nav-item nav-link {% if 'table' in request.path %}active{% endif %}">
-                <i class="fa fa-table me-2"></i>Tables
-            </a>
-            <a href="{% url 'chart' username=request.user.username %}" class="nav-item nav-link {% if 'chart' in request.path %}active{% endif %}">
-                <i class="fa fa-chart-bar me-2"></i>Charts
-            </a>
-            <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle {% if 'view_all_client' in request.path or 'add_client_view' in request.path %}active{% endif %}" data-bs-toggle="dropdown">
                     <i class="fa fa-users me-2"></i>Client
                 </a>
@@ -67,6 +45,10 @@
 
             <a href="{% url 'list_case' username=request.user.username %}" class="nav-item nav-link {% if 'list_case' in request.path %}active{% endif %}">
                 <i class="fa fa-tachometer-alt me-2"></i>Cases
+            </a>
+
+            <a href="{% url 'view_invoice' %}" class="nav-item nav-link {% if 'view_invoice' in request.path %}active{% endif %}">
+                <i class="fa fa-tachometer-alt me-2"></i>Invoice
             </a>
 
 

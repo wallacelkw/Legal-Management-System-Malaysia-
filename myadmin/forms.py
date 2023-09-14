@@ -1,7 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import CaseType, CourtType, Case, ClientRecord
+from .models import CaseType, CourtType, Case, ClientRecord, Invoice, ReimburService, ProfService
+from django.forms import formset_factory
+from django.forms import inlineformset_factory
 
 
 class SignUpForm(UserCreationForm):
@@ -253,3 +255,66 @@ class CaseForm(forms.ModelForm):
     class Meta:
         model = Case
         fields = '__all__'
+
+
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        exclude= ('saved_by',
+                  'paid')
+        
+        widgets = {
+            'short_descriptions': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                    }
+                ),
+
+
+        }
+
+class ReimburServiceForm(forms.ModelForm):
+
+    class Meta:
+        model = ReimburService
+        fields = '__all__'
+        widgets = {
+            'service': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                    }
+                ),
+
+            'unit_price': forms.NumberInput(
+            attrs={
+                'onblur': 'findTotal_uniPrice()',
+                'class' : 'unit_price'
+                }
+            ),
+         
+        }
+
+class ProfServiceForm(forms.ModelForm):
+
+    class Meta:
+        model = ProfService
+        fields = '__all__'
+        widgets = {
+            'prof_service': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                    }
+                ),
+            'prof_service_price' : forms.NumberInput(
+            attrs={
+                'onblur' : 'findTotal_proPrice()',
+                'class' : 'prof_service_price'
+                }
+            ),
+        }
+
+
+# LineItemFormset = formset_factory(LineItemForm, extra=1)
+ProfServiceFormSet = inlineformset_factory(Invoice, ProfService,form = ProfServiceForm,extra=1, can_delete=True, can_delete_extra=True)
+ReimburServiceFormSet = inlineformset_factory(Invoice, ReimburService,form = ReimburServiceForm,extra=1, can_delete=True, can_delete_extra=True)

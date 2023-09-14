@@ -5,27 +5,13 @@ from . import views
 
 urlpatterns = [
     path("register/", views.register_user, name="register"),
-    # path("record/<int:pk>", views.customer_record, name="record"),
-    # path("delete_record/<int:pk>", views.delete_record, name="delete_record"),
-    # path("add_record/", views.add_record, name="add_record"),
-    # path("update_record/<int:pk>", views.update_record, name="update_record"),
+
     # viewing for displaying
     path("", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
     path("dashboard/<str:username>", views.dashboard, name="dashboard"),
-    path("button/<str:username>", views.button_view, name="button"),
-    path("typography/<str:username>", views.typography_view, name="typography"),
-    path("element/<str:username>", views.typography_view, name="element"),
-    path("widget/<str:username>", views.widget_view, name="widget"),
-    path("form/<str:username>", views.form_view, name="form"),
-    path("table/<str:username>", views.table_view, name="table"),
-    path("chart/<str:username>", views.chart_view, name="chart"),
-    path("signin/<str:username>", views.signin_view, name="signin"),
-    path("signup/<str:username>", views.signup_view, name="signup"),
-    path("404/<str:username>", views.view_404, name="404"),
-    path("blank/<str:username>", views.blank_view, name="blank"),
-    # path("add_cus_record/<str:username>", views.add_cus_record, name="add_cus_record"),
-    # path("client_record/<int:pk>",views.client_record,name="client_record"),
+    
+
     path("add_client_to_db/", views.add_client_to_db, name="add_client_to_db"),
     path(
         "add_client_view/<str:username>", views.add_client_view, name="add_client_view"
@@ -56,14 +42,16 @@ urlpatterns = [
     path("update_case/<int:pk>/", views.update_case_client, name="update_case_client"),
     path("delete_case_client/<int:pk>/", views.delete_case, name="delete_case_client"),
     path("single_case_client/<int:pk>/", views.single_case_client, name="single_case_client"),
-    # path(
-    #     "add_client_to_case/<int:pk>",
-    #     views.add_client_to_case,
-    #     name="add_client_to_case",
-    # ),
-    # path(
-    #     "add_case_clients/<str:username>/",
-    #     views.add_case_clients,
-    #     name="add_case_clients",
-    # ),
+
+
+
+    # INVOICE
+    # path("view_invoice/<str:username>/", views.view_invoice, name="view_invoice"),
+    path('view_invoice/', views.InvoiceList.as_view(), name='view_invoice'),
+    path('create_invoice/', views.InvoiceCreate.as_view(), name='create_invoice'),
+    path('update/<int:pk>/', views.ProductUpdate.as_view(), name='update_invoice'),
+    path('delete-services/<int:pk>/', views.delete_reimbur, name='delete_reimbur'),
+    path('delete-prof_services/<int:pk>/', views.delete_proservice, name='delete_proservice'),
+    path('pdf_invoice/<int:pk>/', views.PDFInvoiceView, name='pdf_invoice'),
+  
 ]
