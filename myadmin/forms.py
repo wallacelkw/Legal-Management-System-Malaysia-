@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import CaseType, CourtType, Case, ClientRecord, Invoice, ReimburService, ProfService
+from .models import ClientRole, CourtType, Case, ClientRecord, Invoice, ReimburService, ProfService
 from django.forms import formset_factory
 from django.forms import inlineformset_factory
 
@@ -212,43 +212,13 @@ class AddRecordsForm(forms.ModelForm):
         exclude = ("user",)
 
 
-class AddCaseType(forms.ModelForm):
-    case_type = forms.CharField(
-        label="",
-        max_length=100,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Cases Type"}
-        ),
-    )
-    case_description = forms.CharField(
-        label="",
-        max_length=1000,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Description"}
-        ),
-    )
-
+class AddClientRole(forms.ModelForm):
     class Meta:
-        model = CaseType
+        model = ClientRole
         exclude = ("user",)
 
 
 class AddCourtType(forms.ModelForm):
-    court_type = forms.CharField(
-        label="",
-        max_length=100,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Cases Type"}
-        ),
-    )
-    court_description = forms.CharField(
-        label="",
-        max_length=1000,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Description"}
-        ),
-    )
-
     class Meta:
         model = CourtType
         exclude = ("user",)

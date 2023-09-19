@@ -5,7 +5,7 @@ from django.contrib import messages
 from .forms import (
     SignUpForm,
     AddRecordsForm,
-    AddCaseType,
+    AddClientRole,
     AddCourtType,
     CaseForm,
     AddClientForm,
@@ -15,7 +15,7 @@ from .forms import (
     ProfServiceForm,
     ProfServiceFormSet
 )
-from .models import CaseType, CourtType, ClientRecord, Case, Invoice, ReimburService, ProfService
+from .models import ClientRole, CourtType, ClientRecord, Case, Invoice, ReimburService, ProfService
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -42,7 +42,7 @@ def login_user(request):
         if user is not None:
             login(request, user)
             messages.success(request, "You Have Been Logged In!")
-            return redirect("dashboard", username=user.username)
+            return redirect("dashboard")
         else:
             messages.success(
                 request, "There Was An Error Logging In, Please Try Again..."
@@ -55,7 +55,7 @@ def login_user(request):
 
 from folium import GeoJson
 @login_required()
-def dashboard(request, username):
+def dashboard(request):
     case_information = Case.objects.all()
     client_information = ClientRecord.objects.all()
     invoice_information = Invoice.objects.all()
@@ -97,7 +97,6 @@ def dashboard(request, username):
 
 
     context = {
-        "username": username,
         "case_information": quantity_case,
         "client_information": quantity_client,
         "invoice_information": quantity_invoice,
@@ -147,12 +146,12 @@ def admin_setting(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Record Has Been Updated!")
-                return redirect("dashboard", username=request.user)
+                return redirect("dashboard")
             else:
                 print("Form errors:", form.errors)
             context["form"] = form
         else:
-            form = AddCaseType()
+            form = SignUpForm()
         return render(
             request,
             "navigation/admin_settings.html",
@@ -161,26 +160,10 @@ def admin_setting(request):
 
     else:
         messages.success(request, "Update Error")
-        return redirect("case_type", username=request.user)
+        return redirect("case_type")
 
 
 
-    
-    # if request.user.is_authenticated:
-    #     if request.method =="POST":
-    #         obj = get_object_or_404(User, id=request.user.id)
-    #         current_record = User.objects.get(id=request.user.id)
-    #         form = SignUpForm(request.POST, instance=obj)
-    #         if form.is_valid():
-    #             form.save()
-    #             messages.success(request, "Record Has Been Updated!")
-    #             return redirect("dashboard", username=request.user)
-    #         else:
-    #             print("Form errors:", form.errors)
-
-    #     else:
-    #         form = SignUpForm()
-    #         return render(request,"main/navigation/admin_settings.html",{"form":form, "record": current_record})
 
 
 
@@ -188,91 +171,91 @@ def admin_setting(request):
 
 # Setting -> CASE INFORMATION
 @login_required
-def case_type(request, username):
-    records = CaseType.objects.all()
+def client_role(request):
+    records = ClientRole.objects.all()
     is_add = request.session.pop("is_add", False)
     is_update = request.session.pop("is_update", False)
 
     context = {
-        "username": username,
         "records": records,
         "is_add": is_add,
         "is_update": is_update,
     }
-    return render(request, "main/setting/case_type.html", context)
+    return render(request, "main/setting/client_role.html", context)
 
 @login_required
-def add_case_type(request):
+def add_client_role(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            form = AddCaseType(request.POST)
+            form = AddClientRole(request.POST)
+    
             if form.is_valid():
                 form.save()
                 messages.success(request, "Cases Added")
                 request.session["is_add"] = True
-                return redirect("case_type", username=request.user)
+                return redirect("client_role")
             else:
-                messages.error(request, "There were errors in the form.")
+                print("CLIENT ROLE FORM ERROR: ", form.errors)
+            
         else:
-            form = AddCaseType()  # Create an empty form for GET requests
-        return render(request, "main/setting/add_case_type.html", {"form": form})
+            form = AddClientRole()  # Create an empty form for GET requests
+        return render(request, "main/setting/client_role.html", {"form": form})
     else:
         messages.success(request, "You Must Be Logged In To View That Page...")
-        return redirect("case_type", username=request.user)
+        return redirect("client_role")
 
 @login_required
-def update_case_type(request, pk):
+def update_client_role(request, pk):
     context = {}
     if request.user.is_authenticated:
         if request.method == "POST":
             # fetch the object related to passed id
-            obj = get_object_or_404(CaseType, id=pk)
-            current_record = CaseType.objects.get(id=pk)
-            form = AddCaseType(request.POST, instance=obj)
+            obj = get_object_or_404(ClientRole, id=pk)
+            current_record = ClientRole.objects.get(id=pk)
+            form = AddClientRole(request.POST, instance=obj)
             print(form)
             # print(form)
             if form.is_valid():
                 form.save()
                 messages.success(request, "Record Has Been Updated!")
-                return redirect("case_type", username=request.user)
+                return redirect("client_role")
             else:
                 print("Form errors:", form.errors)
             context["form"] = form
         else:
-            form = AddCaseType()
+            form = AddClientRole()
         return render(
             request,
-            "main/setting/case_type.html",
+            "main/setting/client_role.html",
             {"context": context, "record": current_record},
         )
 
     else:
         messages.success(request, "Update Error")
-        return redirect("case_type", username=request.user)
+        return redirect("case_type")
 
 @login_required
-def delete_case_type(request, pk):
+def delete_client_role(request, pk):
     if request.user.is_authenticated:
-        delete_it = CaseType.objects.get(id=pk)
+        delete_it = ClientRole.objects.get(id=pk)
         delete_it.delete()
         messages.success(request, "Record Deleted Successfully...")
-        return redirect("case_type", request.user)
+        return redirect("client_role")
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("case_type", request.user)
+        return redirect("client_role")
 
 
 ####-----------------####
 ####  COURT RECORD   ####
 ####-----------------####
 # Setting -> COURT INFORMATION
-def court_type(request, username):
+def court_type(request):
     records = CourtType.objects.all()
     is_add = request.session.pop("is_add", False)
     is_update = request.session.pop("is_update", False)
 
     context = {
-        "username": username,
         "records": records,
         "is_add": is_add,
         "is_update": is_update,
@@ -288,15 +271,15 @@ def add_court_type(request):
                 form.save()
                 messages.success(request, "Cases Added")
                 request.session["is_add"] = True
-                return redirect("court_type", username=request.user)
+                return redirect("court_type")
             else:
                 messages.error(request, "There were errors in the form.")
         else:
-            form = AddCaseType()  # Create an empty form for GET requests
+            form = AddCourtType()  # Create an empty form for GET requests
         return render(request, "main/setting/add_court_type.html", {"form": form})
     else:
         messages.success(request, "You Must Be Logged In To View That Page...")
-        return redirect("court_type", username=request.user)
+        return redirect("court_type")
 
 
 def update_court_type(request, pk):
@@ -312,12 +295,12 @@ def update_court_type(request, pk):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Record Has Been Updated!")
-                return redirect("court_type", username=request.user)
+                return redirect("court_type")
             else:
                 print("Form errors:", form.errors)
             context["form"] = form
         else:
-            form = AddCaseType()
+            form = AddCourtType()
         return render(
             request,
             "main/setting/court_type.html",
@@ -326,7 +309,7 @@ def update_court_type(request, pk):
 
     else:
         messages.success(request, "Update Error")
-        return redirect("court_type", username=request.user)
+        return redirect("court_type")
 
 
 def delete_court_type(request, pk):
@@ -334,10 +317,10 @@ def delete_court_type(request, pk):
         delete_it = CourtType.objects.get(id=pk)
         delete_it.delete()
         messages.success(request, "Record Deleted Successfully...")
-        return redirect("court_type", request.user)
+        return redirect("court_type")
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("court_type", request.user)
+        return redirect("court_type")
 
 
 ####-----------------####
@@ -368,7 +351,7 @@ def add_client_to_db(request):
                     client_record.save()
 
                 messages.success(request, "Client record added successfully.")
-                return redirect("add_client_view", request.user)
+                return redirect("add_client_view")
             else:
                 messages.error(request, form.errors)
                 print("Form errors:", form.errors)
@@ -379,14 +362,14 @@ def add_client_to_db(request):
         return render(request, "main/client/add_client.html", {"form": form})
 
 
-def view_all_client(request, username):
+def view_all_client(request):
     record = ClientRecord.objects.all()
     print(record)
     if request.user.is_authenticated:
         return render(
             request,
             "main/client/view_client.html",
-            {"records": record, "username": username},
+            {"records": record},
         )
     else:
         messages.success(request, "You Must Be Logged In To View That Page...")
@@ -421,7 +404,7 @@ def update_client(request, pk):
                 client_record.save()
            
             messages.success(request, "Record Has Been Updated!")
-            return redirect("view_all_client", username=request.user)
+            return redirect("view_all_client")
         else:
             print("Form errors:", form.errors)
         context["form"] = form
@@ -438,25 +421,25 @@ def delete_client(request, pk):
     if request.user.is_authenticated:
         delete_it = ClientRecord.objects.get(id=pk)
         delete_it.delete()
-        return redirect("view_all_client", request.user)
+        return redirect("view_all_client")
     else:
-        return redirect("view_all_client", request.user)
+        return redirect("view_all_client")
 
 
 ###-----------------###
 ###   CREATE CASE --###
 ###-----------------###
-def list_case(request, username):
+def list_case(request, ):
     record = Case.objects.all()
-    return render(request, "main/case/list_case.html", {"username": username, "records": record})
+    return render(request, "main/case/list_case.html", { "records": record})
 
 
-def create_case_view(request, username):
+def create_case_view(request ):
     courtInfo = CourtType.objects.all()
-    caseInfo = CaseType.objects.all()
+    caseInfo = ClientRole.objects.all()
     record = ClientRecord.objects.all()
     return render(
-        request, "main/case/create_case.html", {"username": username, 
+        request, "main/case/create_case.html", { 
                                                 "records": record,
                                                 "courtInfo" : courtInfo,
                                                 "caseInfo": caseInfo}
@@ -468,7 +451,7 @@ def create_case_detail(request):
             case_form = CaseForm(request.POST)
             if case_form.is_valid() :
                 case = case_form.save()
-                return redirect("list_case", request.user)
+                return redirect("list_case")
             else:
                 print("Case Form errors:", case_form.errors)
          
@@ -485,7 +468,7 @@ def update_case_client(request, pk):
         caseclient_info = Case.objects.all()
         court_info = CourtType.objects.all()
         client_info = ClientRecord.objects.all()
-        case_info = CaseType.objects.all()
+        case_info = ClientRole.objects.all()
         caseForm = CaseForm(request.POST, instance=case_record)
         if caseForm.is_valid():
             # print(caseForm)
@@ -493,7 +476,7 @@ def update_case_client(request, pk):
             caseForm.save()
             # clientCaseForm.save()
             messages.success(request, "Record Has Been Updated")
-            return redirect("list_case", username=request.user)
+            return redirect("list_case")
         else:
             print("caseForm Error: ",caseForm.errors)
         context["form"] = caseForm
@@ -511,19 +494,19 @@ def delete_case(request, pk):
     if request.user.is_authenticated:
         delete_it = Case.objects.get(id=pk)
         delete_it.delete()
-        return redirect("list_case", request.user)
+        return redirect("list_case")
     else:
-        return redirect("list_case", request.user)
+        return redirect("list_case")
 
 def single_case_client(request, pk):
     if request.user.is_authenticated:
         current_record = Case.objects.get(id=pk)
-        return redirect("list_case", {"username": request.user,
+        return redirect("list_case", {
                                       "record": current_record})
 
 
-def view_invoice(request, username):
-    return render(request,"main/invoice/invoice_list.html", {"username":username})
+def view_invoice(request):
+    return render(request,"main/invoice/invoice_list.html", )
 
 class InvoiceInline():
     form_class = InvoiceForm
@@ -571,6 +554,8 @@ class InvoiceCreate(InvoiceInline, CreateView):
         ctx = super(InvoiceCreate, self).get_context_data(**kwargs)
         ctx['named_formsets'] = self.get_named_formsets()
         ctx['case_info'] = case
+        
+        return ctx
         # print("CTX: ",ctx)
         return ctx
     
@@ -631,11 +616,13 @@ def delete_reimbur(request, pk):
             )
     return redirect('view_invoice', pk=variant.product.id)
 
-
+from django.urls import reverse
 class InvoiceList(ListView):
     model = Invoice
     template_name = "main/invoice/invoice_list.html"
     context_object_name = "invoices"
+
+  
 
 def PDFInvoiceView(request, pk):
     obj = Invoice.objects.get(pk=pk)
@@ -654,11 +641,11 @@ def PDFInvoiceView(request, pk):
     return render(request,'main/invoice/pdf_view.html', context)
 
 
-def add_client_view(request, username):
-    return render(request, "main/client/add_client.html", {"username": username})
+def add_client_view(request, ):
+    return render(request, "main/client/add_client.html")
 
 
-def balance_sheet(request, username):
+def balance_sheet(request, ):
     invoice = Invoice.objects.all()
     data = []
     total_price =[x.final_total for x in invoice]
@@ -666,7 +653,7 @@ def balance_sheet(request, username):
     for x in total_price:
         price += x
 
-    return render(request,'main/setting/balance_sheet.html', {"username": username,
+    return render(request,'main/setting/balance_sheet.html', {
                                                               "invoice": invoice,
                                                               'total_price': price})
 

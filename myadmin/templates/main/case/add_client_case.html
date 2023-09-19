@@ -56,27 +56,27 @@
                                             </div>
                                             <div class="col-6">
                                                 <div class="form-floating mb-3">
-                                                    <input type="text" class="form-control" id="respondent_name" name="respondent_name" required>
-                                                    <label for="first_name" class="form-label">Respondent Name</label>
+                                                    <input type="text" class="form-control" id="respondent_name" name="respondent_name" >
+                                                    <label for="first_name" class="form-label">Respondent Name (Optional)</label>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="form-floating mb-3">
-                                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" required>
-                                                    <label for="first_name" class="form-label">Respondent Advocate</label>
+                                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" >
+                                                    <label for="first_name" class="form-label">Respondent Advocate (Optional)</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </ul>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" value="{{case.case_no}}" disabled>
-                                    <label for="first_name" class="form-label">Case No</label>
+                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" value="{{case.ref_no}}" disabled>
+                                    <label for="first_name" class="form-label">Reference No</label>
                                 </div>
 
                                 <div class="form-floating mb-3">
-                                    <select class="form-select" name="case_no" required>
-                                        <option value="{{case.id}}"selected>{{case.case_no}}</option>
+                                    <select class="form-select" name="ref_no" required>
+                                        <option value="{{case.id}}"selected>{{case.ref_no}}</option>
                                 </select>
                                     <label for="floatingSelect">Case No</label>
                                 </div>

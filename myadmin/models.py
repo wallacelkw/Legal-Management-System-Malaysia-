@@ -31,48 +31,53 @@ class ClientRecord(models.Model):
         return f"{self.full_name}"
 
 
-class CaseType(models.Model):
+class ClientRole(models.Model):
     # created_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    case_type = models.CharField(max_length=100)
-    case_description = models.CharField(max_length=500)
+    client_role = models.CharField(max_length=100)
+    client_role_description = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
-        return f"{self.case_type}"
+        return f"{self.client_role}"
 
 class CourtType(models.Model):
     # created_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     court_type = models.CharField(max_length=100)
-    court_description = models.CharField(max_length=500)
+    court_description = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
         return f"{self.court_type}"
 
 
 class Case(models.Model):
-    CLIENT_ROLE = [
-    ('Petitioner','Petitioner'),
-    ('Respondent','Respondent')
+    CASE_TYPE = [
+    ('MISC','MISC'),
+    ('CRI','CRI'),
+    ('LIT','LIT'),
+    ('CONV','CONV'),
     ]
 
 
-    case_type = models.ForeignKey(CaseType, on_delete=models.CASCADE)
-    case_no = models.CharField(max_length=255, unique=True)
-    stage_of_case = models.CharField(max_length=100)
+    # case_type = models.ForeignKey(CaseType, on_delete=models.CASCADE)
+    client_role = models.ForeignKey(ClientRole, on_delete=models.CASCADE)
+    # case_no = models.CharField(max_length=255, unique=True)
+    ref_no = models.CharField(max_length=255, unique=True)
     clients = models.ForeignKey(ClientRecord,on_delete=models.CASCADE)
-    respondent_name = models.CharField(max_length=255)
-    respondent_advocate = models.CharField(max_length=255)
-    client_role = models.CharField(max_length=255, choices=CLIENT_ROLE)
+    respondent_name = models.CharField(max_length=255,blank=True, null=True)
+    respondent_advocate = models.CharField(max_length=255,blank=True, null=True)
+    case_type = models.CharField(max_length=255, choices=CASE_TYPE)
     case_description = models.TextField(blank=True, null=True)
     sense_of_urgent = models.CharField(max_length=20)
-    court_no = models.CharField(max_length=40)
-    court_type = models.ForeignKey(CourtType, on_delete=models.CASCADE)
+
+    # Court is Optional
+    court_no = models.CharField(max_length=40, blank=True, null=True)
+    court_type = models.ForeignKey(CourtType, on_delete=models.CASCADE, blank=True, null=True)
     judge_name =  models.CharField(max_length=100, blank=True, null=True)
     court_remark = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.case_no}"
+        return f"{self.ref_no}"
 
 
 class Invoice(models.Model):

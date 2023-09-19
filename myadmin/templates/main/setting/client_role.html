@@ -23,10 +23,10 @@
 
                 <div class="bg-light text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Case Type</h6>
-                        <!-- <button class="btn btn-primary w-30 m-2" type="button">Add Case Type</button> -->
-                        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCaseTypeModal">
-                            Add Case Type
+                        <h6 class="mb-0">Client Role</h6>
+       
+                        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addClientRoleModal">
+                            Add Client Role
                           </button>
                     </div>
                     <div class="table-responsive">
@@ -34,7 +34,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">No</th>
-                                    <th scope="col">Case Type</th>
+                                    <th scope="col">Client Role</th>
                                     <th scope="col">Description</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -43,11 +43,11 @@
                                 {% if records %} {% for record in records %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ record.case_type }}</td>
-                                    <td>{{ record.case_description }}</td>
+                                    <td>{{ record.client_role }}</td>
+                                    <td>{{ record.client_role_description }}</td>
 
                                     <td>
-                                        <button type="submit" class="btn btn-success edit-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#updateCaseTypeModal{{record.id}}">
+                                        <button type="submit" class="btn btn-success edit-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#updateClientRoleModal{{record.id}}">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
@@ -69,16 +69,16 @@
 
             <!-- add Modal -->
 
-            <div class="modal fade" id="addCaseTypeModal" tabindex="-1" aria-labelledby="addCaseTypeModalLabel" aria-hidden="true">
-                <form method="POST" action="{% url 'add_case_type'  %}">
+            <div class="modal fade" id="addClientRoleModal" tabindex="-1" aria-labelledby="addClientRoleModalLabel" aria-hidden="true">
+                <form method="POST" action="{% url 'add_client_role'  %}">
                     {% csrf_token %}
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="addCaseTypeModalLabel">Add Case Type</h1>
+                                <h1 class="modal-title fs-5" id="addClientRoleModalLabel">Add Client Role</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            {% include "main/setting/add_case_type.html" %}
+                            {% include "main/setting/add_client_role.html" %}
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary" id="submitCheking">Save changes</button>
@@ -92,16 +92,16 @@
             <!-- update Modal -->
             <!-- update Modal -->
             {% for record in records %}
-            <div class="modal fade" id="updateCaseTypeModal{{ record.id }}" tabindex="-1" aria-labelledby="updateCaseTypeModalLabel{{ record.id }}" aria-hidden="true">
-                <form method="POST" action="{% url 'update_case_type' pk=record.id %}">
+            <div class="modal fade" id="updateClientRoleModal{{ record.id }}" tabindex="-1" aria-labelledby="updateClientRoleModalLabel{{ record.id }}" aria-hidden="true">
+                <form method="POST" action="{% url 'update_client_role' pk=record.id %}">
                     {% csrf_token %}
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="updateCaseTypeModalLabel{{ record.id }}">Update Case Type</h1>
+                                <h1 class="modal-title fs-5" id="updateClientRoleModalLabel{{ record.id }}">Update Client Role</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            {% include "main/setting/update_case_type.html" %}
+                            {% include "main/setting/update_client_role.html" %}
                             <div class="modal-footer ">
                                 <button type="button " class="btn btn-secondary " data-bs-dismiss="modal ">Close</button>
                                 <button type="submit " class="btn btn-primary " id="submitCheking ">Save changes</button>
@@ -179,7 +179,7 @@
 
                     // Set the "Delete" button's href attribute to include the record ID
                     var deleteButton = $("#confirmDeleteButton");
-                    var deleteUrl = "{% url 'delete_case_type' pk=0 %}".replace('0', recordId);
+                    var deleteUrl = "{% url 'delete_client_role' pk=0 %}".replace('0', recordId);
                     deleteButton.attr("href", deleteUrl);
                 });
             });

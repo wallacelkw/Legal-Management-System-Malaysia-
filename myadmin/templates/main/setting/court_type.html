@@ -80,7 +80,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="casetype" name="court_type">
+                                    <input type="text" class="form-control" id="casetype" name="court_type" required>
                                     <label for="casetype" class="form-label">Court Type</label>
                                 </div>
 
@@ -114,7 +114,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="editCourtType{{ record.id }}" name="court_type" value="{{record.court_type}}">
+                                    <input type="text" class="form-control" id="editCourtType{{ record.id }}" name="court_type" value="{{record.court_type}}" required>
                                     <label for="editCourtType{{ record.id }}" class="form-label">Court Type</label>
                                 </div>
 

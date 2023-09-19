@@ -41,11 +41,10 @@
 
                                 <div class="form-floating mb-3">
                                     <select class="form-select" id="client_role" name="client_role" required>
-                                            <option value="" selected>Please Select Client Role</option>
-                                                <option value="Petitioner">Petitioner</option>
-                                                <option value="Respondent">Respondent</option>
-                                                    <!-- <option value="{{ caseclient }}" {% if record.client_role == caseclient %}selected="selected"{% endif %}>{{ record.client_role }}</option> -->
-                                   
+                                        <option value="" selected>Please Select Client Role</option>
+                                                {% if caseInfo %} {% for case in caseInfo %}
+                                            <option value="{{case.id}}">{{case.client_role}}</option>
+                                            {% endfor %} {% endif %}
                                             </select>
                                     <label for="floatingSelect">Client Role</label>
 
@@ -54,14 +53,14 @@
                             </div>
                             <div class="col-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="respondent_name" name="respondent_name" required>
-                                    <label for="first_name" class="form-label">Respondent Name</label>
+                                    <input type="text" class="form-control" id="respondent_name" name="respondent_name" >
+                                    <label for="first_name" class="form-label">Respondent Name (Optional)</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" required>
-                                    <label for="first_name" class="form-label">Respondent Advocate</label>
+                                    <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" >
+                                    <label for="first_name" class="form-label">Respondent Advocate (Optional)</label>
                                 </div>
                             </div>
                         </div>
@@ -69,28 +68,21 @@
                         <div class="row g-2" id="formContainer">
                             <div class="col-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" name="case_no" class="form-control" id="case_no">
-                                    <label for="case_no" class="form-label">Case No</label>
+                                    <input type="text" name="ref_no" class="form-control" id="ref_no" required>
+                                    <label for="ref_no" class="form-label">Reference No</label>
                                 </div>
                                 <div class="form-floating mb-3">
                                     <select class="form-select" id="case_type" name="case_type" required>
-                                        <option value="" selected>Please Select Case Type</option>
-                                            {% if caseInfo %} {% for case in caseInfo %}
-                                        <option value="{{case.id}}">{{case.case_type}}</option>
-                                        {% endfor %} {% endif %}
-                                 </select>
+                                        <option value="" selected>Please Select Stage</option>
+                                        <option value="MISC">MISC</option>
+                                        <option value="CRI">CRI</option>
+                                        <option value="LIT">LIT</option>
+                                        <option value="CONV">CONV</option>
+                                    </select>
                                     <label for="floatingSelect">Case Type</label>
 
                                 </div>
-                                <div class="form-floating mb-3">
-                                    <select class="form-select" id="stage_of_case" name="stage_of_case" required>
-                            <option value="" selected>Please Select Stage</option>
-                            <option value="Institution Phase">Institution Phase</option>
-                            <option value="Trial Phase">Trial Phase</option>
-                            <option value="Judgement Phase">Judgement Phase</option> 
-                                </select>
-                                    <label for="floatingSelect">Stage of Case</label>
-                                </div>
+                             
                             </div>
                             <div class="col-6">
                                 <div class="form-floating mb-3">
@@ -114,7 +106,7 @@
                 <br>
                 <div class="col-sm-12 col-xl-12">
                     <div class="bg-light rounded h-100 p-4">
-                        <h6 class="mb-4">Court</h6>
+                        <h6 class="mb-4">Court (Optional)</h6>
                         <div class="row g-2" id="formContainer">
                             <div class="col-6">
                                 <div class="form-floating mb-3">
@@ -122,7 +114,7 @@
                                     <label for="court_no" class="form-label">Court No</label>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <select class="form-select" id="case_type" name="court_type" required>
+                                    <select class="form-select" id="case_type" name="court_type">
                                         <option value="" selected>Please Select Court Type</option>
                                             {% if courtInfo %} {% for court in courtInfo %}
                                         <option value="{{court.id}}">{{court.court_type}}</option>
@@ -135,7 +127,7 @@
                             </div>
                             <div class="col-6">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="judge_name" name="judge_name" required>
+                                    <input type="text" class="form-control" id="judge_name" name="judge_name">
                                     <label for="judge_name" class="form-label">Judge Name</label>
                                 </div>
                                 <div class="form-floating">
@@ -227,7 +219,7 @@
         });
 
         function autoInsert() {
-            var inputValue = document.getElementById("case_no").value;
+            var inputValue = document.getElementById("ref_no").value;
             var selectElement = document.getElementById("targetInput");
 
             // Check if the entered value already exists as an option

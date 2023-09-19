@@ -16,7 +16,7 @@
 
 <aside class="sidebar pe-4 pb-3">
     <nav class="navbar bg-light navbar-light">
-        <a href="{% url 'dashboard' username=request.user.username %}" class="navbar-brand mx-4 mb-3">
+        <a href="{% url 'dashboard'  %}" class="navbar-brand mx-4 mb-3">
             <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>DASHMIN</h3>
         </a>
         <div class="d-flex align-items-center ms-4 mb-4">
@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="navbar-nav w-100">
-            <a href="{% url 'dashboard' username=request.user.username %}" class="nav-item nav-link {% if 'dashboard' in request.path %}active{% endif %}">
+            <a href="{% url 'dashboard'  %}" class="nav-item nav-link {% if 'dashboard' in request.path %}active{% endif %}">
                 <i class="fa fa-tachometer-alt me-2"></i>Dashboard
             </a>
             <div class="nav-item dropdown">
@@ -38,28 +38,28 @@
                     <i class="fa fa-users me-2"></i>Client
                 </a>
                 <div class="dropdown-menu bg-transparent border-0 {% if 'add_client_view' in request.path or 'view_all_client' in request.path %}show{% endif %}">
-                    <a href="{% url 'add_client_view' username=request.user.username%}" class="dropdown-item {% if 'add_client_view' in request.path %}active{% endif %}">Add Client</a>
-                    <a href="{% url 'view_all_client' username=request.user.username%}" class="dropdown-item {% if 'view_all_client' in request.path %}active{% endif %}">View Client</a>
+                    <a href="{% url 'add_client_view' %}" class="dropdown-item {% if 'add_client_view' in request.path %}active{% endif %}">Add Client</a>
+                    <a href="{% url 'view_all_client'%}" class="dropdown-item {% if 'view_all_client' in request.path %}active{% endif %}">View Client</a>
                 </div>
             </div>
 
-            <a href="{% url 'list_case' username=request.user.username %}" class="nav-item nav-link {% if 'list_case' in request.path %}active{% endif %}">
-                <i class="fa fa-tachometer-alt me-2"></i>Cases
+            <a href="{% url 'list_case' %}" class="nav-item nav-link {% if 'list_case' in request.path %}active{% endif %}">
+                <i class="bi bi-briefcase-fill me-2"></i>Cases
             </a>
 
-            <a href="{% url 'view_invoice' username=request.user.username %}" class="nav-item nav-link {% if 'view_invoice' in request.path %}active{% endif %}">
-                <i class="fa fa-tachometer-alt me-2"></i>Invoice
+            <a href="{% url 'view_invoice' %}" class="nav-item nav-link {% if 'view_invoice' in request.path %}active{% endif %}">
+                <i class="bi bi-stickies-fill me-2"></i>Invoice
             </a>
 
 
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle {% if 'case_type' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path %}active show{% endif %}" data-bs-toggle="dropdown">
+                <a href="#" class="nav-link dropdown-toggle {% if 'client_role' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path %}active show{% endif %}" data-bs-toggle="dropdown">
                     <i class="fa fa-cogs me-2"></i>Setting
                 </a>
-                <div class="dropdown-menu bg-transparent border-0 {% if 'case_type' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path%}show{% endif %}">
-                    <a href="{% url 'case_type' username=request.user.username %}" class="dropdown-item {% if 'case_type' in request.path %}active{% endif %}">Case Type</a>
-                    <a href="{% url 'court_type' username=request.user.username %}" class="dropdown-item {% if 'court_type' in request.path %}active{% endif %}">Court Type</a>
-                    <a href="{% url 'balance_sheet' username=request.user.username %}" class="dropdown-item {% if 'balance_sheet' in request.path %}active{% endif %}">Balance Sheet</a>
+                <div class="dropdown-menu bg-transparent border-0 {% if 'client_role' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path%}show{% endif %}">
+                    <a href="{% url 'client_role' %}" class="dropdown-item {% if 'client_role' in request.path %}active{% endif %}">Client Role</a>
+                    <a href="{% url 'court_type'%}" class="dropdown-item {% if 'court_type' in request.path %}active{% endif %}">Court Type</a>
+                    <a href="{% url 'balance_sheet'  %}" class="dropdown-item {% if 'balance_sheet' in request.path %}active{% endif %}">Balance Sheet</a>
                 </div>
             </div>
 

@@ -14,7 +14,7 @@
             {% include "navigation/navbar.html" %}
 
             <div class="container-fluid pt-4 px-4">
-                <form id="customerform" class="customerform" method="POST" action="{% url 'add_cus_record'  username%}">
+                <form id="customerform" class="customerform" method="POST" action="{% url 'add_cus_record'  %}">
                     {% csrf_token %}
                     <div class="row g-4">
                         <div class="col-sm-12 col-xl-6">

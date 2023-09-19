@@ -1,0 +1,12 @@
+<div class="modal-body">
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="editClientRole{{ record.id }}" name="client_role" value="{{record.client_role}}" required>
+        <label for="editClientRole{{ record.id }}" class="form-label">Case Type</label>
+    </div>
+
+    <div class="form-floating">
+        <textarea class="form-control" name="client_role_description" id="editClientDescription{{ record.id }}" style="height: 150px; ">{{record.client_role_description}}</textarea>
+        <label for="editClientDescription{{ record.id }} ">Comments</label>
+    </div>
+
+</div>
