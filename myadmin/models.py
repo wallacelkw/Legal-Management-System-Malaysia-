@@ -24,6 +24,9 @@ class ClientRecord(models.Model):
     agent_ph = models.CharField(max_length=50, blank=True, null=True)
     agent_identity = models.CharField(max_length=50, blank=True, null=True)
 
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+
     def __str__(self):
         return f"{self.full_name}"
 

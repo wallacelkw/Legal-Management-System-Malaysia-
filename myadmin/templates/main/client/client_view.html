@@ -47,6 +47,8 @@
                                         <th scope="col">Emergency (Email)</th>
                                         <th scope="col">Emergency (Phone Number)</th>
                                         <th scope="col">Created By</th>
+                                        <th scope="col">Latitude</th>
+                                        <th scope="col">Longitude</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -68,6 +70,8 @@
                                         <td>{{ record.emergency_contact_email }}</td>
                                         <td>{{ record.emergency_contact_phone_number }}</td>
                                         <td>{{ record.created_by }}</td>
+                                        <td>{{ record.latitude }}</td>
+                                        <td>{{ record.longitude }}</td>
                                     </tr>
                                     {% endfor %} {% endif %}
 

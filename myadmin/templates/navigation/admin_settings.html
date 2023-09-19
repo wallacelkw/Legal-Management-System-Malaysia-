@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<!-- Load the static tag library -->
+{% include "navigation/head.html" %}
+
+
+<body>
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+
+        <!-- Sidebar Start -->
+        {% include "navigation/sidebar.html" %}
+        <!-- Sidebar End -->
+
+
+        <!-- Content Start -->
+        <div class="content">
+            {% include "navigation/navbar.html" %}
+
+
+
+            <div class="container-fluid pt-4 px-4">
+
+                <div class="bg-light text-center rounded p-4">
+
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h3 class="mb-0">Admin</h3>
+
+                    </div>
+                    <form id="form" class="form" method="POST">
+                        {% csrf_token %}
+                        <div class="row g-2" id="formContainer">
+                            
+                            <div class="col-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="username" name="username" value="{{record.username}}" readonly>
+                                    <label for="username" class="form-label">Username</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="first_name" name="first_name"  value="{{record.first_name}}"readonly>
+                                    <label for="first_name" class="form-label">First Name </label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input id="phone" type="tel" class="form-control" name="last_name" value="{{record.last_name}}" readonly>
+                                    <label for="first_name" class="form-label">Last Name </label>
+                                </div>
+                            
+                                <div class="form-floating mb-3">
+                                    <input type="email" name="email" class="form-control" id="email" value="{{record.email}}" aria-describedby="emailHelp" readonly>
+                                    <label for="email" class="form-label">Email address</label>
+                                    <div id="email" class="form-text">We'll never share your email with anyone else.
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-6">
+
+
+            
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="password2" name="password2" value="{{record.is_staff}}" readonly>
+                                    <label for="address2" class="form-label">Is Staff</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="password2" name="password2" value="{{record.is_active}}" readonly>
+                                    <label for="address2" class="form-label">Is Active</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="password2" name="password2" value="{{record.is_superuser}}" readonly>
+                                    <label for="address2" class="form-label">Is SuperUser</label>
+                                </div>
+            
+
+                              
+                            </div>
+
+                        </div>
+     
+                    </form>
+
+
+                      
+                    </div>
+                </div>
+
+                <!-- Footer Start -->
+                {% include "navigation/footer.html" %}
+                <!-- Footer End -->
+            </div>
+            <!-- Content End -->
+
+
+
+
+
+
+            <!-- Back to Top -->
+            <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
+        </div>
+
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js "></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js "></script>
+        <script src="{% static 'lib/chart/chart.min.js' %} "></script>
+        <script src="{% static 'lib/easing/easing.min.js' %} "></script>
+        <script src="{% static 'lib/waypoints/waypoints.min.js' %} "></script>
+        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %} "></script>
+        <script src="{% static 'lib/tempusdominus/js/moment.min.js' %} "></script>
+        <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %} "></script>
+        <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %} "></script>
+
+        <!-- Template Javascript -->
+        <script src="{% static 'js/main.js' %} "></script>
+
+
+        <script src="{% static 'js/datatables.js' %} "></script>
+        <script src="{% static 'js/datatables.min.js' %} "></script>
+        <script src="https://code.jquery.com/jquery-3.7.0.js "></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script>
+
+
+  \
+</body>
+
+</html>

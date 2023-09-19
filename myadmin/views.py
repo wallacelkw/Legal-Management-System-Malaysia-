@@ -26,6 +26,12 @@ from django.views.generic.edit import (
 )
 from django.views.generic import ListView
 
+import folium
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+import pandas as pd
+
+
 def login_user(request):
     records = User.objects.all()
     if request.method == "POST":
@@ -47,9 +53,59 @@ def login_user(request):
         return render(request, "auth/login.html", {"records": records})
 
 
+from folium import GeoJson
+@login_required()
 def dashboard(request, username):
+    case_information = Case.objects.all()
+    client_information = ClientRecord.objects.all()
+    invoice_information = Invoice.objects.all()
+   
+    quantity_case = len([x for x,y in enumerate(case_information)])
+    quantity_client = len([x for x,y in enumerate(client_information)])
+    quantity_invoice = len([x for x,y in enumerate(invoice_information)])
+
+    df = pd.DataFrame(client_information.values())
+
+    # Load the GeoJSON file containing Malaysia's boundaries
+    geojson_layer = GeoJson(
+        'myadmin/static/js/stanford-zd362bc5680-geojson.json',  # Replace with the actual path to your GeoJSON file
+        name='Malaysia Boundaries',
+        style_function=lambda feature: {
+            'fillColor': 'green',  # Color for the boundary fill
+            'color': 'black',       # Color for the boundary outline
+            'weight': 1,           # Boundary outline thickness
+            'fillOpacity': 0.1,    # Opacity of the boundary fill
+        }
+    )
+    
+
+
+    map1 = folium.Map(
+        location=[3.79239, 109.69887],
+        tiles='cartodbpositron',
+        zoom_start=5,
+    )
+    # Add the GeoJSON layer to the map
+    geojson_layer.add_to(map1)
+
+    for client in client_information:
+        if client.latitude and client.longitude:
+            folium.Marker(
+                location=[client.latitude, client.longitude],
+                popup=client.full_name,  # You can customize the popup content
+            ).add_to(map1)
+
+
+    context = {
+        "username": username,
+        "case_information": quantity_case,
+        "client_information": quantity_client,
+        "invoice_information": quantity_invoice,
+        # 'map_html': map_html,
+        'map1':map1._repr_html_()
+    }
     messages.success(request, "You Have Been Log In...")
-    return render(request, "main/dashboard.html", {"username": username})
+    return render(request, "main/dashboard.html",context )
 
 
 def logout_user(request):
@@ -69,15 +125,69 @@ def register_user(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(request, "You Have Successfully Registered! Welcome!")
-            return redirect("home")
+            return redirect("login")
     else:
         form = SignUpForm()
-        return render(request, "register.html", {"form": form})
+        return render(request, "auth/register.html", {"form": form})
 
-    return render(request, "register.html", {"form": form})
+    return render(request, "auth/register.html", {"form": form})
+
+
+def admin_setting(request):
+    context={}
+    my_record = User.objects.get(id=request.user.id)
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            # fetch the object related to passed id
+            obj = get_object_or_404(User, id=request.user.id)
+            current_record = User.objects.get(id=request.user.id)
+            form = SignUpForm(request.POST, instance=obj)
+            print(form)
+            # print(form)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Record Has Been Updated!")
+                return redirect("dashboard", username=request.user)
+            else:
+                print("Form errors:", form.errors)
+            context["form"] = form
+        else:
+            form = AddCaseType()
+        return render(
+            request,
+            "navigation/admin_settings.html",
+            {"context": context, "record": my_record},
+        )
+
+    else:
+        messages.success(request, "Update Error")
+        return redirect("case_type", username=request.user)
+
+
+
+    
+    # if request.user.is_authenticated:
+    #     if request.method =="POST":
+    #         obj = get_object_or_404(User, id=request.user.id)
+    #         current_record = User.objects.get(id=request.user.id)
+    #         form = SignUpForm(request.POST, instance=obj)
+    #         if form.is_valid():
+    #             form.save()
+    #             messages.success(request, "Record Has Been Updated!")
+    #             return redirect("dashboard", username=request.user)
+    #         else:
+    #             print("Form errors:", form.errors)
+
+    #     else:
+    #         form = SignUpForm()
+    #         return render(request,"main/navigation/admin_settings.html",{"form":form, "record": current_record})
+
+
+
 
 
 # Setting -> CASE INFORMATION
+@login_required
 def case_type(request, username):
     records = CaseType.objects.all()
     is_add = request.session.pop("is_add", False)
@@ -91,7 +201,7 @@ def case_type(request, username):
     }
     return render(request, "main/setting/case_type.html", context)
 
-
+@login_required
 def add_case_type(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -110,7 +220,7 @@ def add_case_type(request):
         messages.success(request, "You Must Be Logged In To View That Page...")
         return redirect("case_type", username=request.user)
 
-
+@login_required
 def update_case_type(request, pk):
     context = {}
     if request.user.is_authenticated:
@@ -140,7 +250,7 @@ def update_case_type(request, pk):
         messages.success(request, "Update Error")
         return redirect("case_type", username=request.user)
 
-
+@login_required
 def delete_case_type(request, pk):
     if request.user.is_authenticated:
         delete_it = CaseType.objects.get(id=pk)
@@ -240,7 +350,23 @@ def add_client_to_db(request):
         if request.method == "POST":
             form = AddClientForm(request.POST)
             if form.is_valid():
-                form.save()
+                city = form.cleaned_data["city"]
+                postcode = form.cleaned_data["postcode"]
+                state = form.cleaned_data["state"]
+                location = f"{city}, {postcode}, {state}"
+                geolocator = Nominatim(user_agent="myGeocoder")
+                location_info = geolocator.geocode(location)
+                print("Location Information: ", location_info )
+                print("Latitude : ",location_info.latitude)
+                print("Longtitude : ",location_info.longitude)
+                # Check if location_info is available
+                if location_info: 
+                    # Bind the form to a new instance of the ClientRecord model
+                    client_record = form.save(commit=False)
+                    client_record.latitude = location_info.latitude
+                    client_record.longitude = location_info.longitude
+                    client_record.save()
+
                 messages.success(request, "Client record added successfully.")
                 return redirect("add_client_view", request.user)
             else:
@@ -277,7 +403,23 @@ def update_client(request, pk):
         # print(form)
         # print(form)
         if form.is_valid():
-            form.save()
+            city = form.cleaned_data["city"]
+            postcode = form.cleaned_data["postcode"]
+            state = form.cleaned_data["state"]
+            location = f"{city}, {postcode}, {state}"
+            geolocator = Nominatim(user_agent="myGeocoder")
+            location_info = geolocator.geocode(location)
+            print("Location Information: ", location_info )
+            print("Latitude : ",location_info.latitude)
+            print("Longtitude : ",location_info.longitude)
+            # Check if location_info is available
+            if location_info: 
+                # Bind the form to a new instance of the ClientRecord model
+                client_record = form.save(commit=False)
+                client_record.latitude = location_info.latitude
+                client_record.longitude = location_info.longitude
+                client_record.save()
+           
             messages.success(request, "Record Has Been Updated!")
             return redirect("view_all_client", username=request.user)
         else:
@@ -514,4 +656,17 @@ def PDFInvoiceView(request, pk):
 
 def add_client_view(request, username):
     return render(request, "main/client/add_client.html", {"username": username})
+
+
+def balance_sheet(request, username):
+    invoice = Invoice.objects.all()
+    data = []
+    total_price =[x.final_total for x in invoice]
+    price = 0
+    for x in total_price:
+        price += x
+
+    return render(request,'main/setting/balance_sheet.html', {"username": username,
+                                                              "invoice": invoice,
+                                                              'total_price': price})
 

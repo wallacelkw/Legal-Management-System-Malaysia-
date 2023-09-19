@@ -25,7 +25,7 @@
                 <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
             </div>
             <div class="ms-3">
-                <h6 class="mb-0">{{username}}</h6>
+                <h6 class="mb-0">{{request.user.username}}</h6>
                 <span>Admin</span>
             </div>
         </div>
@@ -47,20 +47,25 @@
                 <i class="fa fa-tachometer-alt me-2"></i>Cases
             </a>
 
-            <a href="{% url 'view_invoice' %}" class="nav-item nav-link {% if 'view_invoice' in request.path %}active{% endif %}">
+            <a href="{% url 'view_invoice' username=request.user.username %}" class="nav-item nav-link {% if 'view_invoice' in request.path %}active{% endif %}">
                 <i class="fa fa-tachometer-alt me-2"></i>Invoice
             </a>
 
 
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle {% if 'case_type' in request.path or 'court_type' in request.path%}active show{% endif %}" data-bs-toggle="dropdown">
+                <a href="#" class="nav-link dropdown-toggle {% if 'case_type' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path %}active show{% endif %}" data-bs-toggle="dropdown">
                     <i class="fa fa-cogs me-2"></i>Setting
                 </a>
-                <div class="dropdown-menu bg-transparent border-0 {% if 'case_type' in request.path or 'court_type' in request.path%}show{% endif %}">
+                <div class="dropdown-menu bg-transparent border-0 {% if 'case_type' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path%}show{% endif %}">
                     <a href="{% url 'case_type' username=request.user.username %}" class="dropdown-item {% if 'case_type' in request.path %}active{% endif %}">Case Type</a>
                     <a href="{% url 'court_type' username=request.user.username %}" class="dropdown-item {% if 'court_type' in request.path %}active{% endif %}">Court Type</a>
+                    <a href="{% url 'balance_sheet' username=request.user.username %}" class="dropdown-item {% if 'balance_sheet' in request.path %}active{% endif %}">Balance Sheet</a>
                 </div>
             </div>
+
+            <a href="#" class="nav-item nav-link {% if '#' in request.path %}active{% endif %}">
+                <i class="fa fa-tachometer-alt me-2"></i>Message
+            </a>
 
 
 

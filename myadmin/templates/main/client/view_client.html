@@ -39,7 +39,8 @@
                                         <th scope="col">Agent (IC/Passport)</th>
                                         <th scope="col">Agent (Phone Number)</th>
                                         <th scope="col">Remark</th>
-
+                                        <th scope="col">Latitude</th>
+                                        <th scope="col">Longitude</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -60,6 +61,8 @@
                                         <td>{{ record.agent_identity }}</td>
                                         <td>{{ record.agent_ph }}</td>
                                         <td>{{ record.remark }}</td>
+                                        <td>{{ record.latitude }}</td>
+                                        <td>{{ record.longitude }}</td>
 
                                     </tr>
                                     {% endfor %} {% endif %}

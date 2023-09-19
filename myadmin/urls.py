@@ -10,7 +10,7 @@ urlpatterns = [
     path("", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
     path("dashboard/<str:username>", views.dashboard, name="dashboard"),
-    
+    path("admin_setting/", views.admin_setting, name="admin_setting"),
 
     path("add_client_to_db/", views.add_client_to_db, name="add_client_to_db"),
     path(
@@ -47,11 +47,14 @@ urlpatterns = [
 
     # INVOICE
     # path("view_invoice/<str:username>/", views.view_invoice, name="view_invoice"),
-    path('view_invoice/', views.InvoiceList.as_view(), name='view_invoice'),
+    path('view_invoice/<str:username>', views.InvoiceList.as_view(), name='view_invoice'),
     path('create_invoice/', views.InvoiceCreate.as_view(), name='create_invoice'),
     path('update/<int:pk>/', views.ProductUpdate.as_view(), name='update_invoice'),
     path('delete-services/<int:pk>/', views.delete_reimbur, name='delete_reimbur'),
     path('delete-prof_services/<int:pk>/', views.delete_proservice, name='delete_proservice'),
     path('pdf_invoice/<int:pk>/', views.PDFInvoiceView, name='pdf_invoice'),
+
+    path('balance_sheet/<str:username>/', views.balance_sheet, name='balance_sheet'),
+    
   
 ]
