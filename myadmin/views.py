@@ -13,7 +13,7 @@ from .forms import (
     ReimburServiceFormSet,
     ReimburServiceForm,
     ProfServiceForm,
-    ProfServiceFormSet
+    ProfServiceFormSet,
 )
 from .models import ClientRole, CourtType, ClientRecord, Case, Invoice, ReimburService, ProfService
 from django.contrib.auth.decorators import login_required
@@ -508,81 +508,90 @@ def single_case_client(request, pk):
 def view_invoice(request):
     return render(request,"main/invoice/invoice_list.html", )
 
-class InvoiceInline():
-    form_class = InvoiceForm
-    model = Invoice
-    template_name = "main/invoice/create_invoice.html"
+# class InvoiceInline():
+#     form_class = InvoiceForm
+#     model = Invoice
+#     template_name = "main/invoice/create_invoice.html"
 
-    def form_valid(self, form):
-        named_formsets = self.get_named_formsets()
-        if not all ((x.is_valid() for x in named_formsets.values())):
-            return self.render_to_response(self.get_context_data(form=form))
+#     def form_valid(self, form):
+#         named_formsets = self.get_named_formsets()
+#         if not all ((x.is_valid() for x in named_formsets.values())):
+#             return self.render_to_response(self.get_context_data(form=form))
 
-        self.object = form.save()
+#         self.object = form.save()
     
-        for name,formset in named_formsets.items():
-            print("NAME: ", name)
-            print("FORMSET: ", formset)
-            formset_save_func = getattr(self, 'formset_{0}_valid'.format(name), None)
-            print("formset_save_func : ", formset_save_func )
-            if formset_save_func is not None:
-                formset_save_func(formset)
-            else:
-                formset.save()
-        return redirect('view_invoice')
+#         for name,formset in named_formsets.items():
+#             print("NAME: ", name)
+#             print("FORMSET: ", formset)
+#             formset_save_func = getattr(self, 'formset_{0}_valid'.format(name), None)
+#             print("formset_save_func : ", formset_save_func )
+#             if formset_save_func is not None:
+#                 formset_save_func(formset)
+#             else:
+#                 formset.save()
+#         return redirect('view_invoice')
     
-    def formset_services_valid(self, formset):
-        services = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            obj.delete()
-        for variant in services:
-            variant.invoice = self.object
-            variant.save()
+#     def formset_services_valid(self, formset):
+#         services = formset.save(commit=False)
+#         for obj in formset.deleted_objects:
+#             obj.delete()
+#         for variant in services:
+#             variant.invoice = self.object
+#             variant.save()
 
-    def formset_prof_services_valid(self, formset):
-        profservices = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            obj.delete()
-        for variant in profservices:
-            variant.invoice = self.object
-            variant.save()
+#     def formset_prof_services_valid(self, formset):
+#         profservices = formset.save(commit=False)
+#         for obj in formset.deleted_objects:
+#             obj.delete()
+#         for variant in profservices:
+#             variant.invoice = self.object
+#             variant.save()
 
-class InvoiceCreate(InvoiceInline, CreateView):
+# class InvoiceCreate(InvoiceInline, CreateView):
 
-    def get_context_data(self, **kwargs):
-        case = Case.objects.all()
-        ctx = super(InvoiceCreate, self).get_context_data(**kwargs)
-        ctx['named_formsets'] = self.get_named_formsets()
-        ctx['case_info'] = case
+#     def get_context_data(self, **kwargs):
+#         case = Case.objects.all()
+#         ctx = super(InvoiceCreate, self).get_context_data(**kwargs)
+#         ctx['named_formsets'] = self.get_named_formsets()
+     
         
-        return ctx
-        # print("CTX: ",ctx)
-        return ctx
+#         return ctx
+#         # print("CTX: ",ctx)
+
     
-    def get_named_formsets(self):
-        if self.request.method =='GET':
-            return {
-                'services': ReimburServiceFormSet(prefix='services'),
-                'prof_services' : ProfServiceFormSet(prefix='prof_services')
-            }
-        else:
-            return{
-                'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='services'),
-                'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='prof_services'),
-            }
+#     def get_named_formsets(self):
+#         if self.request.method =='GET':
+#             return {
+#                 'services': ReimburServiceFormSet(prefix='services'),
+#                 'prof_services' : ProfServiceFormSet(prefix='prof_services')
+#             }
+#         else:
+#             return{
+#                 'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='services', form=ReimburServiceForm),
+#                 'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='prof_services',form=ProfServiceForm)     
+#             }
 
-class ProductUpdate(InvoiceInline, UpdateView):
+# class InvoiceUpdate(InvoiceInline, UpdateView):
 
-    def get_context_data(self, **kwargs):
-        ctx = super(ProductUpdate, self).get_context_data(**kwargs)
-        ctx['named_formsets'] = self.get_named_formsets()
-        return ctx
+#     def get_context_data(self, **kwargs):
+#         ctx = super(InvoiceUpdate, self).get_context_data(**kwargs)
+#         ctx['named_formsets'] = self.get_named_formsets()
+#         return ctx
 
-    def get_named_formsets(self):
-        return {
-            'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='services'),
-            'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='prof_services'),
-        }
+#     def get_named_formsets(self):
+#         return {
+#             'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='services',form=ReimburServiceForm),
+#             'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='prof_services',form=ProfServiceForm),
+#         }
+
+
+
+
+
+
+
+
+
 
 
 def delete_proservice(request, pk):
@@ -622,7 +631,112 @@ class InvoiceList(ListView):
     template_name = "main/invoice/invoice_list.html"
     context_object_name = "invoices"
 
-  
+
+# def create_invoice(request):
+#     if request.user.is_authenticated:
+#         form = InvoiceForm()
+#         reimbur_service_form = ReimburServiceFormSet()
+#         prof_service_form = ProfServiceFormSet()
+#         if request.method =="POST":
+#             form = InvoiceForm(request.POST)
+#             reimbur_service_form = ReimburServiceFormSet(request.POST)
+#             prof_service_form = ReimburServiceFormSet(request.POST)
+#             if form.is_valid():
+#                 invoice = Invoice.objects.create(
+#                     case = form.cleaned_data.get["case"],
+#                     short_descriptions = form.cleaned_data.get["short_descriptions"],
+#                 )
+            
+#             if reimbur_service_form.is_valid():
+#                 total_reimbur = 0   
+#                 for form in reimbur_service_form:
+#                     service = form.cleaned_data.get["service"]
+#                     unit_price = form.cleaned_data.get["unit_price"]
+#                     if service and unit_price:
+#                         total_reimbur += unit_price
+#                         ReimburService(invoice=invoice,
+#                                        service=service,
+#                                        unit_price=unit_price).save()
+                
+#                 invoice.total_unit_price = total_reimbur
+            
+#             if prof_service_form.is_valid():
+#                 total_prof = 0   
+#                 for form in prof_service_form:
+#                     prof_service = form.cleaned_data.get["prof_service"]
+#                     prof_service_price = form.cleaned_data.get["prof_service_price"]
+#                     if service and unit_price:
+#                         total_prof += unit_price
+#                         ProfService(invoice=invoice,
+#                                        prof_service=prof_service,
+#                                        prof_service_price=prof_service_price).save()
+                    
+#                 invoice.total_prof_service_price = total_prof
+#                 invoice.save()
+#                 return redirect("invoice_list")
+        
+#         context={
+#             "forms" : form,
+#             "reimbur_service_form": reimbur_service_form,
+#             "prof_service_form" : prof_service_form
+#         }
+#         return render(request, "main/invoice/create_invoice.html", context)
+    
+def create_invoice(request):
+    if request.user.is_authenticated:
+        form = InvoiceForm()
+        reimbur_service_form = ReimburServiceFormSet()
+        prof_service_form = ProfServiceFormSet()
+        
+        if request.method == "POST":
+            form = InvoiceForm(request.POST)
+            reimbur_service_form = ReimburServiceFormSet(request.POST, prefix='reimbur')
+            prof_service_form = ProfServiceFormSet(request.POST, prefix='prof')
+            
+            if form.is_valid() and reimbur_service_form.is_valid() and prof_service_form.is_valid():
+                invoice = form.save()  # Save the main invoice
+                
+                # Process Reimbursement Services
+                total_reimbur = 0
+                for service_form in reimbur_service_form:
+                    service = service_form.cleaned_data.get("service")
+                    unit_price = service_form.cleaned_data.get("unit_price")
+                    if service and unit_price:
+                        total_reimbur += unit_price
+                        ReimburService.objects.create(
+                            invoice=invoice,
+                            service=service,
+                            unit_price=unit_price
+                        )
+                
+                invoice.total_unit_price = total_reimbur
+                
+                # Process Professional Services
+                total_prof = 0
+                for prof_form in prof_service_form:
+                    prof_service = prof_form.cleaned_data.get("prof_service")
+                    prof_service_price = prof_form.cleaned_data.get("prof_service_price")
+                    if prof_service and prof_service_price:
+                        total_prof += prof_service_price
+                        ProfService.objects.create(
+                            invoice=invoice,
+                            prof_service=prof_service,
+                            prof_service_price=prof_service_price
+                        )
+                    
+                invoice.total_prof_service_price = total_prof
+                invoice.final_total = total_prof + total_reimbur
+                invoice.save()
+                
+                return redirect("invoice_list")
+        
+        context = {
+            "form": form,
+            "reimbur_service_form": reimbur_service_form,
+            "prof_service_form": prof_service_form,
+        }
+        return render(request, "main/invoice/create_invoice.html", context)
+
 
 def PDFInvoiceView(request, pk):
     obj = Invoice.objects.get(pk=pk)

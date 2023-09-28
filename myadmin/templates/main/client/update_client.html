@@ -1,155 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load static %} {% include "navigation/head.html" %}
+{% extends "navigation/base.html" %}
+{% block content %}
+{% load static %}
 
-<body>
-    <div class="container-xxl position-relative bg-white d-flex p-0">
-        <!-- Sidebar Start -->
-        {% include "navigation/sidebar.html" %}
-        <!-- Sidebar End -->
-
-        <!-- Content Start -->
-        <div class="content">
-            <!-- Navbar Start -->
-            {% include "navigation/navbar.html" %}
-
-            <div class="container-fluid pt-4 px-4">
-                <form id="customerform" class="customerform" method="POST">
-                    {% csrf_token %}
-                    <div class="col-xl-12 col-xl-12">
-                        <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Client Information</h6>
-                            <div class="row g-2" id="formContainer">
-                                <input type="hidden" name="created_by" value="{{ request.user.id }}">
-                                <div class="col-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{record.full_name}}" required>
-                                        <label for="full_name" class="form-label">Full Name</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="identity" name="identity" value="{{record.identity}}" required>
-                                        <label for="identity" class="form-label">IC/Passport</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input id="phone" type="tel" class="form-control" name="phone_number" value="{{record.phone_number}}" required>
-                                        <p id="output">Please enter a valid number below</p>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <select class="form-select" id="gender" name="gender" value="{{record.gender}}" required>
-                                                    <option value="male">Male</option>
-                                                    <option value="female">Female</option>                        
-                                                </select>
-                                        <label for="floatingSelect">Gender</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="email" name="email" class="form-control" id="email" value="{{record.email}}" aria-describedby="emailHelp">
-                                        <label for="email" class="form-label">Email address</label>
-                                        <div id="email" class="form-text">We'll never share your email with anyone else.
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-6">
-
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="address1" name="address1" value="{{record.address1}}" required>
-                                        <label for="address1" class="form-label" required>Address 1</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="address2" name="address2" value="{{record.address2}}">
-                                        <label for="address2" class="form-label">Address 2</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="customerCity" name="city" value="{{record.city}}">
-                                        <label for="city" class="form-label">City</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="customerPostcode" name="postcode" value="{{record.postcode}}" onkeyup="autocompleteState(this.value)">
-                                        <label for="customerPostcode" class="form-label">Postcode</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="customerState" name="state" value="{{record.state}}">
-                                        <label for="customerState" class="form-label">State/Province</label>
-                                    </div>
-
-                                    {%include "navigation/country_detail.html"%}
-                                </div>
-
-                            </div>
-                            <div class="form-floating">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="remark">{{record.remark}}</textarea>
-                                <label for="floatingTextarea">Remarks</label>
-                            </div>
-
+<div class="container-fluid pt-4 px-4">
+    <form id="customerform" class="customerform" method="POST">
+        {% csrf_token %}
+        <div class="col-xl-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Client Information</h6>
+                <div class="row g-2" id="formContainer">
+                    <input type="hidden" name="created_by" value="{{ request.user.id }}">
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="full_name" name="full_name" value="{{record.full_name}}" required>
+                            <label for="full_name" class="form-label">Full Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="identity" name="identity" value="{{record.identity}}" required>
+                            <label for="identity" class="form-label">IC/Passport</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input id="phone" type="tel" class="form-control" name="phone_number" value="{{record.phone_number}}" required>
+                            <p id="output">Please enter a valid number below</p>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="gender" name="gender" value="{{record.gender}}" required>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>                        
+                                    </select>
+                            <label for="floatingSelect">Gender</label>
                         </div>
 
-
-                    </div>
-
-                    <br>
-
-                    <div class="col-sm-12 col-xl-12">
-                        <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Agent Information (Optional)</h6>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="agent_fullname" class="form-control" id="agent_fullname" value="{{record.agent_fullname}}">
-                                <label for="ECFullname" class="form-label">Agent Full Name</label>
+                        <div class="form-floating mb-3">
+                            <input type="email" name="email" class="form-control" id="email" value="{{record.email}}" aria-describedby="emailHelp">
+                            <label for="email" class="form-label">Email address</label>
+                            <div id="email" class="form-text">We'll never share your email with anyone else.
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="agent_identity" class="form-control" id="agent_identity" value="{{record.agent_identity}}">
-                                <label for="ECFullname" class="form-label">IC/Passport</label>
-                            </div>
-
-
-                            <div class="form-floating mb-3">
-                                <input id="ecphone" type="tel" class="form-control" name="agent_ph" value="{{record.agent_ph}}">
-                                <p id="output1">Please enter a valid number below</p>
-                            </div>
-
                         </div>
+
                     </div>
-                    <input type="submit" class="btn btn-success" value="Update">
-                    <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
-                        Delete</button>
+                    <div class="col-6">
+
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="address1" name="address1" value="{{record.address1}}" required>
+                            <label for="address1" class="form-label" required>Address 1</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="address2" name="address2" value="{{record.address2}}">
+                            <label for="address2" class="form-label">Address 2</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customerCity" name="city" value="{{record.city}}">
+                            <label for="city" class="form-label">City</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customerPostcode" name="postcode" value="{{record.postcode}}" onkeyup="autocompleteState(this.value)">
+                            <label for="customerPostcode" class="form-label">Postcode</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customerState" name="state" value="{{record.state}}">
+                            <label for="customerState" class="form-label">State/Province</label>
+                        </div>
+
+                        {%include "navigation/country_detail.html"%}
+                    </div>
+
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="remark">{{record.remark}}</textarea>
+                    <label for="floatingTextarea">Remarks</label>
+                </div>
+
             </div>
 
 
-
-            </form>
         </div>
-        {% include "navigation/footer.html" %}
-    </div>
+
+        <br>
+
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Agent Information (Optional)</h6>
+                <div class="form-floating mb-3">
+                    <input type="text" name="agent_fullname" class="form-control" id="agent_fullname" value="{{record.agent_fullname}}">
+                    <label for="ECFullname" class="form-label">Agent Full Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="agent_identity" class="form-control" id="agent_identity" value="{{record.agent_identity}}">
+                    <label for="ECFullname" class="form-label">IC/Passport</label>
+                </div>
+
+
+                <div class="form-floating mb-3">
+                    <input id="ecphone" type="tel" class="form-control" name="agent_ph" value="{{record.agent_ph}}">
+                    <p id="output1">Please enter a valid number below</p>
+                </div>
+
+            </div>
+        </div>
+        <input type="submit" class="btn btn-success" value="Update">
+        <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
+            Delete</button>
+
+
+
+
+    </form>
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+</div>
     <!-- Content End -->
 
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this record?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="#" class="btn btn-danger" id="confirmDeleteButton">Delete</a>
-                </div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" class="btn btn-danger" id="confirmDeleteButton">Delete</a>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-    </div>
+    
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -262,3 +250,4 @@
 </body>
 
 </html>
+{%endblock%}

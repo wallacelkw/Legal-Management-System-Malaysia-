@@ -1,268 +1,161 @@
-<!-- product_create_or_update.html -->
-<!DOCTYPE html>
-<html lang="en">
-{% load static %} {% include "navigation/head.html" %}
+{% extends "navigation/base.html" %}
+{% block content %}
+{% load static %}
 
-<body>
-    <div class="container-xxl position-relative bg-white d-flex p-0">
-        <!-- Sidebar Start -->
-        {% include "navigation/sidebar.html" %}
-        <!-- Sidebar End -->
-
-        <!-- Content Start -->
-        <div class="content">
-            <!-- Navbar Start -->
-            {% include "navigation/navbar.html" %}
-
-            <form enctype="multipart/form-data" class="container" method="post" id="product_form">
-                {% csrf_token %}
-                <!-- main form start --- in our case product form -->
-                <div class="card">
-                    <div class="card-header card-header-secondary">
-                        <h4 class="card-title">Add Invoice</h4>
-                    </div>
-
-                    <div class="form-group card-body">
-                        <div class="form-floating mb-3">
-                            <select class="form-select" id="case" name="case" required>
-                                    <option value={{form.case}}></option>     
-                                </select>
-                            <label for="floatingSelect">Case</label>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="short_descriptions" name="short_descriptions">
-                            <label for="identity" class="form-label">Short Description</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!--Professional Service-->
-                {% with named_formsets.prof_services as formset %} {{ formset.management_form }}
-                <script type="text/html" id="prof_services-template"> // id="inlineformsetname-template" // id='inlineformsetname-__prefix__'
-                    <tr id="prof_services-__prefix__" class=hide_all>
-                        {% for fields in formset.empty_form.hidden_fields %} {{ fields }} {% endfor %} {% for fields in formset.empty_form.visible_fields %}
-                        <td>{{fields}}</td>
+<form method="post" action="">
+    {% csrf_token %}
+    
+    <div class="card">
+        <div class="card-header card-header-secondary">
+            <h4 class="card-title">Add Invoice</h4>
+        </div>
+        <div class="columns is-centered">
+            <div class="form-floating mb-3">
+                <select class="form-select" id="case" name="case" required>
+                        {% for option in form.case %}
+                            <option value="{{ option.id }}">{{ option }}</option>
                         {% endfor %}
+                    
+                </select>
+                <label for="floatingSelect">Case</label>
+            </div>
+        
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="short_descriptions" name="short_descriptions">
+                <label for="identity" class="form-label">Short Description</label>
+            </div>
+        </div>
+      
+    </div>
+
+
+    <div class="card-header card-header-secondary">
+        <h4 class="card-title">Professional Services</h4>
+    </div>
+   
+        <table class="table is-fullwidth is-bordered is-hoverable is-striped" id="services-table">
+            <tbody>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>ADD</th>
                     </tr>
-                </script>
-                <div class="table-responsive card mt-4">
-                    <div class="card-header card-header-secondary">
-                        <h4 class="card-title">Professional Service</h4>
-                    </div>
-                    <table class="table card-header">
-                        <thead class="text-secondary">
-                            <th>Service <span style="color: red;" class="required">*</span></th>
-                            <th>Amount (RM) <span style="color: red;" class="required">*</span></th>
-                            <th>Delete</th>
-                        </thead>
-                        <tbody id="item-prof_services">
-                            <!-- id="item-inlineformsetname" -->
-                            <!-- formset non forms errors -->
-                            {% for error in formset.non_form_errors %}
-                            <span style="color: red">{{ error }}</span> {% endfor %} {% for formss in formset %} {{ formss.management_form }}
-                            <tr id="prof_services-{{ forloop.counter0 }}" class=hide_all>
-                                <!-- id="inlineformsetname-counter" -->
-                                {{ formss.id }} {% for field in formss.visible_fields %}
-                                <td>
-                                    {{field}} {% for error in field.errors %}
-                                    <span style="color: red">{{ error }}</span> {% endfor %} {% comment %} {{ field.DELETE }} {% endcomment %}
-                                </td>
-                                {% endfor %} {% comment %} for delete {% endcomment %} {% if formss.instance.pk %}
-                                <td>
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal{{formss.instance.pk}}">
-                            Delete
-                        </button>
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal{{formss.instance.pk}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel{{formss.instance.pk}}" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel{{formss.instance.pk}}">Are Your Sure You Want To Delete This?</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a href="{% url 'delete_proservice' formss.instance.pk %}" type="button" class="btn btn-primary">Yes, Delete</a>
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <br>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="total_prof_service_price" name="total_prof_service_price" readonly>
-                        <label for="identity" class="form-label">Total</label>
-                    </div>
-                    <a href="#" id="add-variant-button" class="btn btn-secondary add-prof_services">Add More</a>
-                    <!-- id="add-inlineformsetname-button" -->
-                </div>
-
-                {% endwith %}
-
-
-
-
-                <!--Reinmbursement-->
-                {% with named_formsets.services as formset %} {{ formset.management_form }}
-                <script type="text/html" id="services-template"> // id="inlineformsetname-template" // id='inlineformsetname-__prefix__'
-                    <tr id="services-__prefix__" class=hide_all>
-                        {% for fields in formset.empty_form.hidden_fields %} {{ fields }} {% endfor %} {% for fields in formset.empty_form.visible_fields %}
-                        <td>{{fields}}</td>
-                        {% endfor %}
+                    {{ prof_service_form.management_form }}
+                    {% for formss in prof_service_form %}
+                    <tr>
+                        <td>{{formss.prof_service}}</td>
+                        <td>{{formss.prof_service_price}}</td>
+                        <td>
+                            <div class="input-group-append">
+                                <button 
+                                    class="button is-small btn btn-success add-form-row" id="add_more">+</button>&nbsp;
+                                <button class="button is-small btn btn-warning remove-form-row">-</button>
+                                <!-- <input class="btn btn-outline-warning add-form-row" style="margin: 0 1em 0 1em; width: 40%"
+                                type="button" value="Add Line" id="add_more">&nbsp; -->
+                            </div>
+                        </td>
                     </tr>
-                </script>
-                <div class="table-responsive card mt-4">
-                    <div class="card-header card-header-secondary">
-                        <h4 class="card-title">Reimbursement Service</h4>
-                    </div>
-                    <table class="table card-header">
-                        <thead class="text-secondary">
-                            <th>Service <span style="color: red;" class="required">*</span></th>
-                            <th>Amount (RM) <span style="color: red;" class="required">*</span></th>
-                            <th>Delete</th>
-                        </thead>
-                        <tbody id="item-services">
-                            <!-- id="item-inlineformsetname" -->
-                            <!-- formset non forms errors -->
-                            {% for error in formset.non_form_errors %}
-                            <span style="color: red">{{ error }}</span> {% endfor %} {% for formss in formset %} {{ formss.management_form }}
-                            <tr id="services-{{ forloop.counter0 }}" class=h ide_all>
-                                <!-- id="inlineformsetname-counter" -->
-                                {{ formss.id }} {% for field in formss.visible_fields %}
-                                <td>
-                                    {{field}} {% for error in field.errors %}
-                                    <span style="color: red">{{ error }}</span> {% endfor %} {% comment %} {{ field.DELETE }} {% endcomment %}
-                                </td>
-                                {% endfor %} {% comment %} for delete {% endcomment %} {% if formss.instance.pk %}
-                                <td>
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal{{formss.instance.pk}}">
-                                        Delete
-                                    </button>
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal{{formss.instance.pk}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel{{formss.instance.pk}}" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel{{formss.instance.pk}}">Are Your Sure You Want To Delete This?</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a href="{% url 'delete_reimbur' formss.instance.pk %}" type="button" class="btn btn-primary">Yes, Delete</a>
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <br>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="total_unit_price" name="total_unit_price" readonly>
-                        <label for="identity" class="form-label">Total</label>
-                    </div>
-                    <a href="#" id="add-variant-button" class="btn btn-secondary add-services">Add More</a>
-                    <!-- id="add-inlineformsetname-button" -->
-                </div>
+            {% endfor %}
+        </table>
 
-                {% endwith %}
-                <!-- inline form for Images end -->
-                <br>
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="final_total" name="final_total" readonly>
-                    <label for="identity" class="form-label">Total Amount (RM)</label>
-                </div>
-
-
-
-                <div class="form-group">
-                    <button type="submit" class="btn btn-secondary btn-block">Submit</button>
-                </div>
-            </form>
+    <div class="row spacer">
+        <div class="col-4 offset-2">
+            <button type="submit" class="button btn btn-block is-info is-half">Create</button>
         </div>
     </div>
-</body>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+ 
+        <!-- <div class="mb-3 d-flex justify-content-center">
+            <input class="btn btn-outline-warning add-form-row" style="margin: 0 1em 0 1em; width: 40%"
+                type="button" value="Add Line" id="add_more">
+            <input class="btn btn-outline-success" style="margin: 0 1em 0 1em; width: 40%" type="submit"
+                name="create-invoice">
+        </div> -->
+    
+</form>
 
 <script>
-    $(document).ready(function() {
-        // when user clicks add more btn of variants
-        $('.add-prof_services').click(function(ev) {
-            ev.preventDefault();
-            var count = $('#item-prof_services').children().length;
-            var tmplMarkup = $('#prof_services-template').html();
-            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
-            $('#item-prof_services').append(compiledTmpl);
+ function updateElementIndex(el, prefix, ndx) {
+        var id_regex = new RegExp('(' + prefix + '-\\d+)');
+        var replacement = prefix + '-' + ndx;
+        if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+        if (el.id) el.id = el.id.replace(id_regex, replacement);
+        if (el.name) el.name = el.name.replace(id_regex, replacement);
+    }
 
-            // update form count
-            $('#id_prof_services-TOTAL_FORMS').attr('value', count + 1);
+// function cloneMore(selector, prefix) {
+//         var newElement = $(selector).clone(true);
+//         console.log(newElement);
+//         var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+//         newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function () {
+//             var name = $(this).attr('name')
+//             if (name) {
+//                 name = name.replace('-' + (total - 1) + '-', '-' + total + '-');
+//                 var id = 'id_' + name;
+//                 $(this).attr({ 'name': name, 'id': id }).val('').removeAttr('checked');
+//             }
+//         });
+//         newElement.find('label').each(function () {
+//             var forValue = $(this).attr('for');
+//             if (forValue) {
+//                 forValue = forValue.replace('-' + (total - 1) + '-', '-' + total + '-');
+//                 $(this).attr({ 'for': forValue });
+//             }
+//         });
+//         total++;
+//         $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+//         $(selector).after(newElement);
+//         // $("div.form-row.button.is-primary").not(":last").hide();
+//         // var conditionRow = $('.form-row:not(:last)');
+//         // conditionRow.find('.button.is-primary')
+//         // .hide();
+//         // .removeClass('btn-success').addClass('btn-danger')
+//         // .removeClass('add-form-row').addClass('remove-form-row')
+//         // .html('-');
+//         return false;
+//     }
+function cloneMore(selector, type) {
+        var newElement = $(selector).clone(true);
+        var total = $('#id_' + type + '-TOTAL_FORMS').val();
+        newElement.find(':input').each(function () {
+            var name = $(this).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
+            var id = 'id_' + name;
+            $(this).attr({ 'name': name, 'id': id }).val('').removeAttr('checked');
         });
-    });
-
-
-
-    $(document).ready(function() {
-        // when user clicks add more btn of variants
-        $('.add-services').click(function(ev) {
-            ev.preventDefault();
-            var count = $('#item-services').children().length;
-            var tmplMarkup = $('#services-template').html();
-            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
-            $('#item-services').append(compiledTmpl);
-
-            // update form count
-            $('#id_services-TOTAL_FORMS').attr('value', count + 1);
+        newElement.find('label').each(function () {
+            var newFor = $(this).attr('for').replace('-' + (total - 1) + '-', '-' + total + '-');
+            $(this).attr('for', newFor);
         });
-    });
-
-    function findTotal_uniPrice() {
-        var arr = document.getElementsByClassName('unit_price');
-        var tot = 0;
-        for (var i = 0; i < arr.length; i++) {
-            if (parseFloat(arr[i].value))
-                tot += parseFloat(arr[i].value);
+        total++;
+        $('#id_' + type + '-TOTAL_FORMS').val(total);
+        $(selector).after(newElement);
+    }
+    function deleteForm(prefix, btn) {
+        var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+        if (total > 1) {
+            btn.closest('.form-row').remove();
+            var forms = $('.form-row');
+            $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+            for (var i = 0, formCount = forms.length; i < formCount; i++) {
+                $(forms.get(i)).find(':input').each(function () {
+                    updateElementIndex(this, prefix, i);
+                });
+            }
         }
-        document.getElementById('total_unit_price').value = tot;
+        return false;
     }
-
-    function findTotal_proPrice() {
-        var arr = document.getElementsByClassName('prof_service_price');
-        var tot = 0;
-        for (var i = 0; i < arr.length; i++) {
-            if (parseFloat(arr[i].value))
-                tot += parseFloat(arr[i].value);
-        }
-        document.getElementById('total_prof_service_price').value = tot;
-    }
-
-    function FinalTotal() {
-        var proService = parseFloat(document.getElementById('total_prof_service_price').value);
-        var SubService = parseFloat(document.getElementById('total_unit_price').value);
-        var tot = 0;
-        tot = proService + SubService;
-        console.log("FINAL TOTAL: ", tot)
-        document.getElementById('final_total').value = tot;
-    }
-    $(document).ready(function() {
-        // Attach a mousemove event listener to the entire document
-        $(document).on('mousemove', function() {
-            // Call the FinalTotal function
-            FinalTotal();
-        });
-
-        // Rest of your code...
+    // $(document).on('click', '.add-form-row', function (e) {
+    //     e.preventDefault();
+    //     cloneMore('table tr:last', 'form');
+    //     return false;
+    // });
+    $('#add_more').click(function () {
+        cloneMore('div.table:last', 'form');
+    });
+    $(document).on('click', '.remove-form-row', function (e) {
+        e.preventDefault();
+        deleteForm('form', $(this));
+        return false;
     });
 </script>
+{% endblock %}

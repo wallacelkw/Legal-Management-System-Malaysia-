@@ -234,16 +234,20 @@ class InvoiceForm(forms.ModelForm):
     class Meta:
         model = Invoice
         exclude= ('saved_by',
-                  'paid')
-        
+                  'paid',)
         widgets = {
+
             'short_descriptions': forms.TextInput(
                 attrs={
                     'class': 'form-control'
                     }
                 ),
-
-
+            'case' : forms.Select(
+                attrs={
+                    'class' : 'form-control',
+                    'label' : 'Reference No'
+                }
+            )
         }
 
 class ReimburServiceForm(forms.ModelForm):
@@ -290,3 +294,4 @@ class ProfServiceForm(forms.ModelForm):
 # LineItemFormset = formset_factory(LineItemForm, extra=1)
 ProfServiceFormSet = inlineformset_factory(Invoice, ProfService,form = ProfServiceForm,extra=1, can_delete=True, can_delete_extra=True)
 ReimburServiceFormSet = inlineformset_factory(Invoice, ReimburService,form = ReimburServiceForm,extra=1, can_delete=True, can_delete_extra=True)
+# CaseInvoiceFormSet = inlineformset_factory(Case, Invoice,form =InvoiceForm,extra=1, can_delete=True, can_delete_extra=True)
