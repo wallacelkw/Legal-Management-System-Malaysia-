@@ -1,212 +1,196 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load static %}
-<!-- Load the static tag library -->
-{% include "navigation/head.html" %}
-
-
-<body>
-    <div class="container-xxl position-relative bg-white d-flex p-0">
-
-        <!-- Sidebar Start -->
-        {% include "navigation/sidebar.html" %}
-        <!-- Sidebar End -->
-
-
-        <!-- Content Start -->
-        <div class="content">
-            {% include "navigation/navbar.html" %}
+ {% extends "navigation/base.html" %} {% block content %} {% load static %}
 
 
 
-            <div class="container-fluid pt-4 px-4">
+<div class="container-fluid pt-4 px-4">
 
-                <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Court Type</h6>
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Court Type</h6>
 
-                        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+            <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
                             Add Court Type
                           </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="clientTable" class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">No</th>
-                                    <th scope="col">Court Type</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if records %} {% for record in records %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{ record.court_type }}</td>
-                                    <td>{{ record.court_description }}</td>
+        </div>
+        <div class="table-responsive">
+            <table id="clientTable" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Court Type</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if records %} {% for record in records %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ record.court_type }}</td>
+                        <td>{{ record.court_description }}</td>
 
-                                    <td>
-                                        <button type="submit" class="btn btn-success edit-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#updateCourtTypeModal{{record.id}}">
+                        <td>
+                            <button type="submit" class="btn btn-success edit-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#updateCourtTypeModal{{record.id}}">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
+                            <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
                                             <i class="far fa-trash-alt"></i>
                                         </button>
 
-                                </tr>
-                                {% endfor %} {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Footer Start -->
-                {% include "navigation/footer.html" %}
-                <!-- Footer End -->
-            </div>
-            <!-- Content End -->
-
-            <!-- add Modal -->
-
-            <div class="modal fade" id="addCourtTypeModal" tabindex="-1" aria-labelledby="addCourtTypeModalLabel" aria-hidden="true">
-                <form method="POST" action="{% url 'add_court_type'  %}">
-                    {% csrf_token %}
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="addCourtTypeModalLabel">Add Court Type</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="casetype" name="court_type" required>
-                                    <label for="casetype" class="form-label">Court Type</label>
-                                </div>
-
-                                <div class="form-floating">
-                                    <textarea class="form-control" name="court_description" id="floatingTextarea" style="height: 150px;"></textarea>
-                                    <label for="floatingTextarea">Comments</label>
-                                </div>
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" id="submitCheking">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-
-            <!-- update Modal -->
-            <!-- update Modal -->
-            {% for record in records %}
-            <div class="modal fade" id="updateCourtTypeModal{{ record.id }}" tabindex="-1" aria-labelledby="updateCourtTypeModalLabel{{ record.id }}" aria-hidden="true">
-                <form method="POST" action="{% url 'update_court_type' pk=record.id %}">
-                    {% csrf_token %}
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="updateCourtTypeModalLabel{{ record.id }}">Update Court Type</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="editCourtType{{ record.id }}" name="court_type" value="{{record.court_type}}" required>
-                                    <label for="editCourtType{{ record.id }}" class="form-label">Court Type</label>
-                                </div>
-
-                                <div class="form-floating">
-                                    <textarea class="form-control" name="court_description" id="editCourtDescription{{ record.id }}" style="height: 150px; ">{{record.court_description}}</textarea>
-                                    <label for="editCourtDescription{{ record.id }} ">Comments</label>
-                                </div>
-
-                            </div>
-                            <div class="modal-footer ">
-                                <button type="button " class="btn btn-secondary " data-bs-dismiss="modal ">Close</button>
-                                <button type="submit " class="btn btn-primary " id="submitCheking ">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            {% endfor %}
-
-
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete this record?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <a href="#" class="btn btn-danger" id="confirmDeleteButton">Delete</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-            <!-- Back to Top -->
-            <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
+                    </tr>
+                    {% endfor %} {% endif %}
+                </tbody>
+            </table>
         </div>
+    </div>
 
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js "></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js "></script>
-        <script src="{% static 'lib/chart/chart.min.js' %} "></script>
-        <script src="{% static 'lib/easing/easing.min.js' %} "></script>
-        <script src="{% static 'lib/waypoints/waypoints.min.js' %} "></script>
-        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %} "></script>
-        <script src="{% static 'lib/tempusdominus/js/moment.min.js' %} "></script>
-        <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %} "></script>
-        <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %} "></script>
+    <!-- Footer Start -->
+    {% include "navigation/footer.html" %}
+    <!-- Footer End -->
+</div>
+<!-- Content End -->
 
-        <!-- Template Javascript -->
-        <script src="{% static 'js/main.js' %} "></script>
+<!-- add Modal -->
+
+<div class="modal fade" id="addCourtTypeModal" tabindex="-1" aria-labelledby="addCourtTypeModalLabel" aria-hidden="true">
+    <form method="POST" action="{% url 'add_court_type'  %}">
+        {% csrf_token %}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addCourtTypeModalLabel">Add Court Type</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="casetype" name="court_type" required>
+                        <label for="casetype" class="form-label">Court Type</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <textarea class="form-control" name="court_description" id="floatingTextarea" style="height: 150px;"></textarea>
+                        <label for="floatingTextarea">Comments</label>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="submitCheking">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 
-        <script src="{% static 'js/datatables.js' %} "></script>
-        <script src="{% static 'js/datatables.min.js' %} "></script>
-        <script src="https://code.jquery.com/jquery-3.7.0.js "></script>
-        <!-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script> -->
+<!-- update Modal -->
+<!-- update Modal -->
+{% for record in records %}
+<div class="modal fade" id="updateCourtTypeModal{{ record.id }}" tabindex="-1" aria-labelledby="updateCourtTypeModalLabel{{ record.id }}" aria-hidden="true">
+    <form method="POST" action="{% url 'update_court_type' pk=record.id %}">
+        {% csrf_token %}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="updateCourtTypeModalLabel{{ record.id }}">Update Court Type</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editCourtType{{ record.id }}" name="court_type" value="{{record.court_type}}" required>
+                        <label for="editCourtType{{ record.id }}" class="form-label">Court Type</label>
+                    </div>
 
-        <script>
-            new DataTable('#clientTable', {
-                order: [
-                    [0, 'asc']
-                ],
-                "columnDefs": [{
-                    "width": "13%",
-                    "targets": 3
-                }]
-            })
-        </script>
+                    <div class="form-floating">
+                        <textarea class="form-control" name="court_description" id="editCourtDescription{{ record.id }}" style="height: 150px; ">{{record.court_description}}</textarea>
+                        <label for="editCourtDescription{{ record.id }} ">Comments</label>
+                    </div>
 
-        <script>
-            $(document).ready(function() {
-                $(".delete-button").on("click", function() {
-                    // Get the record ID from the button's data attribute
-                    var recordId = $(this).data("record-id");
+                </div>
+                <div class="modal-footer ">
+                    <button type="button " class="btn btn-secondary " data-bs-dismiss="modal ">Close</button>
+                    <button type="submit " class="btn btn-primary " id="submitCheking ">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endfor %}
 
-                    // Set the "Delete" button's href attribute to include the record ID
-                    var deleteButton = $("#confirmDeleteButton");
-                    var deleteUrl = "{% url 'delete_court_type' pk=0 %}".replace('0', recordId);
-                    deleteButton.attr("href", deleteUrl);
-                });
-            });
-        </script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" class="btn btn-danger" id="confirmDeleteButton">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Back to Top -->
+<a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
+</div>
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js "></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js "></script>
+<script src="{% static 'lib/chart/chart.min.js' %} "></script>
+<script src="{% static 'lib/easing/easing.min.js' %} "></script>
+<script src="{% static 'lib/waypoints/waypoints.min.js' %} "></script>
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %} "></script>
+<script src="{% static 'lib/tempusdominus/js/moment.min.js' %} "></script>
+<script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %} "></script>
+<script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %} "></script>
+
+<!-- Template Javascript -->
+<script src="{% static 'js/main.js' %} "></script>
+
+
+<script src="{% static 'js/datatables.js' %} "></script>
+<script src="{% static 'js/datatables.min.js' %} "></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js "></script>
+<!-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script> -->
+
+<script>
+    new DataTable('#clientTable', {
+        order: [
+            [0, 'asc']
+        ],
+        "columnDefs": [{
+            "width": "13%",
+            "targets": 3
+        }]
+    })
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(".delete-button").on("click", function() {
+            // Get the record ID from the button's data attribute
+            var recordId = $(this).data("record-id");
+
+            // Set the "Delete" button's href attribute to include the record ID
+            var deleteButton = $("#confirmDeleteButton");
+            var deleteUrl = "{% url 'delete_court_type' pk=0 %}".replace('0', recordId);
+            deleteButton.attr("href", deleteUrl);
+        });
+    });
+</script>
 
 </body>
 
 </html>
+{%endblock%}

@@ -46,12 +46,15 @@ urlpatterns = [
 
 
     # INVOICE
-    path('view_invoice/', views.InvoiceList.as_view(), name='view_invoice'),
-    path('create_invoice/', views.create_invoice, name='create_invoice'),
-    # path('create_invoice/', views.InvoiceCreate.as_view(), name='create_invoice'),
-    # path('update/<int:pk>/', views.InvoiceUpdate.as_view(), name='update_invoice'),
-    path('delete-services/<int:pk>/', views.delete_reimbur, name='delete_reimbur'),
-    path('delete-prof_services/<int:pk>/', views.delete_proservice, name='delete_proservice'),
+    path('invoices/', views.view_invoice, name='view_invoice'),
+    path('invoices/create',views.createInvoice, name='create-invoice'),
+    path('invoices/create-build/<slug:slug>',views.createBuildInvoice, name='create-build-invoice'),
+
+    #Delete an invoice
+    path('invoices/create-build/deleteProfS/<slug:slug>/', views.deleteProfService, name='delete_prof'),
+    path('invoices/create-build/deleteReimburS/<slug:slug>/', views.deleteReimburService, name='delete_reimbur'),
+    path('invoices/delete/<slug:slug>',views.deleteInvoice, name='delete-invoice'),
+
     path('pdf_invoice/<int:pk>/', views.PDFInvoiceView, name='pdf_invoice'),
 
     path('balance_sheet/', views.balance_sheet, name='balance_sheet'),

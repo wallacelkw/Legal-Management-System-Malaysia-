@@ -2,20 +2,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import (
-    SignUpForm,
-    AddRecordsForm,
-    AddClientRole,
-    AddCourtType,
-    CaseForm,
-    AddClientForm,
-    InvoiceForm,
-    ReimburServiceFormSet,
-    ReimburServiceForm,
-    ProfServiceForm,
-    ProfServiceFormSet,
-)
-from .models import ClientRole, CourtType, ClientRecord, Case, Invoice, ReimburService, ProfService
+from .forms import *
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -30,6 +18,7 @@ import folium
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 import pandas as pd
+from uuid import uuid4
 
 
 def login_user(request):
@@ -339,9 +328,6 @@ def add_client_to_db(request):
                 location = f"{city}, {postcode}, {state}"
                 geolocator = Nominatim(user_agent="myGeocoder")
                 location_info = geolocator.geocode(location)
-                print("Location Information: ", location_info )
-                print("Latitude : ",location_info.latitude)
-                print("Longtitude : ",location_info.longitude)
                 # Check if location_info is available
                 if location_info: 
                     # Bind the form to a new instance of the ClientRecord model
@@ -351,7 +337,7 @@ def add_client_to_db(request):
                     client_record.save()
 
                 messages.success(request, "Client record added successfully.")
-                return redirect("add_client_view")
+                return redirect("view_all_client")
             else:
                 messages.error(request, form.errors)
                 print("Form errors:", form.errors)
@@ -506,83 +492,11 @@ def single_case_client(request, pk):
 
 
 def view_invoice(request):
-    return render(request,"main/invoice/invoice_list.html", )
 
-# class InvoiceInline():
-#     form_class = InvoiceForm
-#     model = Invoice
-#     template_name = "main/invoice/create_invoice.html"
-
-#     def form_valid(self, form):
-#         named_formsets = self.get_named_formsets()
-#         if not all ((x.is_valid() for x in named_formsets.values())):
-#             return self.render_to_response(self.get_context_data(form=form))
-
-#         self.object = form.save()
-    
-#         for name,formset in named_formsets.items():
-#             print("NAME: ", name)
-#             print("FORMSET: ", formset)
-#             formset_save_func = getattr(self, 'formset_{0}_valid'.format(name), None)
-#             print("formset_save_func : ", formset_save_func )
-#             if formset_save_func is not None:
-#                 formset_save_func(formset)
-#             else:
-#                 formset.save()
-#         return redirect('view_invoice')
-    
-#     def formset_services_valid(self, formset):
-#         services = formset.save(commit=False)
-#         for obj in formset.deleted_objects:
-#             obj.delete()
-#         for variant in services:
-#             variant.invoice = self.object
-#             variant.save()
-
-#     def formset_prof_services_valid(self, formset):
-#         profservices = formset.save(commit=False)
-#         for obj in formset.deleted_objects:
-#             obj.delete()
-#         for variant in profservices:
-#             variant.invoice = self.object
-#             variant.save()
-
-# class InvoiceCreate(InvoiceInline, CreateView):
-
-#     def get_context_data(self, **kwargs):
-#         case = Case.objects.all()
-#         ctx = super(InvoiceCreate, self).get_context_data(**kwargs)
-#         ctx['named_formsets'] = self.get_named_formsets()
-     
-        
-#         return ctx
-#         # print("CTX: ",ctx)
-
-    
-#     def get_named_formsets(self):
-#         if self.request.method =='GET':
-#             return {
-#                 'services': ReimburServiceFormSet(prefix='services'),
-#                 'prof_services' : ProfServiceFormSet(prefix='prof_services')
-#             }
-#         else:
-#             return{
-#                 'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='services', form=ReimburServiceForm),
-#                 'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, prefix='prof_services',form=ProfServiceForm)     
-#             }
-
-# class InvoiceUpdate(InvoiceInline, UpdateView):
-
-#     def get_context_data(self, **kwargs):
-#         ctx = super(InvoiceUpdate, self).get_context_data(**kwargs)
-#         ctx['named_formsets'] = self.get_named_formsets()
-#         return ctx
-
-#     def get_named_formsets(self):
-#         return {
-#             'services': ReimburServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='services',form=ReimburServiceForm),
-#             'prof_services': ProfServiceFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='prof_services',form=ProfServiceForm),
-#         }
+    context = {}
+    invoices = Invoice.objects.all()
+    context['invoices'] = invoices
+    return render(request,"main/invoice/invoice_list.html", context)
 
 
 
@@ -591,151 +505,153 @@ def view_invoice(request):
 
 
 
-
-
-
-def delete_proservice(request, pk):
-    try:
-        image = ProfService.objects.get(id=pk)
-    except ProfService.DoesNotExist:
-        messages.success(
-            request, 'Object Does not exit'
-            )
-        return redirect('products:update_product', pk=image.product.id)
-
-    image.delete()
-    messages.success(
-            request, 'Image deleted successfully'
-            )
-    return redirect('products:update_product', pk=image.product.id)
-
-
-def delete_reimbur(request, pk):
-    try:
-        variant = ReimburService.objects.get(id=pk)
-    except ReimburService.DoesNotExist:
-        messages.success(
-            request, 'Object Does not exit'
-            )
-        return redirect('view_invoice', pk=variant.product.id)
-
-    variant.delete()
-    messages.success(
-            request, 'Variant deleted successfully'
-            )
-    return redirect('view_invoice', pk=variant.product.id)
 
 from django.urls import reverse
+
 class InvoiceList(ListView):
     model = Invoice
     template_name = "main/invoice/invoice_list.html"
     context_object_name = "invoices"
 
 
-# def create_invoice(request):
-#     if request.user.is_authenticated:
-#         form = InvoiceForm()
-#         reimbur_service_form = ReimburServiceFormSet()
-#         prof_service_form = ProfServiceFormSet()
-#         if request.method =="POST":
-#             form = InvoiceForm(request.POST)
-#             reimbur_service_form = ReimburServiceFormSet(request.POST)
-#             prof_service_form = ReimburServiceFormSet(request.POST)
-#             if form.is_valid():
-#                 invoice = Invoice.objects.create(
-#                     case = form.cleaned_data.get["case"],
-#                     short_descriptions = form.cleaned_data.get["short_descriptions"],
-#                 )
-            
-#             if reimbur_service_form.is_valid():
-#                 total_reimbur = 0   
-#                 for form in reimbur_service_form:
-#                     service = form.cleaned_data.get["service"]
-#                     unit_price = form.cleaned_data.get["unit_price"]
-#                     if service and unit_price:
-#                         total_reimbur += unit_price
-#                         ReimburService(invoice=invoice,
-#                                        service=service,
-#                                        unit_price=unit_price).save()
-                
-#                 invoice.total_unit_price = total_reimbur
-            
-#             if prof_service_form.is_valid():
-#                 total_prof = 0   
-#                 for form in prof_service_form:
-#                     prof_service = form.cleaned_data.get["prof_service"]
-#                     prof_service_price = form.cleaned_data.get["prof_service_price"]
-#                     if service and unit_price:
-#                         total_prof += unit_price
-#                         ProfService(invoice=invoice,
-#                                        prof_service=prof_service,
-#                                        prof_service_price=prof_service_price).save()
-                    
-#                 invoice.total_prof_service_price = total_prof
-#                 invoice.save()
-#                 return redirect("invoice_list")
-        
-#         context={
-#             "forms" : form,
-#             "reimbur_service_form": reimbur_service_form,
-#             "prof_service_form" : prof_service_form
-#         }
-#         return render(request, "main/invoice/create_invoice.html", context)
+@login_required
+def createInvoice(request):
+    #create a blank invoice ....
+    number = 'INV-'+str(uuid4()).split('-')[1]
+    newInvoice = Invoice.objects.create(number=number)
+    newInvoice.save()
+
+    inv = Invoice.objects.get(number=number)
+    return redirect('create-build-invoice', slug=inv.slug)
+
+
+def createBuildInvoice(request, slug):
+    #fetch that invoice
+    try:
+        invoice = Invoice.objects.get(slug=slug)
+        pass
+    except:
+        messages.error(request, 'Something went wrong')
+        return redirect('invoices')
+
+    #fetch all the products - related to this invoice
+    profService = ProfService.objects.filter(invoice=invoice)
+    reimburService = ReimburService.objects.filter(invoice=invoice)
+
+
+    context = {}
+    context['invoice'] = invoice
+    context['profService'] = profService
+    context['reimburService'] = reimburService
+    reimburdance_price = 0.0
+    prof_price = 0.0
+    for i in reimburService:
+        reimburdance_price += float(i.reimbur_service_price)
     
-def create_invoice(request):
-    if request.user.is_authenticated:
-        form = InvoiceForm()
-        reimbur_service_form = ReimburServiceFormSet()
-        prof_service_form = ProfServiceFormSet()
-        
-        if request.method == "POST":
-            form = InvoiceForm(request.POST)
-            reimbur_service_form = ReimburServiceFormSet(request.POST, prefix='reimbur')
-            prof_service_form = ProfServiceFormSet(request.POST, prefix='prof')
-            
-            if form.is_valid() and reimbur_service_form.is_valid() and prof_service_form.is_valid():
-                invoice = form.save()  # Save the main invoice
-                
-                # Process Reimbursement Services
-                total_reimbur = 0
-                for service_form in reimbur_service_form:
-                    service = service_form.cleaned_data.get("service")
-                    unit_price = service_form.cleaned_data.get("unit_price")
-                    if service and unit_price:
-                        total_reimbur += unit_price
-                        ReimburService.objects.create(
-                            invoice=invoice,
-                            service=service,
-                            unit_price=unit_price
-                        )
-                
-                invoice.total_unit_price = total_reimbur
-                
-                # Process Professional Services
-                total_prof = 0
-                for prof_form in prof_service_form:
-                    prof_service = prof_form.cleaned_data.get("prof_service")
-                    prof_service_price = prof_form.cleaned_data.get("prof_service_price")
-                    if prof_service and prof_service_price:
-                        total_prof += prof_service_price
-                        ProfService.objects.create(
-                            invoice=invoice,
-                            prof_service=prof_service,
-                            prof_service_price=prof_service_price
-                        )
-                    
-                invoice.total_prof_service_price = total_prof
-                invoice.final_total = total_prof + total_reimbur
-                invoice.save()
-                
-                return redirect("invoice_list")
-        
-        context = {
-            "form": form,
-            "reimbur_service_form": reimbur_service_form,
-            "prof_service_form": prof_service_form,
-        }
-        return render(request, "main/invoice/create_invoice.html", context)
+    for i in profService:
+        prof_price += float(i.prof_service_price)
+    # Update the invoice's total prices
+    invoice.total_reimbur_service_price = reimburdance_price
+    invoice.total_prof_service_price = prof_price
+    invoice.final_total = reimburdance_price + prof_price
+    invoice.save()
+
+
+
+    if request.method == 'GET':
+
+        prod_form  = ProfServiceForm()
+        prod_form2  = ReimburServiceForm()
+        inv_form = InvoiceForm(instance=invoice)
+        case_form = CaseSelectForm(initial_case=invoice.case)
+        context['prod_form'] = prod_form
+        context['prod_form2'] = prod_form2
+        context['inv_form'] = inv_form
+        context['case_form'] = case_form
+        return render(request, 'main/invoice/create_invoice.html', context)
+
+    if request.method == 'POST':
+        prod_form  = ProfServiceForm(request.POST)
+        prod_form2  = ReimburServiceForm(request.POST)
+        inv_form = InvoiceForm(request.POST, instance=invoice)
+        case_form = CaseSelectForm(request.POST, initial_case=invoice.case, instance=invoice)
+        print(prod_form2.is_valid())
+        print(prod_form.is_valid())
+        if prod_form2.is_valid() and 'reimbur_service'in request.POST:
+            print(prod_form2.cleaned_data['reimbur_service_price'])
+            obj = prod_form2.save(commit=False)
+            obj.invoice = invoice
+            obj.save()
+            messages.success(request, "Reimburdance Service added succesfully")
+            return redirect('create-build-invoice', slug=slug)
+        elif prod_form.is_valid() and 'prof_service' in request.POST:
+            obj2 = prod_form.save(commit=False)
+            obj2.invoice = invoice
+            obj2.save()
+            messages.success(request, "Professional Service added succesfully")
+            return redirect('create-build-invoice', slug=slug)
+        elif inv_form.is_valid and 'case' in request.POST:
+            inv_form.save()
+            messages.success(request, "Invoice updated succesfully")
+            return redirect('create-build-invoice', slug=slug)
+        elif case_form.is_valid() and 'case' in request.POST:
+            case_form.save()
+            messages.success(request, "Case added to invoice succesfully")
+            return redirect('create-build-invoice', slug=slug)
+        else:
+            context['prod_form'] = prod_form
+            context['prod_form2'] = prod_form2
+            context['inv_form'] = inv_form
+            context['case_form'] = case_form
+            messages.error(request,"Problem processing your request")
+            return render(request, 'main/invoice/create_invoice.html', context)
+    
+
+
+    return render(request, 'main/invoice/create_invoice.html', context)
+
+from django.shortcuts import get_object_or_404, redirect
+
+from django.http import HttpResponseRedirect
+
+def deleteProfService(request, slug):
+    try:
+        prof_service = ProfService.objects.get(slug=slug)
+        # Get the 'next' parameter from the request
+        next_url = request.GET.get('next', 'create-build-invoice')
+        prof_service.delete()
+        messages.success(request, 'Professional Service deleted successfully.')
+    except ProfService.DoesNotExist:
+        messages.error(request, 'Professional Service not found.')
+        next_url = 'create-build-invoice'
+
+    return HttpResponseRedirect(next_url)
+
+def deleteReimburService(request, slug):
+    try:
+        reimbur_service = ReimburService.objects.get(slug=slug)
+        # Get the 'next' parameter from the request
+        next_url = request.GET.get('next', 'create-build-invoice')
+        reimbur_service.delete()
+        messages.success(request, 'Reimbursement Service deleted successfully.')
+    except ReimburService.DoesNotExist:
+        messages.error(request, 'Reimbursement Service not found.')
+        next_url = 'create-build-invoice'
+
+    return HttpResponseRedirect(next_url)
+
+
+
+def deleteInvoice(request, slug):
+    try:
+        Invoice.objects.get(slug=slug).delete()
+    except:
+        messages.error(request, 'Something went wrong')
+        return redirect('invoices')
+
+    return redirect('invoices')
+
+
 
 
 def PDFInvoiceView(request, pk):
@@ -755,7 +671,7 @@ def PDFInvoiceView(request, pk):
     return render(request,'main/invoice/pdf_view.html', context)
 
 
-def add_client_view(request, ):
+def add_client_view(request ):
     return render(request, "main/client/add_client.html")
 
 

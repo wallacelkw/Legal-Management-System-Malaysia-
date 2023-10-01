@@ -1,12 +1,17 @@
-{% extends "navigation/base.html" %}
-{% block content %}
-{% load static %}
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
 <form method="POST" action="{% url 'update_case_client' pk=record.id%}">
     {% csrf_token %}
     <br>
     <div class="col-sm-12 col-xl-12">
         <div class="bg-light rounded h-100 p-4">
-            <h6 class="mb-4">Client</h6>
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="mb-0">Cases</h3>
+                <a href="{%url 'list_case' %}">
+                    <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+                    Go Back
+                    </button>
+                </a>
+            </div>
             <div class="row g-2" id="formContainer">
                 <div class="col-6">
                     <div class="form-floating mb-3">
@@ -63,7 +68,7 @@
                         <label for="floatingSelect">Case Type</label>
 
                     </div>
-                    
+
                 </div>
                 <div class="col-6">
                     <div class="form-floating mb-3">
@@ -122,7 +127,7 @@
     <button type="submit" class="btn btn-primary w-30 m-2">Save</button>
 </form>
 
-          
+
 {% if case_form.errors or case_client_form.errors %}
 <div class="modal show" id="mymodal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -192,5 +197,6 @@
         }
     }
 </script>
+
 </html>
 {%endblock%}

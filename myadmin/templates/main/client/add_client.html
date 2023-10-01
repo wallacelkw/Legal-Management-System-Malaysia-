@@ -1,141 +1,144 @@
-{% extends "navigation/base.html" %}
-
-
-{% block content %}
-{% load static %}
-            <div class="container-fluid pt-4 px-4">
-                <form id="customerform" class="customerform" method="POST" action="{% url 'add_client_to_db' %}">
-                    {% csrf_token %}
-                    <div class="col-xl-12 col-xl-12">
-                        <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Client Information</h6>
-                            <div class="row g-2" id="formContainer">
-                                <input type="hidden" name="created_by" value="{{ request.user.id }}">
-                                <div class="col-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="full_name" name="full_name" required>
-                                        <label for="full_name" class="form-label">Full Name</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="identity" name="identity" required>
-                                        <label for="identity" class="form-label">IC/Passport</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input id="phone" type="tel" class="form-control" name="phone_number" required>
-                                        <p id="output">Please enter a valid number below</p>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <select class="form-select" id="gender" name="gender" required>
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
+<div class="container-fluid pt-4 px-4">
+    <form id="customerform" class="customerform" method="POST" action="{% url 'add_client_to_db' %}">
+        {% csrf_token %}
+        <div class="col-xl-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="mb-0">Client Information</h3>
+                    <a href="{%url 'view_all_client' %}">
+                        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+                            Go Back
+                            </button>
+                    </a>
+                </div>
+                <div class="row g-2" id="formContainer">
+                    <input type="hidden" name="created_by" value="{{ request.user.id }}">
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="full_name" name="full_name" required>
+                            <label for="full_name" class="form-label">Full Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="identity" name="identity" required>
+                            <label for="identity" class="form-label">IC/Passport</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input id="phone" type="tel" class="form-control" name="phone_number" required>
+                            <p id="output">Please enter a valid number below</p>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="gender" name="gender" required>
                                                     <option value="male">Male</option>
                                                     <option value="female">Female</option>                        
                                                 </select>
-                                        <label for="floatingSelect">Gender</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp">
-                                        <label for="email" class="form-label">Email address</label>
-                                        <div id="email" class="form-text">We'll never share your email with anyone else.
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-6">
-
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="address1" name="address1" required>
-                                        <label for="address1" class="form-label" required>Address 1</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="address2" name="address2">
-                                        <label for="address2" class="form-label">Address 2</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="customerCity" name="city">
-                                        <label for="city" class="form-label">City</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="customerPostcode" name="postcode" onkeyup="autocompleteState(this.value)">
-                                        <label for="customerPostcode" class="form-label">Postcode</label>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="customerState" name="state">
-                                        <label for="customerState" class="form-label">State/Province</label>
-                                    </div>
-
-                                    {%include "navigation/country_detail.html"%}
-                                </div>
-
-                            </div>
-                            <div class="form-floating">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="remark"></textarea>
-                                <label for="floatingTextarea">Remarks</label>
-                            </div>
-
+                            <label for="floatingSelect">Gender</label>
                         </div>
 
-
-                    </div>
-
-                    <br>
-
-                    <div class="col-sm-12 col-xl-12">
-                        <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Agent Information (Optional)</h6>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="agent_fullname" class="form-control" id="agent_fullname">
-                                <label for="ECFullname" class="form-label">Agent Full Name</label>
+                        <div class="form-floating mb-3">
+                            <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp">
+                            <label for="email" class="form-label">Email address</label>
+                            <div id="email" class="form-text">We'll never share your email with anyone else.
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" name="agent_identity" class="form-control" id="agent_identity">
-                                <label for="ECFullname" class="form-label">IC/Passport</label>
-                            </div>
-
-
-                            <div class="form-floating mb-3">
-                                <input id="ecphone" type="tel" class="form-control" name="agent_ph">
-                                <p id="output1">Please enter a valid number below</p>
-                            </div>
-
                         </div>
+
+                    </div>
+                    <div class="col-6">
+
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="address1" name="address1" required>
+                            <label for="address1" class="form-label" required>Address 1</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="address2" name="address2">
+                            <label for="address2" class="form-label">Address 2</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customerCity" name="city">
+                            <label for="city" class="form-label">City</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customerPostcode" name="postcode" onkeyup="autocompleteState(this.value)">
+                            <label for="customerPostcode" class="form-label">Postcode</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customerState" name="state">
+                            <label for="customerState" class="form-label">State/Province</label>
+                        </div>
+
+                        {%include "navigation/country_detail.html"%}
                     </div>
 
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="remark"></textarea>
+                    <label for="floatingTextarea">Remarks</label>
+                </div>
+
             </div>
-            <br>
-            <div class="m-n2">
-                <button class="btn btn-outline-primary w-100 m-2" type="submit">Submit</button>
-            </div>
-            </form>
+
+
         </div>
-        {% include "navigation/footer.html" %}
-    </div>
-    <!-- Content End -->
 
-    {% if form.errors %}
-    <div class="modal show" id="mymodal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Error</h5>
-                    <button type="button" class="close" data-dismiss="modal" id="closeModalButton1" aria-label="Close">
+        <br>
+
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Agent Information (Optional)</h6>
+                <div class="form-floating mb-3">
+                    <input type="text" name="agent_fullname" class="form-control" id="agent_fullname">
+                    <label for="ECFullname" class="form-label">Agent Full Name</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" name="agent_identity" class="form-control" id="agent_identity">
+                    <label for="ECFullname" class="form-label">IC/Passport</label>
+                </div>
+
+
+                <div class="form-floating mb-3">
+                    <input id="ecphone" type="tel" class="form-control" name="agent_ph">
+                    <p id="output1">Please enter a valid number below</p>
+                </div>
+
+            </div>
+        </div>
+
+</div>
+<br>
+<div class="m-n2">
+    <button class="btn btn-outline-primary w-100 m-2" type="submit">Submit</button>
+</div>
+</form>
+</div>
+{% include "navigation/footer.html" %}
+</div>
+<!-- Content End -->
+
+{% if form.errors %}
+<div class="modal show" id="mymodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" id="closeModalButton1" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                </div>
-                <div class="modal-body">
-                    {{ form.errors }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeModalButton2" data-dismiss="modal">Close</button>
-                </div>
+            </div>
+            <div class="modal-body">
+                {{ form.errors }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeModalButton2" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-    {% endif %}
+</div>
+{% endif %}
 
 
 
@@ -143,98 +146,99 @@
 
 
 
-    <script>
-        function autocompleteState(postcode) {
-            fetch('{% static "postcode1.csv" %}')
-                .then(response => response.text())
-                .then(csvData => {
-                    const lines = csvData.split('\n');
-                    const countrySelect = document.getElementById('customerCountry');
-                    let malaysiaFound = false;
+<script>
+    function autocompleteState(postcode) {
+        fetch('{% static "postcode1.csv" %}')
+            .then(response => response.text())
+            .then(csvData => {
+                const lines = csvData.split('\n');
+                const countrySelect = document.getElementById('customerCountry');
+                let malaysiaFound = false;
 
-                    for (const line of lines) {
-                        const [city, csvPostcode, state] = line.split(',');
+                for (const line of lines) {
+                    const [city, csvPostcode, state] = line.split(',');
 
-                        if (csvPostcode === postcode) {
-                            malaysiaFound = true;
+                    if (csvPostcode === postcode) {
+                        malaysiaFound = true;
 
-                            document.getElementById('customerState').value = state;
-                            document.getElementById('customerCity').value = city;
+                        document.getElementById('customerState').value = state;
+                        document.getElementById('customerCity').value = city;
+                        break;
+                    }
+                }
+
+                if (malaysiaFound) {
+                    for (let j = 0; j < countrySelect.options.length; j++) {
+                        if (countrySelect.options[j].text === 'Malaysia') {
+                            countrySelect.selectedIndex = j;
                             break;
                         }
                     }
-
-                    if (malaysiaFound) {
-                        for (let j = 0; j < countrySelect.options.length; j++) {
-                            if (countrySelect.options[j].text === 'Malaysia') {
-                                countrySelect.selectedIndex = j;
-                                break;
-                            }
-                        }
-                    } else {
-                        document.getElementById('customerCountry').selectedIndex = 0;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching CSV data:', error);
-                });
-        }
-    </script>
-
-    <!-- Phone Number -->
-    <!-- <script src="{%static 'js/intlTelInput.min.js'%}"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
-
-    <script>
-        const validatePhoneNumber = (inputId, outputId) => {
-            const input = document.querySelector(`#${inputId}`);
-            const output = document.querySelector(`#${outputId}`);
-
-            const iti = window.intlTelInput(input, {
-                nationalMode: true,
-                initialCountry: "MY",
-                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-            });
-
-            const handleChange = () => {
-                let text;
-                if (input.value) {
-                    text = iti.isValidNumber() ?
-                        "Valid number! Full international format: " + iti.getNumber() :
-                        "Invalid number - please try again";
                 } else {
-                    text = "Please enter a valid number below";
+                    document.getElementById('customerCountry').selectedIndex = 0;
                 }
-                const textNode = document.createTextNode(text);
-                output.innerHTML = "";
-                output.appendChild(textNode);
-            };
+            })
+            .catch(error => {
+                console.error('Error fetching CSV data:', error);
+            });
+    }
+</script>
 
-            input.addEventListener('change', handleChange);
-            input.addEventListener('keyup', handleChange);
+<!-- Phone Number -->
+<!-- <script src="{%static 'js/intlTelInput.min.js'%}"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+
+<script>
+    const validatePhoneNumber = (inputId, outputId) => {
+        const input = document.querySelector(`#${inputId}`);
+        const output = document.querySelector(`#${outputId}`);
+
+        const iti = window.intlTelInput(input, {
+            nationalMode: true,
+            initialCountry: "MY",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+        });
+
+        const handleChange = () => {
+            let text;
+            if (input.value) {
+                text = iti.isValidNumber() ?
+                    "Valid number! Full international format: " + iti.getNumber() :
+                    "Invalid number - please try again";
+            } else {
+                text = "Please enter a valid number below";
+            }
+            const textNode = document.createTextNode(text);
+            output.innerHTML = "";
+            output.appendChild(textNode);
         };
 
-        // Call the function for each phone number input and output pair
-        validatePhoneNumber("phone", "output");
-        validatePhoneNumber("ecphone", "output1");
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('.modal').modal('show');
+        input.addEventListener('change', handleChange);
+        input.addEventListener('keyup', handleChange);
+    };
 
-            $('#closeModalButton1').click(function() {
-                $('.modal').modal('hide');
+    // Call the function for each phone number input and output pair
+    validatePhoneNumber("phone", "output");
+    validatePhoneNumber("ecphone", "output1");
+</script>
+<script>
+    $(document).ready(function() {
+        $('.modal').modal('show');
 
-                console.log("Close button clicked");
-            });
-            $('#closeModalButton2').click(function() {
-                $('.modal').modal('hide');
+        $('#closeModalButton1').click(function() {
+            $('.modal').modal('hide');
 
-                console.log("Close button clicked");
-            });
+            console.log("Close button clicked");
         });
-    </script>
+        $('#closeModalButton2').click(function() {
+            $('.modal').modal('hide');
+
+            console.log("Close button clicked");
+        });
+    });
+</script>
 </body>
+
 </html>
 
 {%endblock%}

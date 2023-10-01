@@ -1,74 +1,61 @@
-<!-- product_create_or_update.html -->
-<!DOCTYPE html>
-<html lang="en">
-{% load static %} {% include "navigation/head.html" %}
-<!-- Template Stylesheet -->
-<link rel="stylesheet" href="{% static 'css/static.css' %}">
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
 
-<body>
-    <div class="container-xxl position-relative bg-white d-flex p-0">
-        <!-- Sidebar Start -->
-        {% include "navigation/sidebar.html" %}
-        <!-- Sidebar End -->
-        <!-- Content Start -->
-        <div class="content">
-            {% include "navigation/navbar.html" %}
-            <!-- Navbar Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div class="container title">
-                            <h3><strong>LEE CHEW & CO</strong></h3>
-                            <h6><strong>Advocates & Solicitors</strong></h6>
-                            <h6>No.13-1, Jalan Cetak 16/3, Seksyen 16,</h6>
-                            <h6>40200 Shah Alam, Selangor Darul Ehsan.</h6>
-                            <div class="tel_info">
-                                <h6>Tel: +603-5523 3513</h6>
-                                <h6>Fax: +603-5523 8513</h6>
-                            </div>
-                        </div>
-                    </div>
-
-                 
-
-
-                 
-                  
-    
-                    <div class="table-responsive">
-                        <table id="caseTable" class="table table-striped table-hover invoice_table">
-                            <thead>
-                                <tr>
-                                    <th colspan="2"><strong>Balance Sheet</strong></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record in invoice %}
-                                <tr>
-                                    <td>{{record.case}}</td>
-                                    <td>RM {{record.final_total}}</td>
-                                    <td></td>
-                                </tr>
-                                {% endfor %}
-                              
-                            </tbody>
-                           
-                            <!--TOTAL AMOUNT-->
-                            <thead>
-                                <tr>
-                                    <th colspan=" 2 "><strong>Total</strong></th>
-                                    <th>RM {{total_price}}</th>
-                                </tr>
-                            </thead>
-
-                        </table>
-                    </div>
-
+<!-- Navbar Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="container title">
+                <h3><strong>LEE CHEW & CO</strong></h3>
+                <h6><strong>Advocates & Solicitors</strong></h6>
+                <h6>No.13-1, Jalan Cetak 16/3, Seksyen 16,</h6>
+                <h6>40200 Shah Alam, Selangor Darul Ehsan.</h6>
+                <div class="tel_info">
+                    <h6>Tel: +603-5523 3513</h6>
+                    <h6>Fax: +603-5523 8513</h6>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
+        <div class="table-responsive">
+            <table id="caseTable" class="table table-striped table-hover invoice_table">
+                <thead>
+                    <tr>
+                        <th colspan="2"><strong>Balance Sheet</strong></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in invoice %}
+                    <tr>
+                        <td>{{record.case}}</td>
+                        <td>RM {{record.final_total}}</td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+                <!--TOTAL AMOUNT-->
+                <thead>
+                    <tr>
+                        <th colspan=" 2 "><strong>Total</strong></th>
+                        <th>RM {{total_price}}</th>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+
     </div>
+</div>
+</div>
+</div>
 
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js " integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN " crossorigin="anonymous "></script>
@@ -98,3 +85,4 @@
         document.getElementById('final_total').value = tot;
     }
 </script>
+{%endblock%}

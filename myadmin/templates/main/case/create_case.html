@@ -1,156 +1,161 @@
-{% extends "navigation/base.html" %}
-{% block content %}
-{% load static %}
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
 
 <body>
 
-<form method="POST" action="{%url 'create_case_detail' %}">
-    {% csrf_token %}
-    <br>
-    <div class="col-sm-12 col-xl-12">
-        <div class="bg-light rounded h-100 p-4">
-            <h6 class="mb-4">Client</h6>
-            <div class="row g-2" id="formContainer">
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="clientName" name="clients" required>
+    <form method="POST" action="{%url 'create_case_detail' %}">
+        {% csrf_token %}
+        <br>
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="mb-0">Cases</h3>
+                    <a href="{%url 'list_case' %}">
+                        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+                        Go Back
+                        </button>
+                    </a>
+                </div>
+                <div class="row g-2" id="formContainer">
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="clientName" name="clients" required>
                             <option value="" selected>Please Select Client</option>
                         {% if records %} {% for record in records %}
                             <option value="{{record.id}}">{{record.full_name}}</option>
                             {% endfor %} {% endif %}
                         </select>
-                        <label for="floatingSelect">Client</label>
+                            <label for="floatingSelect">Client</label>
 
+                        </div>
                     </div>
-                </div>
-                <div class="col-6">
+                    <div class="col-6">
 
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="client_role" name="client_role" required>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="client_role" name="client_role" required>
                             <option value="" selected>Please Select Client Role</option>
                                     {% if caseInfo %} {% for case in caseInfo %}
                                 <option value="{{case.id}}">{{case.client_role}}</option>
                                 {% endfor %} {% endif %}
                                 </select>
-                        <label for="floatingSelect">Client Role</label>
+                            <label for="floatingSelect">Client Role</label>
+
+                        </div>
 
                     </div>
-
-                </div>
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="respondent_name" name="respondent_name" >
-                        <label for="first_name" class="form-label">Respondent Name (Optional)</label>
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="respondent_name" name="respondent_name">
+                            <label for="first_name" class="form-label">Respondent Name (Optional)</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate">
+                            <label for="first_name" class="form-label">Respondent Advocate (Optional)</label>
+                        </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="respondent_advocate" name="respondent_advocate" >
-                        <label for="first_name" class="form-label">Respondent Advocate (Optional)</label>
-                    </div>
-                </div>
-            </div>
-            <h6 class="mb-4">Cases</h6>
-            <div class="row g-2" id="formContainer">
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <input type="text" name="ref_no" class="form-control" id="ref_no" required>
-                        <label for="ref_no" class="form-label">Reference No</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="case_type" name="case_type" required>
+                <h6 class="mb-4">Cases</h6>
+                <div class="row g-2" id="formContainer">
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="ref_no" class="form-control" id="ref_no" required>
+                            <label for="ref_no" class="form-label">Reference No</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="case_type" name="case_type" required>
                             <option value="" selected>Please Select Stage</option>
                             <option value="MISC">MISC</option>
                             <option value="CRI">CRI</option>
                             <option value="LIT">LIT</option>
                             <option value="CONV">CONV</option>
                         </select>
-                        <label for="floatingSelect">Case Type</label>
+                            <label for="floatingSelect">Case Type</label>
+
+                        </div>
 
                     </div>
-                    
-                </div>
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="stage_of_case" name="sense_of_urgent" required>
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="stage_of_case" name="sense_of_urgent" required>
                 <option value="" selected>Please Select Level</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option> 
                     </select>
-                        <label for="floatingSelect">Level of Urgency</label>
-                    </div>
-                    <div class="form-floating">
-                        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="case_description"></textarea>
-                        <label for="floatingTextarea">Remarks</label>
-                    </div>
+                            <label for="floatingSelect">Level of Urgency</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="case_description"></textarea>
+                            <label for="floatingTextarea">Remarks</label>
+                        </div>
 
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <br>
-    <div class="col-sm-12 col-xl-12">
-        <div class="bg-light rounded h-100 p-4">
-            <h6 class="mb-4">Court (Optional)</h6>
-            <div class="row g-2" id="formContainer">
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <input type="text" name="court_no" class="form-control" id="court_no">
-                        <label for="court_no" class="form-label">Court No</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="case_type" name="court_type">
+        <br>
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Court (Optional)</h6>
+                <div class="row g-2" id="formContainer">
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="court_no" class="form-control" id="court_no">
+                            <label for="court_no" class="form-label">Court No</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="case_type" name="court_type">
                             <option value="" selected>Please Select Court Type</option>
                                 {% if courtInfo %} {% for court in courtInfo %}
                             <option value="{{court.id}}">{{court.court_type}}</option>
                             {% endfor %} {% endif %}
                         </select>
-                        <label for="floatingSelect">Court Type</label>
+                            <label for="floatingSelect">Court Type</label>
+
+                        </div>
 
                     </div>
+                    <div class="col-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="judge_name" name="judge_name">
+                            <label for="judge_name" class="form-label">Judge Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="court_remark"></textarea>
+                            <label for="floatingTextarea">Remarks</label>
+                        </div>
 
-                </div>
-                <div class="col-6">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="judge_name" name="judge_name">
-                        <label for="judge_name" class="form-label">Judge Name</label>
                     </div>
-                    <div class="form-floating">
-                        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 150px;" name="court_remark"></textarea>
-                        <label for="floatingTextarea">Remarks</label>
-                    </div>
-
                 </div>
             </div>
         </div>
-    </div>
-    <button type="submit" class="btn btn-primary w-30 m-2">Save</button>
-</form>
+        <button type="submit" class="btn btn-primary w-30 m-2">Save</button>
+    </form>
 
-         
-<!-- Content End -->
-{% if case_form.errors or case_client_form.errors %}
-<div class="modal show" id="mymodal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Error</h5>
-                <button type="button" class="close" data-dismiss="modal" id="closeModalButton1" aria-label="Close">
+
+    <!-- Content End -->
+    {% if case_form.errors or case_client_form.errors %}
+    <div class="modal show" id="mymodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="closeModalButton1" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
-            <div class="modal-body">
-                Case: {{ case_form.errors }}
-                <br> Case Client : {{ case_client_form.errors }}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="closeModalButton2" data-dismiss="modal">Close</button>
+                </div>
+                <div class="modal-body">
+                    Case: {{ case_form.errors }}
+                    <br> Case Client : {{ case_client_form.errors }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeModalButton2" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% endif %}
+    {% endif %}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const addMoreButton = document.getElementById("addMoreButton");
@@ -200,5 +205,6 @@
         }
     </script>
 </body>
+
 </html>
 {%endblock%}

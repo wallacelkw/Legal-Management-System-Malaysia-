@@ -235,6 +235,8 @@ class InvoiceForm(forms.ModelForm):
         model = Invoice
         exclude= ('saved_by',
                   'paid',)
+        
+        fields = ["case", "short_descriptions"]
         widgets = {
 
             'short_descriptions': forms.TextInput(
@@ -254,7 +256,7 @@ class ReimburServiceForm(forms.ModelForm):
 
     class Meta:
         model = ReimburService
-        fields = '__all__'
+        fields = ['reimbur_service', 'reimbur_service_price']
         widgets = {
             'service': forms.TextInput(
                 attrs={
@@ -275,7 +277,7 @@ class ProfServiceForm(forms.ModelForm):
 
     class Meta:
         model = ProfService
-        fields = '__all__'
+        fields = ['prof_service', 'prof_service_price']
         widgets = {
             'prof_service': forms.TextInput(
                 attrs={
@@ -294,4 +296,42 @@ class ProfServiceForm(forms.ModelForm):
 # LineItemFormset = formset_factory(LineItemForm, extra=1)
 ProfServiceFormSet = inlineformset_factory(Invoice, ProfService,form = ProfServiceForm,extra=1, can_delete=True, can_delete_extra=True)
 ReimburServiceFormSet = inlineformset_factory(Invoice, ReimburService,form = ReimburServiceForm,extra=1, can_delete=True, can_delete_extra=True)
-# CaseInvoiceFormSet = inlineformset_factory(Case, Invoice,form =InvoiceForm,extra=1, can_delete=True, can_delete_extra=True)
+# CaseInvoiceFormSet = inlineformset_factory(Case, Invoice,form =InvoiceForm,extra=1, can_delete=True, can_delet_extra=True)
+
+
+
+
+class CaseSelectForm(forms.ModelForm):
+
+    def __init__(self,*args,**kwargs):
+        self.initial_case = kwargs.pop('initial_case')
+        self.CASE_LIST = Case.objects.all()
+        self.CASE_CHOICES = [('-----', '--Select a Case--')]
+
+
+        for case in self.CASE_LIST:
+            d_t = (case.ref_no, case.ref_no)
+            self.CASE_CHOICES.append(d_t)
+
+
+        super(CaseSelectForm,self).__init__(*args,**kwargs)
+
+        self.fields['ref_no'] = forms.ChoiceField(
+                                        label='Choose a related Case',
+                                        choices = self.CASE_CHOICES,
+                                        widget=forms.Select(attrs={'class': 'form-control'}),)
+
+    class Meta:
+        model = Case
+        fields = ['ref_no']
+
+
+    def clean_case(self):
+        c_case = self.cleaned_data['ref_no']
+        if c_case == '-----':
+            return self.initial_case
+        else:
+            return Case.objects.get(uniqueId=c_case)
+
+
+
