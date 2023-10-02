@@ -159,14 +159,14 @@ class Invoice(models.Model):
     invoice_date_time = models.DateField(auto_now_add=True, null=True, blank=True)
     final_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     paid  = models.BooleanField(default=False, null=True, blank=True)
-    short_descriptions = models.TextField(max_length=100 , null=True, blank=True)
+    short_descriptions = models.TextField(max_length=1000, null=True, blank=True)
     total_reimbur_service_price = models.DecimalField(max_digits=100, decimal_places=2, null=True, blank=True)
     total_prof_service_price = models.DecimalField(max_digits=100, decimal_places=2, null=True, blank=True)
 
     number = models.CharField(null=True, blank=True, max_length=100)
 
     #RELATED fields
-    case = models.ForeignKey(Case, blank=True, null=True, on_delete=models.SET_NULL)
+    case = models.OneToOneField(Case, blank=True, null=True, on_delete=models.SET_NULL)
 
     #Utility fields
     uniqueId = models.CharField(null=True, blank=True, max_length=100)

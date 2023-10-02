@@ -29,3 +29,7 @@
 .invoice_table {
     text-align: left;
 }
+
+.container-xxl.signature {
+    display: flex;
+}

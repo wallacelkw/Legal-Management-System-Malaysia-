@@ -49,17 +49,13 @@
             <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
                 <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
                     <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
+                        <img src="{% static 'images/logo.png' %}" alt="" style="width: 100%; height: 150%;">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h3>Log In</h3>
                         </div>
-                        {% block content %}
+
                         <!-- Display error messages if any -->
-                        {% if messages %} {% for msg in messages %}
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>Hey! </strong>{{msg}}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        {% endfor %} {% endif %} {% endblock %}
+
                         <form method="post">
                             {% csrf_token %}
                             <div class="form-floating mb-3">

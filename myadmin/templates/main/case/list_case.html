@@ -1,6 +1,4 @@
-{% extends "navigation/base.html" %}
-{% block content %}
-{% load static %}
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
 
 <div class="container-fluid pt-4 px-4">
 
@@ -18,8 +16,9 @@
             <table id="caseTable" class="table table-striped table-hover">
                 <thead>
                     <tr>
+                        <th scope="col">Case No</th>
                         <th scope="col">Client</th>
-                        <th scope="col">Reference No</th>
+
                         <th scope="col">Case Type</th>
                         <th scope="col">Urgent Level</th>
                         <th scope="col">Court No</th>
@@ -31,8 +30,9 @@
                 <tbody>
                     {% if records %} {% for record in records %}
                     <tr>
-                        <td>{{ record.clients }}</td>
                         <td>{{ record.ref_no }}</td>
+                        <td>{{ record.clients }}</td>
+
                         <td>{{ record.case_type }}</td>
                         <td>{{ record.sense_of_urgent }}</td>
                         <td>{{ record.court_no }}</td>
@@ -52,18 +52,20 @@
                             <button type="button" class="btn btn-info view-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#viewConfirmationModal{{ record.id }}">
                                 <i class="far fa-eye"></i>
                             </button>
+
+
                     </tr>
                     {% endfor %} {% endif %}
                 </tbody>
             </table>
         </div>
     </div>
-        <!-- Back to Top -->
+    <!-- Back to Top -->
     <a href="# " class="btn btn-lg btn-primary btn-lg-square back-to-top "><i class="bi bi-arrow-up "></i></a>
 </div>
 
-       
-            
+
+
 <!-- Content End -->
 <!-- View Checking Modal -->
 {% for record in records %}
@@ -109,47 +111,45 @@
     </div>
 </div>
 
-           
-
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js "></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js "></script>
-        <script src="{% static 'lib/chart/chart.min.js' %} "></script>
-        <script src="{% static 'lib/easing/easing.min.js' %} "></script>
-        <script src="{% static 'lib/waypoints/waypoints.min.js' %} "></script>
-        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %} "></script>
-        <script src="{% static 'lib/tempusdominus/js/moment.min.js' %} "></script>
-        <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %} "></script>
-        <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %} "></script>
-
-        <!-- Template Javascript -->
-        <script src="{% static 'js/main.js' %} "></script>
 
 
-        <script src="{% static 'js/datatables.js' %} "></script>
-        <script src="{% static 'js/datatables.min.js' %} "></script>
-        <script src="https://code.jquery.com/jquery-3.7.0.js "></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script>
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js "></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js "></script>
+<script src="{% static 'lib/chart/chart.min.js' %} "></script>
+<script src="{% static 'lib/easing/easing.min.js' %} "></script>
+<script src="{% static 'lib/waypoints/waypoints.min.js' %} "></script>
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %} "></script>
+<script src="{% static 'lib/tempusdominus/js/moment.min.js' %} "></script>
+<script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %} "></script>
+<script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %} "></script>
+
+<!-- Template Javascript -->
+<script src="{% static 'js/main.js' %} "></script>
 
 
-        <script>
-            new DataTable('#caseTable', {})
-        </script>
-        <script>
-            $(document).ready(function() {
-                $(".delete-button").on("click", function() {
-                    // Get the record ID from the button's data attribute
-                    var recordId = $(this).data("record-id");
+<script src="{% static 'js/datatables.js' %} "></script>
+<script src="{% static 'js/datatables.min.js' %} "></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js "></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js "></script>
 
-                    // Set the "Delete" button's href attribute to include the record ID
-                    var deleteButton = $("#confirmDeleteButton");
-                    var deleteUrl = "{% url 'delete_case_client' pk=0 %}".replace('0', recordId);
-                    deleteButton.attr("href", deleteUrl);
-                });
-            });
 
-        
-        </script>
+<script>
+    new DataTable('#caseTable', {})
+</script>
+<script>
+    $(document).ready(function() {
+        $(".delete-button").on("click", function() {
+            // Get the record ID from the button's data attribute
+            var recordId = $(this).data("record-id");
+
+            // Set the "Delete" button's href attribute to include the record ID
+            var deleteButton = $("#confirmDeleteButton");
+            var deleteUrl = "{% url 'delete_case_client' pk=0 %}".replace('0', recordId);
+            deleteButton.attr("href", deleteUrl);
+        });
+    });
+</script>
 </body>
 
 </html>

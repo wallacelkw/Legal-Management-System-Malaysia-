@@ -19,6 +19,7 @@ from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 import pandas as pd
 from uuid import uuid4
+from .process import *
 
 
 def login_user(request):
@@ -439,7 +440,8 @@ def create_case_detail(request):
                 case = case_form.save()
                 return redirect("list_case")
             else:
-                print("Case Form errors:", case_form.errors)
+                messages.error(request,case_form.errors)
+                # print("Case Form errors:", case_form.errors)
          
         else:
             case_form = CaseForm()
@@ -490,28 +492,23 @@ def single_case_client(request, pk):
         return redirect("list_case", {
                                       "record": current_record})
 
-
+from django.db.models import Q
 def view_invoice(request):
-
     context = {}
     invoices = Invoice.objects.all()
+    reimburService = ReimburService.objects.all()
+    for brand in Invoice.objects.all():
+        if brand.case == None:
+            invoice_to_delete = Invoice.objects.get(pk = brand.pk)
+            invoice_to_delete.delete()
+
     context['invoices'] = invoices
     return render(request,"main/invoice/invoice_list.html", context)
 
 
-
-
-
-
-
-
-
 from django.urls import reverse
 
-class InvoiceList(ListView):
-    model = Invoice
-    template_name = "main/invoice/invoice_list.html"
-    context_object_name = "invoices"
+
 
 
 @login_required
@@ -550,33 +547,31 @@ def createBuildInvoice(request, slug):
     
     for i in profService:
         prof_price += float(i.prof_service_price)
-    # Update the invoice's total prices
     invoice.total_reimbur_service_price = reimburdance_price
     invoice.total_prof_service_price = prof_price
     invoice.final_total = reimburdance_price + prof_price
     invoice.save()
 
-
-
     if request.method == 'GET':
-
         prod_form  = ProfServiceForm()
         prod_form2  = ReimburServiceForm()
         inv_form = InvoiceForm(instance=invoice)
-        case_form = CaseSelectForm(initial_case=invoice.case)
         context['prod_form'] = prod_form
         context['prod_form2'] = prod_form2
         context['inv_form'] = inv_form
-        context['case_form'] = case_form
+
+
+
         return render(request, 'main/invoice/create_invoice.html', context)
 
     if request.method == 'POST':
         prod_form  = ProfServiceForm(request.POST)
         prod_form2  = ReimburServiceForm(request.POST)
         inv_form = InvoiceForm(request.POST, instance=invoice)
-        case_form = CaseSelectForm(request.POST, initial_case=invoice.case, instance=invoice)
-        print(prod_form2.is_valid())
-        print(prod_form.is_valid())
+        
+
+
+        print("INV FORM : ", inv_form.is_valid())
         if prod_form2.is_valid() and 'reimbur_service'in request.POST:
             print(prod_form2.cleaned_data['reimbur_service_price'])
             obj = prod_form2.save(commit=False)
@@ -590,25 +585,188 @@ def createBuildInvoice(request, slug):
             obj2.save()
             messages.success(request, "Professional Service added succesfully")
             return redirect('create-build-invoice', slug=slug)
-        elif inv_form.is_valid and 'case' in request.POST:
+        elif inv_form.is_valid() and 'case' in request.POST:
             inv_form.save()
             messages.success(request, "Invoice updated succesfully")
             return redirect('create-build-invoice', slug=slug)
-        elif case_form.is_valid() and 'case' in request.POST:
-            case_form.save()
-            messages.success(request, "Case added to invoice succesfully")
-            return redirect('create-build-invoice', slug=slug)
         else:
+            if inv_form.errors :
+                messages.error(request, inv_form.errors)
+            elif prod_form.errors:
+                messages.error(request, prod_form.errors)
+            elif prod_form2.errors:
+                messages.error(request, prod_form2.errors)
             context['prod_form'] = prod_form
             context['prod_form2'] = prod_form2
             context['inv_form'] = inv_form
-            context['case_form'] = case_form
-            messages.error(request,"Problem processing your request")
+            # context['case_form'] = case_form
             return render(request, 'main/invoice/create_invoice.html', context)
+        
     
 
 
     return render(request, 'main/invoice/create_invoice.html', context)
+
+
+
+# def updateBuildInvoice(request, slug):
+#     #fetch that invoice
+#     try:
+#         invoice = Invoice.objects.get(slug=slug)
+#         pass
+#     except:
+#         messages.error(request, 'Something went wrong')
+#         return redirect('invoices')
+
+#     #fetch all the products - related to this invoice
+#     profService = ProfService.objects.filter(invoice=invoice)
+#     reimburService = ReimburService.objects.filter(invoice=invoice)
+
+
+#     context = {}
+#     context['invoice'] = invoice
+#     context['profService'] = profService
+#     context['reimburService'] = reimburService
+#     reimburdance_price = 0.0
+#     prof_price = 0.0
+#     for i in reimburService:
+#         reimburdance_price += float(i.reimbur_service_price)
+    
+#     for i in profService:
+#         prof_price += float(i.prof_service_price)
+#     invoice.total_reimbur_service_price = reimburdance_price
+#     invoice.total_prof_service_price = prof_price
+#     invoice.final_total = reimburdance_price + prof_price
+#     invoice.save()
+
+#     if request.method == 'GET':
+#         prod_form  = ProfServiceForm()
+#         prod_form2  = ReimburServiceForm()
+#         inv_form = InvoiceForm(instance=invoice)
+#         context['prod_form'] = prod_form
+#         context['prod_form2'] = prod_form2
+#         context['inv_form'] = inv_form
+
+
+
+#         return render(request, 'main/invoice/update_invoice.html', context)
+
+#     if request.method == 'POST':
+#         prod_form  = ProfServiceForm(request.POST)
+#         prod_form2  = ReimburServiceForm(request.POST)
+#         inv_form = InvoiceForm(request.POST, instance=invoice)
+        
+
+
+#         print("INV FORM : ", inv_form.is_valid())
+#         if prod_form2.is_valid() and 'reimbur_service'in request.POST:
+#             print(prod_form2.cleaned_data['reimbur_service_price'])
+#             obj = prod_form2.save(commit=False)
+#             obj.invoice = invoice
+#             obj.save()
+#             messages.success(request, "Reimburdance Service added succesfully")
+#             return redirect('update-build-invoice', slug=slug)
+#         elif prod_form.is_valid() and 'prof_service' in request.POST:
+#             obj2 = prod_form.save(commit=False)
+#             obj2.invoice = invoice
+#             obj2.save()
+#             messages.success(request, "Professional Service added succesfully")
+#             return redirect('update-build-invoice', slug=slug)
+#         elif inv_form.is_valid() and 'case' in request.POST:
+#             inv_form.save()
+#             messages.success(request, "Invoice updated succesfully")
+#             return redirect('update-build-invoice', slug=slug)
+#         else:
+#             if inv_form.errors :
+#                 messages.error(request, inv_form.errors)
+#             elif prod_form.errors:
+#                 messages.error(request, prod_form.errors)
+#             elif prod_form2.errors:
+#                 messages.error(request, prod_form2.errors)
+#             context['prod_form'] = prod_form
+#             context['prod_form2'] = prod_form2
+#             context['inv_form'] = inv_form
+#             # context['case_form'] = case_form
+#             return render(request, 'main/invoice/update_invoice.html', context)
+        
+    
+
+
+#     return render(request, 'main/invoice/update_invoice.html', context)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Invoice, ProfService, ReimburService
+from .forms import InvoiceForm, ProfServiceForm, ReimburServiceForm
+from django.contrib import messages
+
+def updateBuildInvoice(request, slug):
+    try:
+        invoice = get_object_or_404(Invoice, slug=slug)
+    except Invoice.DoesNotExist:
+        messages.error(request, 'Invoice not found')
+        return redirect('invoices')
+    all_case = Case.objects.all()
+    profService = ProfService.objects.filter(invoice=invoice)
+    reimburService = ReimburService.objects.filter(invoice=invoice)
+
+    reimburdance_price = sum(float(i.reimbur_service_price) for i in reimburService)
+    prof_price = sum(float(i.prof_service_price) for i in profService)
+
+    invoice.total_reimbur_service_price = reimburdance_price
+    invoice.total_prof_service_price = prof_price
+    invoice.final_total = reimburdance_price + prof_price
+    invoice.save()
+
+    if request.method == 'GET':
+        prod_form = ProfServiceForm()
+        prod_form2 = ReimburServiceForm()
+        inv_form = updateInvoiceForm(instance=invoice)
+
+        context = {
+            'invoice': invoice,
+            'profService': profService,
+            'reimburService': reimburService,
+            'prod_form': prod_form,
+            'prod_form2': prod_form2,
+            'inv_form': inv_form,
+            'all_case' : all_case
+        }
+
+        return render(request, 'main/invoice/update_invoice.html', context)
+
+    if request.method == 'POST':
+        if 'reimbur_service' in request.POST:
+            prod_form2 = ReimburServiceForm(request.POST)
+            if prod_form2.is_valid():
+                obj = prod_form2.save(commit=False)
+                obj.invoice = invoice
+                obj.save()
+                messages.success(request, "Reimbursement Service added successfully")
+            else:
+                messages.error(request, prod_form2.errors)
+        elif 'prof_service' in request.POST:
+            prod_form = ProfServiceForm(request.POST)
+            if prod_form.is_valid():
+                obj2 = prod_form.save(commit=False)
+                obj2.invoice = invoice
+                obj2.save()
+                messages.success(request, "Professional Service added successfully")
+            else:
+                messages.error(request, prod_form.errors)
+        elif 'case' in request.POST:
+            inv_form = updateInvoiceForm(request.POST, instance=invoice)
+            if inv_form.is_valid():
+                inv_form.save()
+                messages.success(request, "Invoice updated successfully")
+            else:
+                messages.error(request, inv_form.errors)
+
+        return redirect('update-build-invoice', slug=slug)
+
+    return render(request, 'main/invoice/update_invoice.html', context)
+
+
+
 
 from django.shortcuts import get_object_or_404, redirect
 
@@ -669,6 +827,51 @@ def PDFInvoiceView(request, pk):
                'proservices' : proservices
                }
     return render(request,'main/invoice/pdf_view.html', context)
+
+#Creating a class based view
+from django.template.loader import render_to_string
+from django.template import Context, Template
+from xhtml2pdf import pisa
+from io import BytesIO
+import os
+def generate_pdf_invoice(request, slug):
+    obj = Invoice.objects.get(slug=slug)
+    articles = obj.reimburservice_set.all()
+    proservices = obj.profservice_set.all()
+    case = Case.objects.get(pk=obj.case_id)
+    clients = ClientRecord.objects.get(pk= case.clients_id)
+
+
+    context = {'obj' : obj,
+               'articles': articles,
+               'case' : case,
+               'clients' : clients,
+               'proservices' : proservices
+               }
+    # Load your existing HTML template with Django template tags
+    location = os.path.join(os.getcwd(),'myadmin','templates','main','invoice','pdf_template.html')
+    with open(os.path.join(os.getcwd(),'myadmin','templates','main','invoice','pdf_template.html'), 'r') as template_file:
+        template_content = template_file.read()
+
+    # Render the HTML template with the context
+    template = Template(template_content)
+    context = Context(context)
+    rendered_template = template.render(context)
+
+    # Create a BytesIO buffer to receive the PDF
+    buffer = BytesIO()
+
+    # Generate the PDF from the rendered HTML
+    pdf = pisa.pisaDocument(BytesIO(rendered_template.encode("UTF-8")), buffer)
+
+    if not pdf.err:
+        # If PDF generation succeeded, return the PDF as a response
+        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="invoice.pdf"'
+        return response
+
+    # If PDF generation failed, handle the error accordingly
+    return HttpResponse('PDF generation failed.', content_type='text/plain')
 
 
 def add_client_view(request ):

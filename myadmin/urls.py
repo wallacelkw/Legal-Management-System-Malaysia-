@@ -46,10 +46,11 @@ urlpatterns = [
 
 
     # INVOICE
-    path('invoices/', views.view_invoice, name='view_invoice'),
+    path('invoices/', views.view_invoice, name='invoices'),
     path('invoices/create',views.createInvoice, name='create-invoice'),
     path('invoices/create-build/<slug:slug>',views.createBuildInvoice, name='create-build-invoice'),
-
+    path('invoices/update-build/<slug:slug>',views.updateBuildInvoice, name='update-build-invoice'),
+    path('pdf/<slug:slug>', views.generate_pdf_invoice, name="generate-pdf"), 
     #Delete an invoice
     path('invoices/create-build/deleteProfS/<slug:slug>/', views.deleteProfService, name='delete_prof'),
     path('invoices/create-build/deleteReimburS/<slug:slug>/', views.deleteReimburService, name='delete_reimbur'),

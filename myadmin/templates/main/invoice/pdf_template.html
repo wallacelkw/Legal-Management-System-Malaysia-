@@ -1,33 +1,51 @@
-{% extends "navigation/base.html" %} {% block content %} {% load static %}
+<!DOCTYPE html>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <style>
-    @media print {
-        body * {
-            visibility: hidden;
-        }
-        .container_print,
-        .container_print * {
-            visibility: visible;
-        }
+    .tel_info {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    
+    .clientAddress {
+        text-align: justify;
+        margin-left: 45px;
+    }
+    
+    .container-xxl.clientToward {
+        display: flex;
+    }
+    
+    .container-xxl.ref_address {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .container-xxl.ref_date {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .short_description {
+        text-align: justify;
+    }
+    
+    .invoice_table {
+        text-align: left;
+    }
+    
+    .container-xxl.signature {
+        display: flex;
     }
 </style>
 
-<section>
-
-</section>
+<html lang="en" dir="ltr">
 <div class="container-fluid pt-4 px-4">
-    <!-- <button onclick="printDiv('mn')" type="button" class="btn btn-primary btn-lg">
-        Print PDF
-         </button> -->
-    <input type="button" onclick="window.print();" value="print a div!" />
-    <a href="{%url 'invoices' %}">
-        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
-            Go Back
-            </button>
-    </a>
-    <div class="bg-light text-center rounded p-4 container_print" id="my-section ">
-
+    <div class="bg-light text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
-
             <div class="container title">
                 <h3><strong>LEE CHEW & CO</strong></h3>
                 <h6><strong>Advocates & Solicitors</strong></h6>
@@ -56,8 +74,8 @@
                 <h6>{{clients.country}}<br><br></h6>
 
                 <!-- <h6>No. 145A, Kampung Tiong </h6>
-                            <h6>73400 Gemas, </h6>
-                            <h6>Negeri Sembilan </h6> -->
+                                <h6>73400 Gemas, </h6>
+                                <h6>Negeri Sembilan </h6> -->
             </div>
         </div>
         <div class="container-xxl">
@@ -128,7 +146,7 @@
         <br><br><br><br><br>
         <!-- <div class="container-xxl signature" style="display: flex;"> -->
         <div class="clientAddress">
-            <img src="{% static 'images/signature.png' %}" style="width: 200px; height: 100px;">
+            <img src="../../../static/images/signature.png" style="width: 200px; height: 100px;">
             <h6>________________________________</h6>
             <h6>Lee Chew & Co</h6>
         </div>
@@ -140,7 +158,7 @@
 
 
 
-
+</body>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js " integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN " crossorigin="anonymous "></script>
 
 <script>
@@ -156,14 +174,6 @@
             // update form count
             $('#id_services-TOTAL_FORMS').attr('value', count + 1);
         });
-
-        function printDiv(divName) {
-            var printContents = document.getElementById(divName).innerHTML;
-            var originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
-        }
     });
 
     function findTotal() {
@@ -176,6 +186,5 @@
         document.getElementById('final_total').value = tot;
     }
 </script>
-</body>
 
-{%endblock%}
+</html>

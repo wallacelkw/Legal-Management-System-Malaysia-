@@ -228,9 +228,61 @@ class CaseForm(forms.ModelForm):
         model = Case
         fields = '__all__'
 
+class updateInvoiceForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(updateInvoiceForm, self).__init__(*args, **kwargs)
+        # Customize the label for the 'short_descriptions' field
+        self.fields['short_descriptions'].label = 'Description'
+        self.fields['case'].label = ''
+    class Meta:
+        model = Invoice
+        exclude = ('saved_by', 'paid',)
+        fields = ["case", "short_descriptions"]
+        widgets = {
+            'short_descriptions': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'required': 'required',
+            
+                }
+            ),
+            'case': forms.TextInput(  # Render as plain text
+                attrs={
+                    'style': 'display: none;',
+                }
+            )
+        }
 
 
 class InvoiceForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(InvoiceForm, self).__init__(*args, **kwargs)
+        self.custom_choices = [('-----', '--Select a Case--')]
+        # Extract unique identifiers from Invoice objects in invoice_data
+        invoice_data = [i.case.ref_no for i in Invoice.objects.all() if i.case]
+        case_data = [str(j.ref_no) for j in Case.objects.all()]
+    
+        # Check for duplicates
+        set1 = set(invoice_data)
+        set2 = set(case_data)
+        items_not_in_list1 = list(set2 - set1)
+
+        for case in items_not_in_list1:
+            d_t = (case, case)
+            self.custom_choices.append(d_t)
+        
+        for i in Invoice.objects.all():
+            print(i)
+        
+        self.fields['short_descriptions'].label = 'Description'
+        self.fields['case'] = forms.ChoiceField(
+                                        label='Choose a Case',
+                                        choices = self.custom_choices,
+                                        widget=forms.Select(attrs={'class': 'form-control'}),)
+        
+
+
+
     class Meta:
         model = Invoice
         exclude= ('saved_by',
@@ -239,9 +291,10 @@ class InvoiceForm(forms.ModelForm):
         fields = ["case", "short_descriptions"]
         widgets = {
 
-            'short_descriptions': forms.TextInput(
+            'short_descriptions': forms.Textarea(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'required' : 'required'
                     }
                 ),
             'case' : forms.Select(
@@ -251,6 +304,23 @@ class InvoiceForm(forms.ModelForm):
                 }
             )
         }
+
+    def clean_case(self):
+        c_case = self.cleaned_data['case']
+        print(c_case)
+        if c_case == '-----':
+            print('HARD-------')
+            return False
+        else:
+             # Get the existing Case instance associated with the Invoice
+            invoice_instance = self.instance  # Get the current instance of the form
+            print("INSTANCES : ",invoice_instance)
+            if invoice_instance and invoice_instance.case:
+                return invoice_instance.case
+            else:
+                return Case.objects.get(ref_no=c_case)
+
+
 
 class ReimburServiceForm(forms.ModelForm):
 
@@ -301,37 +371,55 @@ ReimburServiceFormSet = inlineformset_factory(Invoice, ReimburService,form = Rei
 
 
 
-class CaseSelectForm(forms.ModelForm):
+# class CaseSelectForm(forms.ModelForm):
 
-    def __init__(self,*args,**kwargs):
-        self.initial_case = kwargs.pop('initial_case')
-        self.CASE_LIST = Case.objects.all()
-        self.CASE_CHOICES = [('-----', '--Select a Case--')]
+#     def __init__(self,*args,**kwargs):
+#         self.initial_case = kwargs.pop('initial_case')
+#         self.CASE_LIST = Case.objects.all()
+#         self.INVOICE_LIST = Invoice.objects.all()
+#         self.CASE_CHOICES = [('-----', '--Select a Case--')]
+#         self.CHECK_DUPLICATE_CASE =[]
 
-
-        for case in self.CASE_LIST:
-            d_t = (case.ref_no, case.ref_no)
-            self.CASE_CHOICES.append(d_t)
-
-
-        super(CaseSelectForm,self).__init__(*args,**kwargs)
-
-        self.fields['ref_no'] = forms.ChoiceField(
-                                        label='Choose a related Case',
-                                        choices = self.CASE_CHOICES,
-                                        widget=forms.Select(attrs={'class': 'form-control'}),)
-
-    class Meta:
-        model = Case
-        fields = ['ref_no']
+      
+#         # for case in self.CASE_LIST:
+#         #     d_t = (case.ref_no, case.ref_no)
+#         #     self.CASE_CHOICES.append(d_t)
 
 
-    def clean_case(self):
-        c_case = self.cleaned_data['ref_no']
-        if c_case == '-----':
-            return self.initial_case
-        else:
-            return Case.objects.get(uniqueId=c_case)
+#         super(CaseSelectForm,self).__init__(*args,**kwargs)
+
+#         # Extract unique identifiers from Invoice objects in invoice_data
+#         invoice_data = [i.case.ref_no for i in Invoice.objects.all() if i.case]
+#         case_data = [str(j.ref_no) for j in Case.objects.all()]
+    
+#         # Check for duplicates
+#         set1 = set(invoice_data)
+#         set2 = set(case_data)
+
+#         items_not_in_list1 = list(set2 - set1)
+    
+#         for case in items_not_in_list1:
+#             d_t = (case, case)
+#             self.CASE_CHOICES.append(d_t)
+
+     
+#         # self.fields['ref_no'].queryset = Invoice.objects.exclude(uniqueId=initial_case.uniqueId)
+#         self.fields['ref_no'] = forms.ChoiceField(
+#                                         label='Choose a related Case',
+#                                         choices = self.CASE_CHOICES,
+#                                         widget=forms.Select(attrs={'class': 'form-control'}),)
+
+#     class Meta:
+#         model = Case
+#         fields = ['ref_no']
+
+
+#     def clean_case(self):
+#         c_case = self.cleaned_data['ref_no']
+#         if c_case == '-----':
+#             return self.initial_case
+#         else:
+#             return Case.objects.get(uniqueId=c_case)
 
 
 

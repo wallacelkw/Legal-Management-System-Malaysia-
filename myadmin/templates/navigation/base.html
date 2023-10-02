@@ -6,7 +6,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>DASHMIN - Bootstrap Admin Template</title>
+        <title>Lee Chew & Co</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
@@ -57,7 +57,7 @@
         <aside class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
                 <a href="{% url 'dashboard'  %}" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>DASHMIN</h3>
+                    <img src="{% static 'images/logo.png' %}" alt="" style="width: 180px; height: 75px;">
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
@@ -77,10 +77,10 @@
                     <a href="{% url 'view_all_client' %}" class="nav-item nav-link {% if 'view_all_client' in request.path or 'add_client_view' in request.path%}active{% endif %}">
                         <i class="fa fa-users me-2"></i>Client
                     </a>
-                    <a href="{% url 'list_case' %}" class="nav-item nav-link {% if 'list_case' in request.path %}active{% endif %}">
+                    <a href="{% url 'list_case' %}" class="nav-item nav-link {% if 'list_case' in request.path or 'create_case_view' in request.path%}active{% endif %}">
                         <i class="bi bi-briefcase-fill me-2"></i>Cases
                     </a>
-                    <a href="{% url 'view_invoice' %}" class="nav-item nav-link {% if 'view_invoice' in request.path %}active{% endif %}">
+                    <a href="{% url 'invoices' %}" class="nav-item nav-link {% if 'invoices' in request.path or 'create-build' in request.path or 'pdf_invoice' in request.path %}active{% endif %}">
                         <i class="bi bi-stickies-fill me-2"></i>Invoice
                     </a>
                     <div class="nav-item dropdown">
