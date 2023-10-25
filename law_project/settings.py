@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
     "myadmin",
 ]
 
@@ -148,3 +149,12 @@ LOGIN_REDIRECT_URL='/login'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.Emailbackend'
+EMAIL_HOST= 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'wallacelkwang@gmail.com'
+EMAIL_HOST_PASSWORD = 'owetzssvrfcnihng'
+EMAIL_USE_TSL = True
+EMAIL_USE_SSL = False

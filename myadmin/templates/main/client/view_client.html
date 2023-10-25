@@ -18,13 +18,13 @@
                 <table id="clientTable" class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th scope="col">ID</th>
+                            <th scope="col">No</th>
                             <th scope="col">Name</th>
                             <th scope="col">IC/Passport</th>
                             <th scope="col">Phone Number</th>
-                            <th scope="col">Gender</th>
+                            <!-- <th scope="col">Gender</th> -->
                             <th scope="col">Email Address</th>
-                            <th scope="col">Address</th>
+                            <!-- <th scope="col">Address</th>
                             <th scope="col">City</th>
                             <th scope="col">Postcode</th>
                             <th scope="col">State</th>
@@ -34,19 +34,20 @@
                             <th scope="col">Agent (Phone Number)</th>
                             <th scope="col">Remark</th>
                             <th scope="col">Latitude</th>
-                            <th scope="col">Longitude</th>
+                            <th scope="col">Longitude</th> -->
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% if records %} {% for record in records %}
                         <tr>
-                            <td><a class="open-incident" href="{% url 'update_client'  pk=record.id %}">{{ record.id }}</a></td>
+                            <td>{{ forloop.counter }}</td>
                             <td>{{ record.full_name }}</td>
                             <td>{{ record.identity }}</td>
                             <td>{{ record.phone_number }}</td>
-                            <td>{{ record.gender }}</td>
+                            <!-- <td>{{ record.gender }}</td> -->
                             <td>{{ record.email }}</td>
-                            <td>{{ record.address1 }} {{ record.address2 }}</td>
+                            <!-- <td>{{ record.address1 }} {{ record.address2 }}</td>
                             <td>{{ record.city }}</td>
                             <td>{{ record.postcode }}</td>
                             <td>{{ record.state }}</td>
@@ -56,7 +57,20 @@
                             <td>{{ record.agent_ph }}</td>
                             <td>{{ record.remark }}</td>
                             <td>{{ record.latitude }}</td>
-                            <td>{{ record.longitude }}</td>
+                            <td>{{ record.longitude }}</td> -->
+                            <td>
+                                <a href="{%url 'update_client' pk=record.id%}">
+                                    <button class="btn btn-success edit-button">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                </a>
+                                <button type="button" class="btn btn-info view-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#viewConfirmationModal{{ record.id }}">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </td>
                         </tr>
                         {% endfor %} {% endif %}
 
@@ -66,6 +80,49 @@
 
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- View Checking Modal -->
+{% for record in records %}
+<div class="modal fade" id="viewConfirmationModal{{ record.id }}" tabindex="-1" aria-labelledby="viewConfirmationModalLabel" aria-hidden="true">
+    <form method="GET" action="{% url 'single_client' pk=record.id %}">
+        {% csrf_token %}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewConfirmationModalLabel">View Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {%include "main/case/individual_client_case.html"%}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endfor %}
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" class="btn btn-danger" id="confirmDeleteButton">Delete</a>
             </div>
         </div>
     </div>
@@ -82,9 +139,20 @@
 <script>
     new DataTable('#clientTable', {
         order: [
-            [0, 'decs']
+            [0, 'asc']
         ]
     })
+    $(document).ready(function() {
+        $(".delete-button").on("click", function() {
+            // Get the record ID from the button's data attribute
+            var recordId = $(this).data("record-id");
+
+            // Set the "Delete" button's href attribute to include the record ID
+            var deleteButton = $("#confirmDeleteButton");
+            var deleteUrl = "{% url 'delete_client' pk=0 %}".replace('0', recordId);
+            deleteButton.attr("href", deleteUrl);
+        });
+    });
 </script>
 </body>
 

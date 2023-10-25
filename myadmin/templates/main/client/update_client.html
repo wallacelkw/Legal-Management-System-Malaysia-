@@ -1,13 +1,19 @@
-{% extends "navigation/base.html" %}
-{% block content %}
-{% load static %}
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
 
 <div class="container-fluid pt-4 px-4">
     <form id="customerform" class="customerform" method="POST">
         {% csrf_token %}
         <div class="col-xl-12 col-xl-12">
             <div class="bg-light rounded h-100 p-4">
-                <h6 class="mb-4">Client Information</h6>
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="mb-0">Client Information</h3>
+                    <a href="{%url 'view_all_client' %}">
+                        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+                        Go Back
+                        </button>
+                    </a>
+                </div>
+
                 <div class="row g-2" id="formContainer">
                     <input type="hidden" name="created_by" value="{{ request.user.id }}">
                     <div class="col-6">
@@ -101,11 +107,15 @@
                     <p id="output1">Please enter a valid number below</p>
                 </div>
 
+                <input type="submit" class="btn btn-success" value="Update">
+                <!-- <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
+                Delete</button> -->
+                <br>
             </div>
+
+
         </div>
-        <input type="submit" class="btn btn-success" value="Update">
-        <button type="button" class="btn btn-danger delete-button" data-record-id="{{ record.id }}" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">
-            Delete</button>
+
 
 
 
@@ -115,7 +125,7 @@
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
 </div>
-    <!-- Content End -->
+<!-- Content End -->
 
 
 <!-- Delete Confirmation Modal -->
@@ -137,116 +147,116 @@
     </div>
 </div>
 
-    
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'lib/chart/chart.min.js' %}"></script>
-    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
-    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
-    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
-    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/project_function.js' %}"></script>
 
 
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'lib/chart/chart.min.js' %}"></script>
+<script src="{% static 'lib/easing/easing.min.js' %}"></script>
+<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+<script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+<script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+<script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+<!-- Template Javascript -->
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/project_function.js' %}"></script>
 
 
-    <script>
-        function autocompleteState(postcode) {
-            fetch('{% static "postcode1.csv" %}')
-                .then(response => response.text())
-                .then(csvData => {
-                    const lines = csvData.split('\n');
-                    const countrySelect = document.getElementById('customerCountry');
-                    let malaysiaFound = false;
 
-                    for (const line of lines) {
-                        const [city, csvPostcode, state] = line.split(',');
 
-                        if (csvPostcode === postcode) {
-                            malaysiaFound = true;
+<script>
+    function autocompleteState(postcode) {
+        fetch('{% static "postcode1.csv" %}')
+            .then(response => response.text())
+            .then(csvData => {
+                const lines = csvData.split('\n');
+                const countrySelect = document.getElementById('customerCountry');
+                let malaysiaFound = false;
 
-                            document.getElementById('customerState').value = state;
-                            document.getElementById('customerCity').value = city;
+                for (const line of lines) {
+                    const [city, csvPostcode, state] = line.split(',');
+
+                    if (csvPostcode === postcode) {
+                        malaysiaFound = true;
+
+                        document.getElementById('customerState').value = state;
+                        document.getElementById('customerCity').value = city;
+                        break;
+                    }
+                }
+
+                if (malaysiaFound) {
+                    for (let j = 0; j < countrySelect.options.length; j++) {
+                        if (countrySelect.options[j].text === 'Malaysia') {
+                            countrySelect.selectedIndex = j;
                             break;
                         }
                     }
-
-                    if (malaysiaFound) {
-                        for (let j = 0; j < countrySelect.options.length; j++) {
-                            if (countrySelect.options[j].text === 'Malaysia') {
-                                countrySelect.selectedIndex = j;
-                                break;
-                            }
-                        }
-                    } else {
-                        document.getElementById('customerCountry').selectedIndex = 0;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching CSV data:', error);
-                });
-        }
-    </script>
-
-    <!-- Phone Number -->
-    <!-- <script src="{%static 'js/intlTelInput.min.js'%}"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
-
-    <script>
-        const validatePhoneNumber = (inputId, outputId) => {
-            const input = document.querySelector(`#${inputId}`);
-            const output = document.querySelector(`#${outputId}`);
-
-            const iti = window.intlTelInput(input, {
-                nationalMode: true,
-                initialCountry: "MY",
-                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-            });
-
-            const handleChange = () => {
-                let text;
-                if (input.value) {
-                    text = iti.isValidNumber() ?
-                        "Valid number! Full international format: " + iti.getNumber() :
-                        "Invalid number - please try again";
                 } else {
-                    text = "Please enter a valid number below";
+                    document.getElementById('customerCountry').selectedIndex = 0;
                 }
-                const textNode = document.createTextNode(text);
-                output.innerHTML = "";
-                output.appendChild(textNode);
-            };
+            })
+            .catch(error => {
+                console.error('Error fetching CSV data:', error);
+            });
+    }
+</script>
 
-            input.addEventListener('change', handleChange);
-            input.addEventListener('keyup', handleChange);
+<!-- Phone Number -->
+<!-- <script src="{%static 'js/intlTelInput.min.js'%}"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+
+<script>
+    const validatePhoneNumber = (inputId, outputId) => {
+        const input = document.querySelector(`#${inputId}`);
+        const output = document.querySelector(`#${outputId}`);
+
+        const iti = window.intlTelInput(input, {
+            nationalMode: true,
+            initialCountry: "MY",
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+        });
+
+        const handleChange = () => {
+            let text;
+            if (input.value) {
+                text = iti.isValidNumber() ?
+                    "Valid number! Full international format: " + iti.getNumber() :
+                    "Invalid number - please try again";
+            } else {
+                text = "Please enter a valid number below";
+            }
+            const textNode = document.createTextNode(text);
+            output.innerHTML = "";
+            output.appendChild(textNode);
         };
 
-        // Call the function for each phone number input and output pair
-        validatePhoneNumber("phone", "output");
-        validatePhoneNumber("ecphone", "output1");
-    </script>
+        input.addEventListener('change', handleChange);
+        input.addEventListener('keyup', handleChange);
+    };
+
+    // Call the function for each phone number input and output pair
+    validatePhoneNumber("phone", "output");
+    validatePhoneNumber("ecphone", "output1");
+</script>
 
 
-    <script>
-        $(document).ready(function() {
-            $(".delete-button").on("click", function() {
-                // Get the record ID from the button's data attribute
-                var recordId = $(this).data("record-id");
+<script>
+    $(document).ready(function() {
+        $(".delete-button").on("click", function() {
+            // Get the record ID from the button's data attribute
+            var recordId = $(this).data("record-id");
 
-                // Set the "Delete" button's href attribute to include the record ID
-                var deleteButton = $("#confirmDeleteButton");
-                var deleteUrl = "{% url 'delete_client' pk=0 %}".replace('0', recordId);
-                deleteButton.attr("href", deleteUrl);
-            });
+            // Set the "Delete" button's href attribute to include the record ID
+            var deleteButton = $("#confirmDeleteButton");
+            var deleteUrl = "{% url 'delete_client' pk=0 %}".replace('0', recordId);
+            deleteButton.attr("href", deleteUrl);
         });
-    </script>
+    });
+</script>
 </body>
 
 </html>

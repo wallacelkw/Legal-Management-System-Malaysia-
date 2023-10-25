@@ -21,6 +21,8 @@ urlpatterns = [
     ),
     path("update_the_client/<int:pk>", views.update_client, name="update_client"),
     path("delete_the_client/<int:pk>", views.delete_client, name="delete_client"),
+    path("single_client/<int:pk>/", views.single_client, name="single_client"),
+
     # CREATE CASES TYPE
     path("client_role/", views.client_role, name="client_role"),
     path("add_client_role/", views.add_client_role, name="add_client_role"),
@@ -50,7 +52,10 @@ urlpatterns = [
     path('invoices/create',views.createInvoice, name='create-invoice'),
     path('invoices/create-build/<slug:slug>',views.createBuildInvoice, name='create-build-invoice'),
     path('invoices/update-build/<slug:slug>',views.updateBuildInvoice, name='update-build-invoice'),
-    path('pdf/<slug:slug>', views.generate_pdf_invoice, name="generate-pdf"), 
+    # path('pdf/<int:pk>', views.generate_pdf_invoice, name="generate-pdf"),
+    path('sending_email/<slug:slug>', views.sending_email, name="sending_email"),
+    path('invoices/pdf-build/<int:pk>',views.generate_pdf_invoice, name='generate_pdf_invoice'),
+
     #Delete an invoice
     path('invoices/create-build/deleteProfS/<slug:slug>/', views.deleteProfService, name='delete_prof'),
     path('invoices/create-build/deleteReimburS/<slug:slug>/', views.deleteReimburService, name='delete_reimbur'),

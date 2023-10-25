@@ -18,12 +18,16 @@
     <!-- <button onclick="printDiv('mn')" type="button" class="btn btn-primary btn-lg">
         Print PDF
          </button> -->
-    <input type="button" onclick="window.print();" value="print a div!" />
-    <a href="{%url 'invoices' %}">
-        <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+    <div class="container-xxl ref_date">
+        <button type="button" onclick="window.print();" class="btn btn-primary w-30 m-2">Print PDF</button>
+
+        <a href="{%url 'invoices' %}">
+            <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
             Go Back
             </button>
-    </a>
+        </a>
+    </div>
+
     <div class="bg-light text-center rounded p-4 container_print" id="my-section ">
 
         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -136,46 +140,46 @@
 
     </div>
 
-</div>
+    </di>
 
 
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js " integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN " crossorigin="anonymous "></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js " integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN " crossorigin="anonymous "></script>
 
-<script>
-    $(document).ready(function() {
-        // when user clicks add more btn of variants
-        $('.add-services').click(function(ev) {
-            ev.preventDefault();
-            var count = $('#item-services').children().length;
-            var tmplMarkup = $('#services-template').html();
-            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
-            $('#item-services').append(compiledTmpl);
+    <script>
+        $(document).ready(function() {
+            // when user clicks add more btn of variants
+            $('.add-services').click(function(ev) {
+                ev.preventDefault();
+                var count = $('#item-services').children().length;
+                var tmplMarkup = $('#services-template').html();
+                var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+                $('#item-services').append(compiledTmpl);
 
-            // update form count
-            $('#id_services-TOTAL_FORMS').attr('value', count + 1);
+                // update form count
+                $('#id_services-TOTAL_FORMS').attr('value', count + 1);
+            });
+
+            function printDiv(divName) {
+                var printContents = document.getElementById(divName).innerHTML;
+                var originalContents = document.body.innerHTML;
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+            }
         });
 
-        function printDiv(divName) {
-            var printContents = document.getElementById(divName).innerHTML;
-            var originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
+        function findTotal() {
+            var arr = document.getElementsByClassName('unit_price');
+            var tot = 0;
+            for (var i = 0; i < arr.length; i++) {
+                if (parseFloat(arr[i].value))
+                    tot += parseFloat(arr[i].value);
+            }
+            document.getElementById('final_total').value = tot;
         }
-    });
+    </script>
+    </body>
 
-    function findTotal() {
-        var arr = document.getElementsByClassName('unit_price');
-        var tot = 0;
-        for (var i = 0; i < arr.length; i++) {
-            if (parseFloat(arr[i].value))
-                tot += parseFloat(arr[i].value);
-        }
-        document.getElementById('final_total').value = tot;
-    }
-</script>
-</body>
-
-{%endblock%}
+    {%endblock%}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ClientRecord, ClientRole, CourtType, Case, Invoice,ProfService,ReimburService
+from .models import *
 
 # admin.site.register(Record)
 # admin.site.register(cusRecord)
@@ -11,3 +11,5 @@ admin.site.register(Case)
 admin.site.register(Invoice)
 admin.site.register(ProfService)
 admin.site.register(ReimburService)
+
+# admin.site.register(Transaction)
