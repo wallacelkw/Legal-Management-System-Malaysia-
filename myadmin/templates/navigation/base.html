@@ -83,6 +83,9 @@
                     <a href="{% url 'invoices' %}" class="nav-item nav-link {% if 'invoices' in request.path or 'create-build' in request.path or 'pdf_invoice' in request.path %}active{% endif %}">
                         <i class="bi bi-stickies-fill me-2"></i>Invoice
                     </a>
+                    <a href="{% url 'accounts' %}" class="nav-item nav-link {% if 'accounts' in request.path %}active{% endif %}">
+                        <i class="bi bi-wallet-fill"></i>Account
+                    </a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle {% if 'client_role' in request.path or 'court_type' in request.path or 'balance_sheet' in request.path %}active show{% endif %}" data-bs-toggle="dropdown">
                             <i class="fa fa-cogs me-2"></i>Setting
@@ -115,7 +118,7 @@
                     <div class="nav-item dropdown">
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <img class="rounded-circle me-lg-2" src="{% static 'images/user.jpg'%}" alt="" style="width: 40px; height: 40px;">
+                                <img class="rounded-circle me-lg-2" src="{% static 'images/user2.jpeg'%}" alt="" style="width: 40px; height: 40px;">
                                 <span class="d-none d-lg-inline-flex">{{request.user.username}}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">

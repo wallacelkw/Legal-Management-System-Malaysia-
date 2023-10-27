@@ -19,8 +19,18 @@
         Print PDF
          </button> -->
     <div class="container-xxl ref_date">
-        <button type="button" onclick="window.print();" class="btn btn-primary w-30 m-2">Print PDF</button>
-
+        <!-- <button type="button" onclick="window.print();" class="btn btn-primary w-30 m-2">Print PDF</button> -->
+        <a href="{% url 'generate_pdf_invoice' obj.id %}">
+            <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+                Generate PDF
+                </button>
+            </button>
+        </a>
+        <a href="{%url 'sending_email' obj.id  %}">
+            <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+            Send Email
+            </button>
+        </a>
         <a href="{%url 'invoices' %}">
             <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
             Go Back

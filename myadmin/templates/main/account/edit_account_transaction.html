@@ -1,0 +1,102 @@
+{% extends "navigation/base.html" %} {% block content %} {% load static %}
+<div class="container-fluid pt-4 px-4">
+    <div class="col-sm-12 col-xl-12">
+        <div class="bg-light rounded h-100 p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="mb-0">Transaction Information</h3>
+                <a href="{%url 'accounts' %}">
+                    <button type="button" class="btn btn-primary w-30 m-2" data-bs-toggle="modal" data-bs-target="#addCourtTypeModal">
+                Go Back
+                </button>
+                </a>
+            </div>
+
+            <p>Invoice Number: {{ invoice.case }}</p>
+            <p>Total Amount: RM {{ invoice.final_total_transaction }}</p>
+        </div>
+    </div>
+    <br>
+    <div class="col-sm-12 col-xl-12">
+        <div class="bg-light rounded h-100 p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="mb-0">Transaction History</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table id="transactionTable" class="table table-bordered table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>Transaction Number</th>
+                            <th>Transaction Type</th>
+                            <th>Transaction Description</th>
+                            <th>Transaction Credit</th>
+                            <th>Transaction Debit</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in invoice.transaction_set.all %}
+                        <tr>
+                            <td>{{ transaction.transaction_number }}</td>
+                            <td>{{ transaction.transaction_type }}</td>
+                            <td>{{ transaction.transaction_description }}</td>
+                            {% if transaction.transaction_type == 'Credit' %}
+                            <td>RM {{ transaction.transaction_price }}</td>
+                            <td></td>
+                            <!-- Empty cell for debit -->
+                            {% else %}
+                            <td></td>
+                            <!-- Empty cell for credit -->
+                            <td>RM {{ transaction.transaction_price }}</td>
+                            {% endif %}
+                            <td>RM {{ transaction.balance }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+            <h5 class="card-title">
+                <button href="#addTransactionModal" type="button" class="btn btn-primary" data-bs-toggle="modal"> ADD TRANSACTION </button>
+            </h5>
+        </div>
+    </div>
+</div>
+<!-- Modal PopOut -->
+<div class="modal modal-sheet py-5" tabindex="-1" id="addTransactionModal">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-6 shadow">
+
+            <form class="" action="#" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title">Add Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body py-0">
+                    {{ transaction_form.as_p }}
+                </div>
+                <div class="modal-footer flex-column border-top-0">
+                    <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2">Save changes</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- DataTable-->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- <form method="post">
+        {% csrf_token %} {{ transaction_form.as_p }}
+        <input type="submit" value="Create Transaction">
+    </form> -->
+<script>
+    new DataTable('#transactionTable', {
+        pageLength: 5,
+    })
+</script>
+{%endblock%}

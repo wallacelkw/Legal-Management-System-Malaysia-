@@ -29,6 +29,8 @@ import json
 from folium import GeoJson
 from django.core.mail import send_mail
 from django.conf import settings
+from .utils import *
+from django.db.models import Count
 
 
 def login_user(request):
@@ -57,38 +59,26 @@ def dashboard(request):
     case_information = Case.objects.all()
     client_information = ClientRecord.objects.all()
     invoice_information = Invoice.objects.all()
-
-    #Urgency get it from case_information
-    for i in case_information:
-        print(i.sense_of_urgent)
    
     quantity_case = len([x for x,y in enumerate(case_information)])
     quantity_client = len([x for x,y in enumerate(client_information)])
     quantity_invoice = len([x for x,y in enumerate(invoice_information)])
 
+
+    #############################
+    # Doughnut Chart for Urgent #
+    #############################
     data = {1: [], 2: [], 3: []}  # Create dictionaries to store data based on labels
-    label_order = ["High", "Medium", "Low"]
-
     # Retrieve the query of sense_of_urgent containing 'High', 'Medium', and 'Low'
-    case_information_urgent = Case.objects.filter(sense_of_urgent__in=['High', 'Medium', 'Low'])
-
     # Extract the sense_of_urgent values into a list
-    sense_of_urgent_values = [case.sense_of_urgent for case in case_information_urgent]
-
+    sense_of_urgent_values = [case.sense_of_urgent for case in case_information]
     # Count the occurrences of each label
     label_counts = dict(Counter(sense_of_urgent_values))
-
     # Define the order of labels
     label_order = ['High', 'Medium', 'Low']
-
     # Create a list of data corresponding to each label
     data = [label_counts[label] for label in label_order]
-
-
-
     label_order = json.dumps(label_order)
-    print(label_order)
-    print(data)
 
     # Load the GeoJSON file containing Malaysia's boundaries
     geojson_layer = GeoJson(
@@ -101,9 +91,6 @@ def dashboard(request):
             'fillOpacity': 0.1,    # Opacity of the boundary fill
         }
     )
-    
-
-
     map1 = folium.Map(
         location=[3.79239, 109.69887],
         tiles='cartodbpositron',
@@ -119,6 +106,22 @@ def dashboard(request):
                 popup=client.full_name,  # You can customize the popup content
             ).add_to(map1)
 
+    #############################
+    #  Case Type for Bar Chart  #
+    #############################
+
+# Extract the case types and count occurrences
+    case_types = [case.case_type for case in case_information]
+    label_counts = dict(Counter(case_types))
+
+    # Define the order of labels (case types)
+    caseType_label_order = ['MISC', 'CRI', 'LIT', 'CONV']  # Define your case types here
+
+    # Create a dictionary to store data based on labels
+    caseType_data = [label_counts[label] for label in caseType_label_order]
+    # caseType_data = {label: label_counts.get(label, 0) for label in caseType_label_order}
+    caseType_label = json.dumps(caseType_label_order)
+
 
     context = {
         "case_information": quantity_case,
@@ -127,8 +130,18 @@ def dashboard(request):
         # 'map_html': map_html,
         'map1':map1._repr_html_(),
         'data_urgent' : data,
-        'label_urgent': label_order
+        'label_urgent': label_order,
+        'case_types': case_types,
+
+        #case type,
+        'caseType_label' : caseType_label,
+        'caseType_data' : caseType_data
+
     }
+
+
+
+
     return render(request, "main/dashboard.html",context )
 
 
@@ -414,9 +427,9 @@ def update_client(request, pk):
             location = f"{city}, {postcode}, {state}"
             geolocator = Nominatim(user_agent="myGeocoder")
             location_info = geolocator.geocode(location)
-            print("Location Information: ", location_info )
-            print("Latitude : ",location_info.latitude)
-            print("Longtitude : ",location_info.longitude)
+            # print("Location Information: ", location_info )
+            # print("Latitude : ",location_info.latitude)
+            # print("Longtitude : ",location_info.longitude)
             # Check if location_info is available
             if location_info: 
                 # Bind the form to a new instance of the ClientRecord model
@@ -591,6 +604,7 @@ def createBuildInvoice(request, slug):
     invoice.total_reimbur_service_price = reimburdance_price
     invoice.total_prof_service_price = prof_price
     invoice.final_total = reimburdance_price + prof_price
+    invoice.final_total_transaction = reimburdance_price + prof_price
     invoice.save()
 
     if request.method == 'GET':
@@ -653,13 +667,15 @@ def updateBuildInvoice(request, slug):
     all_case = Case.objects.all()
     profService = ProfService.objects.filter(invoice=invoice)
     reimburService = ReimburService.objects.filter(invoice=invoice)
-
+    original_final_total_transaction = invoice.final_total_transaction
     reimburdance_price = sum(float(i.reimbur_service_price) for i in reimburService)
     prof_price = sum(float(i.prof_service_price) for i in profService)
 
     invoice.total_reimbur_service_price = reimburdance_price
     invoice.total_prof_service_price = prof_price
     invoice.final_total = reimburdance_price + prof_price
+    
+    invoice.final_total_transaction = original_final_total_transaction
     invoice.save()
 
     if request.method == 'GET':
@@ -772,100 +788,6 @@ def PDFInvoiceView(request, pk):
     return render(request,'main/invoice/pdf_view.html', context)
 
 #Creating a class based view
-from django.template.loader import render_to_string
-from django.template.loader import get_template
-from django.template import Context, Template
-from xhtml2pdf import pisa
-from io import BytesIO
-import os
-
-from fpdf import FPDF
-
-
-
-class PDF(FPDF):
-    def header(self) -> None:
-        self.set_font('helvetica' ,'B', 20)
-        self.cell(0, 10, 'LEE CHO & CO', border=False, ln=1, align='C')
-        self.set_font('helvetica' ,'B', 10)
-        self.cell(0,5 , 'Advocates & Solicitors', ln=1, align='C')
-        self.set_font('helvetica' ,'', 10)
-        self.cell(0,5 , 'No.13-1, Jalan Cetak 16/3, Seksyen 16,', ln=1,align='C')
-        self.cell(0,5 , '40200 Shah Alam, Selangor Darul Ehsan.', ln=1, align='C')
-        
-        self.ln(1)
-       # Tel and Fax
-        tel_text = 'Tel: +603-5523 3513'
-        fax_text = 'Fax: +603-5523 8513'
-        total_width = self.w  # Total width of the page
-
-        # Calculate the combined width of both cells
-        tel_width = self.get_string_width(tel_text)
-        fax_width = self.get_string_width(fax_text)
-        total_text_width = tel_width + fax_width + 20  # 10 units of space
-
-        # Calculate the starting x-coordinate to center the combined text
-        x_start = (total_width - total_text_width) / 2
-
-        # Set x position for Tel
-        self.set_x(x_start)
-        self.cell(tel_width, 5, tel_text, align='L')
-
-        # Set x position for Fax
-        self.set_x(x_start + tel_width + 20)
-        self.cell(fax_width, 5, fax_text, align='L')
-
-        self.ln(5)
-
-    def chapter_title(self, title):
-        self.set_font('Arial', 'B', 10)
-        self.cell(0, 10, title, ln=True, align='C')
-        self.ln(3)
-    
-
-    def chapter_body(self, body):
-        # Set font for chapter body
-        self.set_font("helvetica",'' ,10)
-        # MultiCell allows for text to flow and automatically wrap to the next line
-        self.multi_cell(0, 5, body)
-        self.ln()  # Move down after the paragraph
-
-    def chapter_table(self, table_data):
-        # Set font for the table
-        self.set_font("Arial", size=10)
-        
-        # Define column widths
-        col_widths = [80, 40, 40]  # Adjust as needed
-        
-        for row in table_data:
-            for i, data in enumerate(row):
-                self.cell(col_widths[i], 10, data, border=1)
-            self.ln()
-
-    def chapter_title_detail(self, title):
-        # Set font for chapter title
-        self.set_font("Arial", "B", 10)
-        self.cell(0, 10, title, 0, 1, "L")
-        self.ln(5)  # Move down a little
-
-    def chapter_content(self, data):
-        # Set font for the content
-        self.set_font("Arial", size=10)
-        for item in data:
-            if isinstance(item, tuple):
-                # If it's a tuple, it's a line item
-                self.cell(100, 5, item[0], border=1)
-                self.cell(45, 5, item[1], align="R", border=1)
-                self.cell(45, 5, "", align="R", border=1)
-                self.ln()
-            else:
-                # If it's not a tuple, it's a total
-                self.cell(100, 5, "", border=1)
-                self.cell(45, 5, "", border=1)
-                self.cell(45, 5, item, align="R", border=1)
-                self.ln()
-        self.ln(5)  # Move down a little
-
 
 def generate_pdf_invoice(request, pk):
     print("SLUG:::: ",pk)
@@ -880,91 +802,8 @@ def generate_pdf_invoice(request, pk):
                'clients' : clients,
                'proservices' : proservices
                }
-    
-    pdf = PDF('P', 'mm', 'A4')
-
-
-
-    # Add a page
-    pdf.add_page()
-
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.set_font('helvetica', '', 10)
-    pdf.ln(3)
-    # Add the "Our Ref" and "Date" lines
-    our_ref_text = f'Our Ref: {case.ref_no}'
-    date_text = f'Date: {obj.invoice_date_time}'
-    our_ref_width = pdf.get_string_width(our_ref_text)
-    date_width = pdf.get_string_width(date_text)
-    max_width = min(our_ref_width, date_width)
-
-    pdf.cell(max_width, 5, our_ref_text, align='L')
-    pdf.cell(0, 5, date_text, align='R', ln=1)
-
-    # Set the position for the "To" section
-    to_x = max_width  # X-coordinate, with additional spacing
-    to_y = pdf.get_y()  # Y-coordinate
-    print("X: ", to_x)
-
-    # Add the "To" section aligned with "Our Ref"
-    # pdf.set_xy(to_x, to_y)
-    pdf.cell(0, 5, 'To: ')
-    pdf.set_x(to_x-3)  # Adjust for additional spacing
-    pdf.multi_cell(0, 5, clients.full_name, align='L')
-    pdf.set_x(to_x-3)  # Adjust for additional spacing
-    pdf.multi_cell(0, 5, clients.address1, align='L')
-    pdf.set_x(to_x-3)  # Adjust for additional spacing
-    pdf.multi_cell(0, 5, clients.address2, align='L')
-    pdf.set_x(to_x-3)  # Adjust for additional spacing
-    pdf.multi_cell(0, 5, f'{clients.city}, {clients.postcode}, {clients.state}', align='L')
-    pdf.set_x(to_x-3)  # Adjust for additional spacing
-    pdf.multi_cell(0, 5, clients.country, align='L')
-
-    pdf.ln(3)
-    pdf.set_font('helvetica', 'B', 10)
-
-    # pdf.cell(0, 5, 'PROFESSIONAL CHARGES IN THE MATTER OF:-', ln=2, align='C')
-    pdf.chapter_title('PROFESSIONAL CHARGES IN THE MATTER OF:-')
-    pdf.chapter_body(obj.short_descriptions)
-
-    # Add a chapter title for "PROFESSIONAL CHARGES"
-    chapter_title = "PROFESSIONAL CHARGES"
-    pdf.chapter_title_detail(chapter_title)
-
-    proservices_data =[]
-    for record in proservices:
-        proservices_data.append((record.prof_service, f"RM {record.prof_service_price:.2f}"))
-
-    # Add a total row
-    total_price = obj.total_prof_service_price
-    proservices_data.append( f"RM {total_price:.2f}")
-    print("PROSERVUICES: ", proservices_data)
-    # Add the professional charges content
-    pdf.chapter_content(proservices_data)
-
-    # Add a chapter title for "REIMBURSEMENTS"
-    chapter_title = "REIMBURSEMENTS"
-    pdf.chapter_title_detail(chapter_title)
-
-    articles_data =[]
-    for record in reimburservice:
-        articles_data.append((record.reimbur_service, f"RM {record.reimbur_service_price:.2f}"))
-
-    # Add a total row
-    total_price = obj.total_reimbur_service_price
-    articles_data.append(f"RM {total_price:.2f}")
-
-
-    # Add the reimbursements content
-    pdf.chapter_content(articles_data)
-
-    # Add the "Total" section
-    total = ["Total", f"RM {obj.final_total}"]
-    pdf.chapter_content(total)
-
-
-    pdf.output('pdf_2.pdf')
-
+    file_name = clients.full_name
+    create_pdf_n_save_it(case,obj,clients,proservices,reimburservice, file_name)
     return redirect('invoices')
 
 
@@ -986,30 +825,92 @@ def balance_sheet(request, ):
                                                               'total_price': price})
 
 
-def sending_email(request, slug):
+def sending_email(request, pk):
+    regards = """Regards,\nAlice Lee \nLEE CHEW & CO \nADVOCATES & SOLICITORS \n李与邱律师楼"""
     invoices = Invoice.objects.all()
-    obj = Invoice.objects.get(slug=slug)
-    articles = obj.reimburservice_set.all()
+    obj = Invoice.objects.get(pk=pk)
+    reimburservice = obj.reimburservice_set.all()
     proservices = obj.profservice_set.all()
     case = Case.objects.get(pk=obj.case_id)
     clients = ClientRecord.objects.get(pk= case.clients_id)
     context = {'obj' : obj,
-               'articles': articles,
+               'articles': reimburservice,
                'case' : case,
                'clients' : clients,
                'proservices' : proservices,
                'invoices' : invoices
                }
-    name = clients.full_name
+    file_name = clients.full_name
     email = clients.email
-    email_message = 'Greeting, This is my EMAIL TESTING HERE'
-    send_mail(name,
-              email_message,
-              'settings.EMAIL_HOST_USER',
-              [email],
-              fail_silently=False)
-    
-    return render(request, "main/invoice/invoice_list.html", context)
-
+    test_email = ['kimwang6957@gmail.com']
+    email_message = f'Dear {file_name},\n\nThe invoice is in attachment. Please contact to 012-xxxx for futher information.'
+    # Create the PDF Invocie
+    create_pdf_n_save_it(case,obj,clients,proservices,reimburservice, file_name)
+    file_path = f"{settings.BASE_DIR}/{file_name}_invoice.pdf"
 
     
+    send_email_with_attachment(
+        "Quotation and Email",
+        email_message + '\n\n\n' + regards,
+        recipient_list=test_email,
+        file_path=file_path
+    )
+    # Delete the temporary pdf File
+    ####
+
+    return render(request, "main/invoice/pdf_view.html", context)
+
+
+#######################
+# Account Information #
+#######################
+def view_accounts(request):
+    context = {}
+    invoices = Invoice.objects.all()
+    for brand in Invoice.objects.all():
+        if brand.case == None:
+            invoice_to_delete = Invoice.objects.get(pk = brand.pk)
+            invoice_to_delete.delete()
+    context['invoices'] = invoices
+    return render(request,"main/account/account_list.html", context)
+
+from django.http import HttpResponseNotFound  # Import HttpResponseNotFound
+
+def edit_account_transaction(request, slug):
+    context = {}
+    
+    if request.user.is_authenticated:
+        try:
+            invoice = Invoice.objects.get(slug=slug)
+            context['invoice'] = invoice
+            pass
+        except:
+            messages.error(request, 'Something went wrong')
+            return redirect('accounts')
+
+        if request.method == 'GET':
+            context['transaction_form'] = TransactionForm()  # For creating a new transaction
+            return render(request, "main/account/edit_account_transaction.html", context)
+
+        if request.method == 'POST':
+            transaction_form = TransactionForm(request.POST)
+            if transaction_form.is_valid():
+                trans = transaction_form.save(commit=False)
+                get_trans_type = transaction_form.cleaned_data['transaction_type']
+                # Update the transaction's balance based on the transaction type
+                if get_trans_type.lower() == 'credit':
+                    invoice.final_total_transaction -= transaction_form.cleaned_data['transaction_price']
+                else:
+                    invoice.final_total_transaction += transaction_form.cleaned_data['transaction_price']
+                trans.balance = invoice.final_total_transaction
+
+                trans.invoice = invoice  # Associating the transaction with the invoice
+
+                invoice.save()
+                trans.save()
+ 
+                # Redirect or perform any other necessary actions
+                return redirect('edit_account_transaction', slug=slug)
+            else:
+                return render(request, "main/account/edit_account_transaction.html", context)
+    return render(request, "main/account/edit_account_transaction.html", context)

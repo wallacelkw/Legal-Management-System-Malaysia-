@@ -34,7 +34,7 @@
 
             <div class="row">
                 <div class="col-lg-12">
-                    <h5 class="card-title">Add Professional Service
+                    <h5 class="card-title">
                         <button href="#addProductModal" type="button" class="btn btn-primary " data-bs-toggle="modal"> ADD PROFESSIONAL SERVICE </button>
                     </h5>
 
@@ -67,7 +67,7 @@
 
 
                 <div class="col-lg-12">
-                    <h5 class="card-title">Add Reimburdance Service
+                    <h5 class="card-title">
                         <button href="#addProduct2Modal" type="button" class="btn btn-primary" data-bs-toggle="modal"> ADD REINBURDANCE SERVICE </button>
                     </h5>
 
@@ -120,11 +120,8 @@
 <div class="modal modal-sheet py-5" tabindex="-1" id="addProductModal">
     <div class="modal-dialog">
         <div class="modal-content rounded-6 shadow">
-
             <form class="" action="#" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-
-
                 <div class="modal-header border-bottom-0">
                     <h5 class="modal-title">Add Professional Service</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -132,8 +129,6 @@
 
                 <div class="modal-body py-0">
                     {% for hidden in form.hidden_fields %} {{ hidden }} {% endfor %} {{prod_form.as_p}}
-
-
                 </div>
                 <div class="modal-footer flex-column border-top-0">
                     <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2">Save changes</button>
@@ -147,7 +142,6 @@
 <div class="modal modal-sheet py-5" tabindex="-1" id="addProduct2Modal">
     <div class="modal-dialog">
         <div class="modal-content rounded-6 shadow">
-
             <form class="" action="#" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="modal-header border-bottom-0">
@@ -156,7 +150,7 @@
                 </div>
 
                 <div class="modal-body py-0">
-                    {{prod_form2.as_p}}
+                    {% for hidden in form.hidden_fields %} {{ hidden }} {% endfor %}{{prod_form2.as_p}}
                 </div>
                 <div class="modal-footer flex-column border-top-0">
                     <button type="submit" class="btn btn-lg btn-primary w-100 mx-0 mb-2">Save changes</button>

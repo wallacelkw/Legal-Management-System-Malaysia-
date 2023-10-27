@@ -11,5 +11,6 @@ admin.site.register(Case)
 admin.site.register(Invoice)
 admin.site.register(ProfService)
 admin.site.register(ReimburService)
+admin.site.register(Transaction)
 
 # admin.site.register(Transaction)

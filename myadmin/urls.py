@@ -53,7 +53,7 @@ urlpatterns = [
     path('invoices/create-build/<slug:slug>',views.createBuildInvoice, name='create-build-invoice'),
     path('invoices/update-build/<slug:slug>',views.updateBuildInvoice, name='update-build-invoice'),
     # path('pdf/<int:pk>', views.generate_pdf_invoice, name="generate-pdf"),
-    path('sending_email/<slug:slug>', views.sending_email, name="sending_email"),
+    path('sending_email/<int:pk>', views.sending_email, name="sending_email"),
     path('invoices/pdf-build/<int:pk>',views.generate_pdf_invoice, name='generate_pdf_invoice'),
 
     #Delete an invoice
@@ -63,7 +63,14 @@ urlpatterns = [
 
     path('pdf_invoice/<int:pk>/', views.PDFInvoiceView, name='pdf_invoice'),
 
+
+
+    # Account
+    path('accounts/', views.view_accounts, name='accounts'),
+    path('accounts/edit_account_transaction/<slug:slug>',views.edit_account_transaction, name='edit_account_transaction'),
+
     path('balance_sheet/', views.balance_sheet, name='balance_sheet'),
+    
     
   
 ]

@@ -1,48 +1,64 @@
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="clients" value="{{record.clients}}" readonly>
-    <label for="first_name" class="form-label">Client</label>
+    <input type="text" class="form-control" name="clients" value="{{record.full_name}}" readonly>
+    <label for="first_name" class="form-label">Full Name</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="respondent_name" value="{{record.respondent_name}}" readonly>
-    <label for="first_name" class="form-label">Respondent Name</label>
+    <input type="text" class="form-control" name="identity" value="{{record.identity}}" readonly>
+    <label for="identity" class="form-label">IC/Passport</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="client_role" value="{{record.client_role}}" readonly>
-    <label for="first_name" class="form-label">Client Role</label>
+    <input type="text" class="form-control" name="phone_number" value="{{record.phone_number}}" readonly>
+    <label for="phone_number" class="form-label">Phone Number</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="respondent_advocate" value="{{record.respondent_advocate}}" readonly>
-    <label for="first_name" class="form-label">Respondent Advocate</label>
+    <input type="text" class="form-control" name="gender" value="{{record.gender}}" readonly>
+    <label for="gender" class="form-label">Gender</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="case_no" value="{{record.case_no}}" readonly>
-    <label for="first_name" class="form-label">Case No</label>
+    <input type="text" class="form-control" name="email" value="{{record.email}}" readonly>
+    <label for="email" class="form-label">Email Address</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="case_type" value="{{record.case_type}}" readonly>
-    <label for="first_name" class="form-label">Respondent Name</label>
+    <input type="text" class="form-control" name="case_type" value="{{record.address1}}" readonly>
+    <label for="first_name" class="form-label">Address 1</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="sense_of_urgent" value="{{record.sense_of_urgent}}" readonly>
-    <label for="first_name" class="form-label">Level Of Urgency</label>
+    <input type="text" class="form-control" name="address2" value="{{record.address2}}" readonly>
+    <label for="address2" class="form-label">Address 2</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="stage_of_case" value="{{record.stage_of_case}}" readonly>
-    <label for="first_name" class="form-label">Stage of Case</label>
+    <input type="text" class="form-control" name="city" value="{{record.city}}" readonly>
+    <label for="city" class="form-label">City</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="court_no" value="{{record.court_no}}" readonly>
-    <label for="first_name" class="form-label">Court No</label>
+    <input type="text" class="form-control" name="postcode" value="{{record.postcode}}" readonly>
+    <label for="postcode" class="form-label">Postcode</label>
 </div>
 <div class="form-floating mb-3">
-    <input type="text" class="form-control" name="court_type" value="{{record.court_type}}" readonly>
-    <label for="first_name" class="form-label">Court Type</label>
+    <input type="text" class="form-control" name="court_type" value="{{record.country}}" readonly>
+    <label for="state" class="form-label">Country</label>
 </div>
-<div class="form-floating mb-3">
-    <input type="text" class="form-control" name="judge_name" value="{{record.judge_name}}" readonly>
-    <label for="first_name" class="form-label">Judge Name</label>
-</div>
+
 <div class="form-floating">
-    <textarea class="form-control" id="floatingTextarea" style="height: 150px;" name="case_description" disabled>{{record.court_remark}}</textarea>
+    <textarea class="form-control" id="floatingTextarea" style="height: 150px;" name="remark" disabled>{{record.remark}}</textarea>
     <label for="floatingTextarea">Remarks</label>
+</div>
+<br><br>
+<div class="form-floating mb-3">
+    <h3>Agent Information</h3>
+</div>
+<!-- Agent information -->
+<div class="form-floating mb-3">
+    <input type="text" class="form-control" name="judge_name" value="{{record.agent_fullname}}" readonly>
+    <label for="first_name" class="form-label">Agent Full Name</label>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" class="form-control" name="agent_identity" value="{{record.agent_identity}}" readonly>
+    <label for="agent_identity" class="form-label">IC/Passport</label>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" class="form-control" name="agent_ph" value="{{record.agent_ph}}" readonly>
+    <label for="agent_ph" class="form-label">Phone Number </label>
 </div>

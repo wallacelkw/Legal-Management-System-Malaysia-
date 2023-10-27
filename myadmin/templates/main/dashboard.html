@@ -39,13 +39,11 @@
 
 <!-- <div id="themap"></div> -->
 <!-- Sales Chart Start -->
-<div class="container-fluid pt-2 px-2">
+<div class="container-fluid pt-4 px-4">
     <div class="row g-2">
         <div class="col-md-6 col-md-6 col-xl-6">
             <div class="bg-light text-center rounded p-4">
-
                 <div class="d-flex align-items-center justify-content-between mb-4">
-
                     <h6 class="mb-0">Client Location</h6>
                 </div>
                 {{map1|safe}}
@@ -54,14 +52,10 @@
         </div>
         <div class="col-md-6 col-md-6 col-xl-6">
             <div class="bg-light text-center rounded p-4">
-
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h6 class="mb-0">Volume Today</h6>
+                <div class="d-flex align-items-center justify-content-between mb-4 canvas">
+                    <h6 class="mb-0">Current Case Type</h6>
                 </div>
-                <canvas id="myChart" width="400" height="50"></canvas>
-
-
-
+                <canvas id="caseTypeChart" width="330px" height="300px"></canvas>
                 <!-- <canvas id="worldwide-sales"></canvas> -->
             </div>
         </div>
@@ -71,78 +65,17 @@
 <!-- Sales Chart End -->
 
 
-<!-- Recent Sales Start -->
+<!-- Volume Today -->
 <div class="container-fluid pt-4 px-4">
     <div class="bg-light text-center rounded p-4">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h6 class="mb-0">Recent Salse</h6>
-            <a href="">Show All</a>
+        <h2>Volume Today</h2>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <canvas id="myChart" width="500" height="500"></canvas>
         </div>
-        <div class="table-responsive">
-            <table class="table text-start align-middle table-bordered table-hover mb-0">
-                <thead>
-                    <tr class="text-dark">
-                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Invoice</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+
     </div>
 </div>
-<!-- Recent Sales End -->
+<!-- Volume Today End -->
 
 
 <!-- Widgets Start -->
@@ -198,6 +131,39 @@
                 }]
             },
             options: {
+                responsive: false, // Make the chart responsive to the canvas size
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        var data2 = JSON.parse("{{caseType_data|safe}}");
+        var label2 = JSON.parse('{{caseType_label|safe}}');
+
+
+        var ctx2 = document.getElementById('caseTypeChart').getContext('2d');
+
+
+
+        var myChart2 = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: label2, //loop through queryset, 
+                datasets: [{
+                    label: 'Case Type',
+                    data: data2,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false, // Make the chart responsive to the canvas size
+                maintainAspectRatio: true,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -205,6 +171,8 @@
                 }
             }
         });
+
+
     });
 </script>
 

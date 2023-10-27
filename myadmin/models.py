@@ -158,6 +158,7 @@ class Invoice(models.Model):
     # save_by = models.ForeignKey(User, on_delete=models.CASCADE)
     invoice_date_time = models.DateField(auto_now_add=True, null=True, blank=True)
     final_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    final_total_transaction = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     paid  = models.BooleanField(default=False, null=True, blank=True)
     short_descriptions = models.TextField(max_length=1000, null=True, blank=True)
     total_reimbur_service_price = models.DecimalField(max_digits=100, decimal_places=2, null=True, blank=True)
@@ -272,33 +273,40 @@ class ReimburService(models.Model):
         super(ReimburService, self).save(*args, **kwargs)
     
 
+class Transaction(models.Model):
+    TRANSACTION_TYPE_CHOICES = [
+        ('Debit', 'Debit'),  # Deducting money (e.g., for invoices)
+        ('Credit', 'Credit'),  # Adding money (e.g., for payments)
+    ]
+    transaction_number = models.CharField(null=True, blank=True, max_length=100)
+    transaction_date = models.DateField(auto_now_add=True, null=True, blank=True)
+    transaction_description = models.CharField(null=True, blank=True, max_length=100)
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPE_CHOICES)
+    transaction_price = models.DecimalField(max_digits=1000, decimal_places=2, null=True, blank=True)
+    
+    balance = models.DecimalField(max_digits=1000, decimal_places=2, null=True, blank=True)
+    
+    paid  = models.BooleanField(default=False, null=True, blank=True)
+    
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
 
+    #Utility fields
+    uniqueId = models.CharField(null=True, blank=True, max_length=100)
+    slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
+    date_created = models.DateTimeField(blank=True, null=True)
+    last_updated = models.DateTimeField(blank=True, null=True)
 
-# class Transaction(models.Model):
+    def save(self, *args, **kwargs):
+        if self.date_created is None:
+            self.date_created = timezone.localtime(timezone.now())
+        if self.uniqueId is None:
+            self.uniqueId = str(uuid4()).split('-')[4]
+            self.slug = slugify('{} {} {}'.format(self.transaction_type,self.invoice, self.uniqueId))
 
-#     transaction_data = models.DateField(auto_now_add=True, null=True, blank=True)
-#     transaction_description = models.CharField(null=True, blank=True, max_length=100)
-#     debit_transaction = models.DecimalField(max_digits=1000, decimal_places=2, null=True, blank=True)
-#     credit_transaction = models.DecimalField(max_digits=1000, decimal_places=2, null=True, blank=True)
-#     balance = models.DecimalField(max_digits=1000, decimal_places=2, null=True, blank=True)
+        self.slug = slugify('{} {} {}'.format(self.transaction_type,self.invoice, self.uniqueId))
+        self.last_updated = timezone.localtime(timezone.now())
 
-#     paid  = models.BooleanField(default=False, null=True, blank=True)
-#     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
-
-#     #Utility fields
-#     uniqueId = models.CharField(null=True, blank=True, max_length=100)
-#     slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
-#     date_created = models.DateTimeField(blank=True, null=True)
-#     last_updated = models.DateTimeField(blank=True, null=True)
-
-#     def save(self, *args, **kwargs):
-#         if self.date_created is None:
-#             self.date_created = timezone.localtime(timezone.now())
-#         if self.uniqueId is None:
-#             self.uniqueId = str(uuid4()).split('-')[4]
-#             self.slug = slugify('{} {}'.format(self.reimbur_service, self.uniqueId))
-
-#         self.slug = slugify('{} {}'.format(self.reimbur_service, self.uniqueId))
-#         self.last_updated = timezone.localtime(timezone.now())
-
-#         super(Transaction, self).save(*args, **kwargs)
+        super(Transaction, self).save(*args, **kwargs)
+    
+    def __str__(self):
+           return f"{self.invoice}_{self.transaction_number}"

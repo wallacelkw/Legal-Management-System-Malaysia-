@@ -323,61 +323,88 @@ class InvoiceForm(forms.ModelForm):
 
 
 class ReimburServiceForm(forms.ModelForm):
-
     class Meta:
         model = ReimburService
         fields = ['reimbur_service', 'reimbur_service_price']
-        widgets = {
-            'service': forms.TextInput(
-                attrs={
-                    'class': 'form-control'
-                    }
-                ),
-
-            'unit_price': forms.NumberInput(
-            attrs={
-                'onblur': 'findTotal_uniPrice()',
-                'class' : 'unit_price'
-                }
-            ),
-         
-        }
+        
+    reimbur_service = forms.CharField(
+        label='Reimburdance Service',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        })
+    )
+    reimbur_service_price = forms.IntegerField(
+        widget=forms.TextInput(attrs={
+            'onblur': 'findTotal_proPrice()',
+            'class': 'prof_service_price form-control',
+        }),
+        label='Service Price'
+    )
 
 class ProfServiceForm(forms.ModelForm):
-
     class Meta:
         model = ProfService
         fields = ['prof_service', 'prof_service_price']
-        widgets = {
-            'prof_service': forms.TextInput(
-                attrs={
-                    'class': 'form-control'
-                    }
-                ),
-            'prof_service_price' : forms.NumberInput(
-            attrs={
-                'onblur' : 'findTotal_proPrice()',
-                'class' : 'prof_service_price'
-                }
-            ),
-        }
+    prof_service = forms.CharField(
+        label='Professional Service',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        })
+    )
+    prof_service_price = forms.IntegerField(
+        widget=forms.TextInput(attrs={
+            'onblur': 'findTotal_proPrice()',
+            'class': 'prof_service_price form-control',
+        }),
+        label='Service Price'
+    )
+
 
 
 ProfServiceFormSet = inlineformset_factory(Invoice, ProfService,form = ProfServiceForm,extra=1, can_delete=True, can_delete_extra=True)
 ReimburServiceFormSet = inlineformset_factory(Invoice, ReimburService,form = ReimburServiceForm,extra=1, can_delete=True, can_delete_extra=True)
 
-# class TransactionForm(forms.ModelForm):
-#     class Meta:
-#         model = Transaction
-#         field = ['inoice', 'transaction_description', 'debit_transaction', 'credit_transaction',
-#                  'blance']
-#         widget={
-#             'inoice'  : forms.Select(attrs={'class' : 'form-control'}),
-#             "transaction_description" : forms.TextInput( attrs={'class' : 'form-control'}),
-#             "debit_transaction" : forms.DecimalField( attrs={'class' : 'form-control'}),
-#             "credit_transaction" : forms.DecimalField( attrs={'class' : 'form-control'}),
-#             "blance" : forms.DecimalField( attrs={'class' : 'form-control'}),
-#         }
+class TransactionForm(forms.ModelForm):
+    class Meta:
+        model = Transaction
+        fields = ['transaction_number', 'transaction_description', 'transaction_type', 'transaction_price']
+        # fields = ['transaction_type', 'transaction_price']
+        # widget={
+        #     "transaction_number" : forms.TextInput( attrs={'class' : 'form-control'}),
+        #     "transaction_description" : forms.TextInput( attrs={'class' : 'form-control'}),
+        #     "transaction_type" : forms.Select(attrs={'class' : 'form-control'}),
+        #     "transaction_price" : forms.NumberInput(attrs={'class' : 'form-control'}),
+            # "balance" : forms.NumberInput( attrs={'class' : 'form-control'}),
+        # }
+        # widget={
+        #     "transaction_type" : forms.Select(attrs={'class' : 'form-control'}),
+        #     "transaction_price" : forms.NumberInput(attrs={'class' : 'form-control'}),
+        # }
 
+
+
+    transaction_number = forms.CharField(
+        label='Transaction Number',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        })
+    )
+
+    transaction_description = forms.CharField(
+        label='Transaction Description',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        })
+    )
+    transaction_type = forms.Select(
+            attrs={'class' : 'form-control'}
+        )
+
+    transaction_price = forms.IntegerField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        }),
+        label='Transaction Price'
+    )
 
 
